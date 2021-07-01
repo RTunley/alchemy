@@ -11,7 +11,7 @@ application.config['MAX_CONTENT_LENGTH'] = 1000*1024*1025 #1 GB max upload limit
 
 #config
 
-application.config.from_object('sam.config.BaseConfig')
+application.config.from_object('alchemy.config.BaseConfig')
 db = SQLAlchemy(application)
 
 # Add jinja custom filter to strip trailing zero from a number, or convert
@@ -24,8 +24,8 @@ def prettify_number(arg):
         return int(arg)
     return arg
 
-from sam import models
-from sam.views import account, course, clazz, paper, library
+from alchemy import models
+from alchemy.views import account, course, clazz, paper, library
 
 course.bp_course.register_blueprint(clazz.bp_clazz, url_prefix='/clazz/<clazz_id>')
 course.bp_course.register_blueprint(paper.bp_paper, url_prefix='/paper/<paper_id>')

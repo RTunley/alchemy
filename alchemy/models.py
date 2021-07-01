@@ -1,6 +1,6 @@
-from sam import db
+from alchemy import db
 import sqlalchemy
-import sam.views.profile as paper_profile
+import alchemy.views.profile as paper_profile
 
 ## Database Models ##
 

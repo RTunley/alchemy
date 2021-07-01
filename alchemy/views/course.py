@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from sam import db, models
+from alchemy import db, models
 
 bp_course = flask.Blueprint('course', __name__)
 

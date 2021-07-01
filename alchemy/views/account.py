@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from sam import models
+from alchemy import models
 
 bp_account = flask.Blueprint('bp_account', __name__)
 

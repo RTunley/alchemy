@@ -1,8 +1,8 @@
 import flask
 from flask import g
 import sqlalchemy
-from sam import db, models
-from sam.views import forms
+from alchemy import db, models
+from alchemy.views import forms
 
 bp_library = flask.Blueprint('library', __name__)
 

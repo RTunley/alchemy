@@ -1,5 +1,5 @@
 import numpy as np
-from sam import models, plots
+from alchemy import models, plots
 
 def make_student_paper_scoreset(student, paper):
     score_list = []

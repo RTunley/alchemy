@@ -1,13 +1,13 @@
-from sam import application as app
-from sam import db
+from alchemy import application as app
+from alchemy import db
 from flask_testing import TestCase
 import unittest
-from sam.models import Account, Course, Question
+from alchemy.models import Account, Course, Question
 
 class BaseTestCase(TestCase):
 
     def create_app(self):
-        app.config.from_object('sam.config.TestConfig')
+        app.config.from_object('alchemy.config.TestConfig')
         return app
 
     def setUp(self):

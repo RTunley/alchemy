@@ -1,4 +1,4 @@
-from sam import application
+from alchemy import application
 
 if __name__ == '__main__':
     application.run()

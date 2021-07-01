@@ -1,4 +1,4 @@
-from sam import score_manager
+from alchemy import score_manager
 
 class StudentCourseProfile(object):
     def __init__(self, student, scoreset_list):

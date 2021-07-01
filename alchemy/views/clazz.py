@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from sam import db, models, score_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, score_manager, summary_profiles, file_input, file_output
 import os
 from werkzeug.utils import secure_filename
 
@@ -57,8 +57,8 @@ def upload_excel():
 def download_excel():
     # TODO should not save files into the code repo.
     cwd = os.getcwd()
-    sam = os.path.join(cwd, 'sam')
-    downloads = os.path.join(sam, 'downloads')
+    alchemy = os.path.join(cwd, 'alchemy')
+    downloads = os.path.join(alchemy, 'downloads')
     filename = 'clazz_template.xlsx'
 
     try:
@@ -141,8 +141,8 @@ def download_results_excel():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     cwd = os.getcwd()
-    sam = os.path.join(cwd, 'sam')
-    downloads = os.path.join(sam, 'downloads')
+    alchemy = os.path.join(cwd, 'alchemy')
+    downloads = os.path.join(alchemy, 'downloads')
     filename = file_output.output_results_excel(paper, g.clazz, downloads)
     try:
         return flask.send_from_directory(downloads, filename, as_attachment=True)

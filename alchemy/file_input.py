@@ -1,5 +1,5 @@
 import openpyxl as opxl
-from sam import application, models
+from alchemy import application, models
 import os
 
 ALLOWED_EXTENSIONS = set(['xlsx'])

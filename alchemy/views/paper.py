@@ -3,7 +3,7 @@ import sqlalchemy
 import pdfkit
 import flask
 from flask import g
-from sam import db, models
+from alchemy import db, models
 
 bp_paper = flask.Blueprint('paper', __name__)
 
