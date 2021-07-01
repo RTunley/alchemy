@@ -1,0 +1,83 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<main role="main">
+
+  <div id="stats_sidebar" class="sidebar">
+    {% include "course/paper/profile.html" %}
+  </div>
+
+  <h1 class="my-3">{{ g.course.name }} - {{ g.paper.title }}</h1>
+
+  <div class="d-flex p-0">
+    <div class="flex-grow-1 bd-highlight">
+      <button id="stats_toggle_button" onclick="toggle_sidebar()" role="button" aria-label="Open statistics" class="btn btn-primary btn-sm">
+        <span data-feather="activity"></span> Profile
+      </button>
+      <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#paper_edit_modal"><span data-feather="edit-2"></span> Edit Title </a>
+    </div>
+
+    {% import "course/paper_new_or_edit_macro.html" as paper_edit_modal %}
+    {{ paper_edit_modal.render_modal("paper_edit_modal", g.course, g.paper) }}
+
+    <div class="bd-highlight">
+      <a class="btn btn-outline-success btn-sm" href="{{ url_for('course.paper.index')}}"><span data-feather="check"></span> Done Editing</a>
+    </div>
+  </div>
+
+  <div id="paper_questions_tabs" class="container m-0 p-0">
+
+    <ul class="nav nav-tabs justify-content-center">
+      <li class="nav-item">
+        <a id="show_all_questions_link" class="nav-link active" aria-current="page" href="#" onclick="show_all_questions()">Library View</a>
+      </li>
+      <li class="nav-item">
+        <a id="show_selected_questions_link" class="nav-link" href="#" onclick="show_selected_questions()">Assessment View</a>
+      </li>
+    </ul>
+
+    <p></p>
+
+    <div id="available_questions_filter_options">
+      {% import "course/question_filter_macro.html" as library_filter %}
+      {{ library_filter.render_filter_options('available_questions_area', 'paper_questions_tabs', g.course.id, g.paper.id, all_course_tags) }}
+    </div>
+
+    <!-- Tab showing all questions in the library -->
+    <div id="available_questions_area" class="mt-3">
+      {% import "course/question_accordion_macro.html" as question_accordion %}
+
+      {{ question_accordion.render_questions(g.course.id, g.paper.id, available_questions) }}
+    </div>
+
+    <!-- Tab showing all questions in the paper -->
+    <div id="paper_questions_area" class="mt-3" style="display: none;">
+      {% include "course/paper/questions_list.html" %}
+    </div>
+
+  </div>
+
+</main>
+
+<script type="text/javascript">
+  function show_all_questions()
+  {
+    document.getElementById("available_questions_area").style.display = "block";
+    document.getElementById("paper_questions_area").style.display = "none";
+    document.getElementById("available_questions_filter_options").style.display = "block";
+    $("#show_all_questions_link").toggleClass("active", true);
+    $("#show_selected_questions_link").toggleClass("active", false);
+  }
+
+  function show_selected_questions()
+  {
+    document.getElementById("available_questions_area").style.display = "none";
+    document.getElementById("paper_questions_area").style.display = "block";
+    document.getElementById("available_questions_filter_options").style.display = "none";
+    $("#show_all_questions_link").toggleClass("active", false);
+    $("#show_selected_questions_link").toggleClass("active", true);
+  }
+</script>
+
+{% endblock course_main_content %}

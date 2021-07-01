@@ -1,0 +1,40 @@
+{% include "layout_start.html" %}
+
+<div class="container">
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.index' }}" href="{{ url_for('course.index', course_id=g.course.id) }}">Settings</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.library.index' }}" href="{{ url_for('course.library.index') }}">Question Library</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Classes</a>
+      <div class="dropdown-menu">
+        {% for clazz in g.course.clazzes %}
+          <a class="nav-link {{ 'active' if request.endpoint == 'course.clazz.index' }}" href="{{ url_for('course.clazz.index', clazz_id=clazz.id) }}">{{ clazz.code }}</a>
+        {% endfor %}
+      </div>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle {{ 'active' if request.endpoint == 'course.paper.index' or request.endpoint == 'course.paper.edit' }}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Assessments</a>
+      <div class="dropdown-menu">
+        {% for paper in g.course.papers%}
+          <a class="dropdown-item" href="{{ url_for('course.paper.index', paper_id=paper.id) }}">{{ paper.title }}</a>
+        {% endfor %}
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" data-toggle="modal" data-target="#paper_create_modal" href="#">New assessment</a>
+      </div>
+    </li>
+  </ul>
+
+  {% block course_main_content %}
+  {% endblock course_main_content %}
+
+</div>
+
+{% import "course/paper_new_or_edit_macro.html" as paper_create_modal %}
+{{ paper_create_modal.render_modal("paper_create_modal", course, None) }}
+
+{% include "layout_end.html" %}

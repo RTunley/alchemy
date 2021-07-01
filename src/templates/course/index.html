@@ -1,0 +1,141 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<script src="{{ url_for('static', filename='edit_grade_form.js') }}"></script>
+
+<style>
+  .profile{
+    display: grid;
+      grid-template-columns: 1fr 1fr;
+  }
+  .profile > div{
+    margin: 1em;
+  }
+  .grade_boundaries{
+    grid-column:1;
+    grid-row:1/2;
+  }
+  .achievement_categories{
+    grid-column:2;
+    grid-row:1/2;
+  }
+</style>
+<main role="main">
+
+  <h1 class="my-3">{{ g.course.name }}</h1>
+
+  <h2>Assessment Profile</h2>
+  <p>[Real Categories do not exist yet, but will be important later since not all assessments will be weighted the same.]</p>
+  <p>[Will eventually need to build this into Models]</p>
+  <br>
+  <div class="profile">
+    <div class="grade_boundaries">
+      <h4>Assessment Categories <button class="btn btn-info btn-sm"><a>Edit</a></button></h4>
+      <table class="table table-hover text-center">
+        <thead>
+          <th>Category</th>
+          <th>Course Weighting</th>
+          <th>Number of Assessments</th>
+        </thead>
+        <tr>
+          <th>Exams</th>
+          <th>60%</th>
+          <th>2</th>
+        </tr>
+        <tr>
+          <th>Lab Reports</th>
+          <th>30%</th>
+          <th>2</th>
+        </tr>
+        <tr>
+          <th>Quizzes</th>
+          <th>10%</th>
+          <th>4</th>
+        </tr>
+      </table>
+    </div>
+    <div class="achievement_categories">
+      <h4>Current Assessments <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#paper_new_modal"><a>Add Assessment</a></button></h4>
+      <table class="table table-hover text-center">
+        <thead>
+          <th>Title</th>
+          <th>Category</th>
+        </thead>
+        {% for paper in g.course.papers %}
+        <tr>
+          <th>
+            <div align="left">
+              <a class="btn btn-link {{ 'disabled' if paper.scores }}" aria-label="Delete paper" href="{{ url_for('course.paper.remove', paper_id=paper.id) }}">
+                <span data-feather="trash-2"></span>
+              </a>
+              <a href="{{ url_for('course.paper.index', paper_id=paper.id) }}">{{ paper.title }}</a>
+            </div>
+          </th>
+          <th>Exam</th>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <br>
+
+  {% import "course/grade_levels_form_macro.html" as grades_form %}
+  <!-- edit grade levels modal form -->
+  <form id="grade-level-form" class="needs-validation" novalidate>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Grade Boundaries</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>{{ grades_form.render_edit_gradelevels(g.course) }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" onclick='return validate_grade_levels({{ g.course.id }})'>Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <h2>Achievement Profile</h2>
+  <p>This is where school can set the grade boundaries or other achievment categories for the data analytics.</p>
+  <br>
+  <div class="profile">
+    <div class="grade_boundaries">
+      <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Edit</h4>
+      <table class="table table-hover text-center">
+        {% for grade in g.course.grade_levels %}
+          <tr>
+            <td>{{ grade.grade }}</td>
+            <td>{{ grade.lower_bound }}%</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="achievement_categories">
+      <h4>Achievement Categories <button class="btn btn-info btn-sm"><a>Edit</a></button></h4>
+      <table class="table table-hover text-center">
+        <tr>
+          <th>Exceeding Expectations (EE)</th>
+          <th>75%</th>
+        </tr>
+        <tr>
+          <th>Meeting Expectations (ME)</th>
+          <th>45%</th>
+        </tr>
+        <tr>
+          <th>Below Expectations (BE)</th>
+          <th>0%</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+</main>
+{% endblock course_main_content %}

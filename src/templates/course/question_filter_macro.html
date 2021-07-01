@@ -1,0 +1,55 @@
+<!--
+Renders UI for filtering a course's questions by tags and text search.
+
+filter_mode: 'course_library_mode' if viewing the main course library, or 'paper_edit_mode' if editing a paper
+html_container_id: the id of the HTML element that will contain the questions when updated via AJAX
+html_scroll_marker_id: the id of the HTML element that should be scrolled to the top of the screen after the question container is updated
+course_id: the course id
+paper_id: the paper id, or 0 if there is no specific paper
+tag_list: a list of all question tags associated with this course
+-->
+
+{% macro render_filter_options(html_container_id, html_scroll_marker_id, course_id, paper_id, tag_list) -%}
+
+<div class="container p-0">
+  <div class="row">
+
+    <!-- Filter questions by tag -->
+    <div id="question_library_tag_filter_container" class="col">
+        Tags: <a id="library_question_filter_tags_all"  onclick="library_filter_tags_all()">All</a> | <a id="library_question_filter_tags_none" href="#" onclick="library_filter_tags_none()">None</a>
+        <br />
+        {% for tag in tag_list %}
+          <button onclick="library_filter_tag_clicked({{ tag.id }}, $(this))" role="button" aria-label="Toggle tag filter" class="btn btn-outline-info btn-sm m-1 active" data-alchemy_tag_id="{{ tag.id }}">
+            {{ tag.name }}
+          </button>
+        {% endfor %}
+    </div>
+
+    <!-- Filter questions by text search.
+      Search doesn't happen until Enter is pressed, but if all text in the
+      search field is deleted, the search query will be reset automatically. -->
+    <div class="col-4 d-flex align-items-end">
+      <div class="input-group">
+        <input type="search" id="library_question_search_input"
+            class="form-control rounded" placeholder="Search" aria-label="Search"
+            aria-describedby="search-addon"
+            onkeyup="if (event.keyCode == 13) library_filter_text_changed()"
+            oninput="if (this.value == '') library_filter_text_changed()" />
+        <button type="button" class="btn btn-primary" onclick="library_filter_text_changed()"><span data-feather="search"></span></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='question_filter.js') }}"></script>
+<script type="text/javascript">
+  init_library_filter_properties({
+    html_container_id: "{{ html_container_id }}",
+    html_scroll_marker_id: "{{ html_scroll_marker_id }}",
+    course_id: "{{ course_id }}",
+    paper_id: "{{ paper_id }}"
+  })
+</script>
+
+{%- endmacro %}

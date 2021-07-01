@@ -1,0 +1,54 @@
+{% macro render_modal(modal_id, course, paper) -%}
+
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}_title_label" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{ modal_id }}_title_label">
+          {% if paper %}
+          Edit title: {{ paper.title }}
+          {% else %}
+          New assessment
+          {% endif %}
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      {% if paper %}
+      <form action="{{ url_for('course.paper.edit_title', paper_id=paper.id) }}" method="post">
+      {% else %}
+      <form action="{{ url_for('course.paper.index', paper_id=0) }}" method="post">
+      {% endif %}
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="{{ modal_id }}_title_label">
+              {% if paper %}
+              New title:
+              {% else %}
+              Title:
+              {% endif %}
+            </label>
+            <input id="{{ modal_id }}_title_label" name="{{ modal_id }}_new_title" type="text" value="" class="form-control" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          {% if paper %}
+            <input type="submit" class="btn btn-primary" value="Save" />
+          {% else %}
+            <input type="submit" class="btn btn-primary" value="Create" />
+          {% endif %}
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{%- endmacro %}

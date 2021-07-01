@@ -1,0 +1,29 @@
+{% macro render_edit_gradelevels(course) -%}
+
+<table id="grade-form-table">
+  <tr>
+    <th>Grade</th>
+    <th>Lower Bound (min %)</th>
+    <th></th>
+  </tr>
+  {% for gl in course.grade_levels %}
+    <tr valign="top">
+      <td><input type="text" class="form-control" id = "grade_level_{{ loop.index0 }}" placeholder="Grade Level" value='{{ gl.grade }}' required>
+      <label id="grade-error-{{ loop.index0 }}" class="invalid-feedback" for="grade_level_{{ loop.index0 }}">
+        invalid entry
+      </label>
+      </td>
+      <td><input type="integer" id="lower_bound_{{ loop.index0 }}" class="form-control" placeholder="Lower Bound" value='{{ gl.lower_bound }}' required>
+      <label id="bound-error-{{ loop.index0 }}" class="invalid-feedback" for="lower_bound_{{ loop.index0 }}">
+        invalid entry
+      </label>
+      </td>
+      <td><a class="btn btn-link" aria-label="Delete Grade Level" onclick="remove_field_row($(this));">
+        <span data-feather="trash-2"></span></a></td>
+    </tr>
+  {% endfor %}
+</table>
+<a role="button" aria-label="Add grade level" class="btn btn-link" onclick="insert_field_row();">Add New Grade
+  <span data-feather="plus-circle"></span></a>
+
+{%- endmacro %}

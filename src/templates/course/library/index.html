@@ -1,0 +1,57 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<main role="main">
+  <h1 class="my-3">Question Library</h1>
+
+  <div class="border p-3 mb-3">
+    <h2>New Question</h2>
+
+    {% import "course/library/question_form_macro.html" as question_form %}
+    {{ question_form.render_question_form(new_question_form, "new_question_", url_for('course.library.add_question'), "") }}
+  </div>
+
+  <div class="modal fade" id="question_edit_modal" tabindex="-1" aria-labelledby="question_edit_modal_label" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="question_edit_modal_label">Update Question</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="edit_question_area">
+            Loading...
+            <!-- Edit Question form will be injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="available_questions_header">Available Questions</h2>
+
+  {% import "course/question_filter_macro.html" as library_filter %}
+  {{ library_filter.render_filter_options('question_accordion_container', 'available_questions_header', g.course.id, 0, all_course_tags) }}
+
+  <p></p>
+
+  <div id="question_accordion_container">
+    {% import "course/question_accordion_macro.html" as question_accordion %}
+    {{ question_accordion.render_questions(g.course.id, 0, g.course.questions) }}
+  </div>
+
+</main>
+
+
+<script type="text/javascript">
+  (function () {
+    document.addEventListener('DOMContentLoaded', function() {
+      reload_question_tags("new_question_")
+    });
+  }())
+</script>
+
+{% endblock course_main_content %}

@@ -1,0 +1,134 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<main role="main">
+  <h1 class="my-3">{{ g.clazz.code }} - {{ g.course.name }}</h1>
+
+  <h2>Teachers / Administrators</h2>
+  <ul>
+    {% for user in g.clazz.users %}
+      {% if user.access_id != 3 %}
+      <li>{{user.given_name}} {{user.family_name}}</li>
+      <!-- Include access descriptor above? -->
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <h2>Assessments</h2>
+  <br>
+  <table class="table table-hover">
+    {% for paper in g.course.papers %}
+      <tr>
+        <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+        <td>
+          {% if (paper.paper_questions | length) != 0 %}
+            <a class="btn btn-info btn-sm" href="{{ url_for('course.clazz.paper_results', paper_id = paper.id)}}">Edit Results</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if (paper.paper_questions | length) != 0 %}
+            {% if paper.has_all_scores %}
+              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id)}}">View Class Report</a>
+            {% else %}
+              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id)}}">View Class Report</a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <h2>Students</h2>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
+  Add Student
+  </button>
+
+  <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add_student_modal_label">Add New Student</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="{{ url_for('course.clazz.add_student', clazz_id = g.clazz.id) }}" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+             <label for="student_given_name">Given Name</label>
+             <input id="student_given_name" name="given_name" type="text" value="" class="form-control" required />
+             <label for="student_family_name">Family Name</label>
+             <input id="student_family_name" name="family_name" type="text" value="" class="form-control" required />
+             <input type="hidden" name="course_id" value="{{ g.course.id }}" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" value="Add Student" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <table class="table table-hover">
+    <thead>
+      <th></th>
+      <th>Student ID</th>
+      <th>Family Name</th>
+      <th>Given Name</th>
+      {% for paper in g.course.papers %}
+        <th>{{ paper.title }}</th>
+      {% endfor %}
+    </thead>
+    {% for profile in profiles %}
+      <tr>
+        <td class="align-middle">
+          <a class="btn btn-link" aria-label="Delete question btn-sm">
+            <span data-feather="trash-2"></span>
+          </a>
+        </td>
+        <td class="align-middle">{{ profile.student.id }}</td>
+        <td class="align-middle">{{ profile.student.family_name }}</td>
+        <td class="align-middle">{{ profile.student.given_name }}</td>
+        {% for s in profile.scoreset_list %}
+          {% if s.has_all_scores %}
+            <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>
+          {% else %}
+            <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm disabled" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Upload Class Data</h3>
+  <p>You can add multiple students at a time by uploading a pre-formatted excel spreadsheet with the relevant information.</p>
+  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_excel') }}">here</a></p>
+  <p>Once it is completed, upload below to add your students.</p>
+  <p>
+  	{% with messages = get_flashed_messages() %}
+  	  {% if messages %}
+  		<ul class=flashes>
+  		{% for message in messages %}
+  		  <li>{{ message }}</li>
+  		{% endfor %}
+  		</ul>
+  	  {% endif %}
+  	{% endwith %}
+  </p>
+  <form method="post" action="{{ url_for('course.clazz.upload_excel')}}" enctype="multipart/form-data">
+    <dl>
+      <p>
+        <input type="file" name="file" autocomplete="off" required>
+      </p>
+    </dl>
+    <p>
+      <input type="submit" value="Submit">
+    </p>
+  </form>
+
+</main>
+
+{% endblock course_main_content %}

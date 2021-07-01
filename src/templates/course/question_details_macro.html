@@ -1,0 +1,37 @@
+<!--
+  Renders a display of all the details for a question.
+-->
+
+{% macro render_question_details(question) -%}
+
+<div class="card-body">
+  <div class="accordion-grid">
+    <div class="content area">
+      <p class="card-text">{{ question.content }}</p>
+    </div>
+    <div class="solution-area">
+      <h5>Solution</h5>
+      <p class="card-text">{{ question.solution }}</p>
+    </div>
+    <div class="tag-area">
+      <h6 class="card-subtitle mt-2 mb-1 text-muted">Tags</h6>
+        <p class="card-text">
+          <ul>
+            {% for tag in question.tags %}
+            <li>{{ tag.name }}</li>
+            {% endfor %}
+          </ul>
+        </p>
+    </div>
+    <div class="inclusions-area">
+      <h6 class="card-subtitle mt-2 mb-1 text-muted">Assessment Inclusions</h6>
+      <ul>
+        {% for paper_question in question.papers %}
+          <li>{{ paper_question.paper.title }} (Question {{paper_question.order_number}})</li>
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+</div>
+
+{%- endmacro %}

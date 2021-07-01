@@ -1,0 +1,156 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<main role="main">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+<script src="https://jsuites.net/v4/jsuites.js"></script>
+<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    <title></title>
+  </head>
+  <body>
+    <br>
+    <h3>Input Results from {{ paper.title }} for {{ g.clazz.code }}</h3>
+    <h4>Option 1: HTML Grid</h4>
+    <br>
+
+    <table id="results_spreadsheet">
+      <thead>
+        <tr>
+        <td>Student ID</td>
+        <td>Given Name</td>
+        <td>Family Name</td>
+        {% for paper_question in paper.ordered_paper_questions() %}
+          <td>Question {{ paper_question.order_number }}
+            ( / {{ paper_question.question.points | prettify_number }} )
+          </td>
+        {% endfor %}
+        <td>Total (Raw)
+          ( / {{ paper.profile.total_points | prettify_number }} )
+        </td>
+        <td>Total (%)</td>
+        <td>Grade</td>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for score_set in score_sets %}
+        <tr>
+        <td>{{ score_set.student.id }}</td>
+        <td>{{ score_set.student.given_name }}</td>
+        <td>{{ score_set.student.family_name }}</td>
+
+        {% for score in score_set.score_list %}
+          <td>{{ score.value | prettify_number }}</td>
+        {% endfor %}
+
+        <td>{{ score_set.total | prettify_number }}</td>
+        <td>{{ score_set.percentage | prettify_number }}</td>
+        <td>{{ score_set.grade }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+
+  <br>
+  <input id="save_scores_button" class="btn btn-primary" type="button" value="Save" onclick="update_student_data()" disabled>
+  <br>
+  <br>
+  <h4>Option 2: Upload a Custom Excel Spreadsheet</h4>
+  <br>
+  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_results_excel', paper_id = paper.id) }}">here</a></p>
+  <p>Upload your completed template using the form below.</p>
+  <br>
+  <form method="post" action="{{ url_for('course.clazz.upload_results_excel', paper_id = paper.id)}}" enctype="multipart/form-data">
+    <dl>
+      <p>
+        <input type="file" name="file" autocomplete="off" required>
+      </p>
+    </dl>
+    <p>
+      <input type="submit" value="Submit">
+    </p>
+  </form>
+</main>
+
+<script type="text/javascript">
+  let modified_students = {}
+  let results_table = jexcel(document.getElementById('results_spreadsheet'), {
+    lazyLoading: true,
+    loadingSpin: true,
+    tableOverflow: true,
+    onbeforechange: function(instance, cell, x, y, value) {
+      if (isNaN(value) || value < 0 || value > find_max_score_for_column(x)) {
+        // Clear the field if an invalid value is entered
+        return ''
+      }
+    },
+    onchange: function(instance, cell, x, y, value) {
+      var row_data = results_table.getRowData(y);
+      var student_id = row_data[0]
+      modified_students[student_id] = true
+      $('#save_scores_button').prop('disabled', false)
+    },
+    updateTable: function(instance, cell, x, y, source, value, id) {
+      // Ideally the known readonly columns would not be hardcoded here
+      if (x < 3 || x > get_results_table_column_count() - 3) {
+          cell.classList.add('readonly');
+      }
+    },
+    contextMenu: function() {
+        return false;
+    }
+  });
+  for (var col = 0; col < get_results_table_column_count(); col++){
+    results_table.setWidth(col, (col == 1 || col == 2) ? 150 : 100)
+  }
+
+  let max_scores = []
+  {% for paper_question in paper.paper_questions %}
+    max_scores.push( {{ paper_question.question.points }} )
+  {% endfor %}
+
+  function get_results_table_column_count() {
+    return {{ paper.paper_questions | count }} + 6
+  }
+
+  function find_max_score_for_column(column) {
+      var question_index = column - 3   // skip first three columns
+      if (question_index < 0 || question_index > max_scores.length) {
+        console.warn('Invalid question_index', question_index, 'for max_scores', max_scores)
+        return 0
+      }
+      return max_scores[question_index]
+  }
+
+  function update_student_data() {
+    scores_update({{ paper.id }}, results_table.getData(), modified_students )
+    modified_students = {}
+    $('#save_scores_button').prop('disabled', true)
+  }
+
+  function scores_update(paper_id, scores_json, modified_students) {
+    $.ajax({
+      type: 'POST',
+      url: '{{ url_for('course.clazz.student_scores_update') }}',
+      data: JSON.stringify({
+        'paper_id': paper_id,
+        'student_scores': scores_json,
+        'modified_students': modified_students,
+      }),
+      contentType: 'application/json',
+      dataType: 'json',
+    }).done(function(data) {
+      if (data) {
+        results_table.setData(data.scores_table_json)
+      }
+    });
+  }
+
+</script>
+
+{% endblock course_main_content %}

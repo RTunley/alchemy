@@ -1,0 +1,45 @@
+{% extends "course/course_layout.html" %}
+
+{% block course_main_content %}
+
+<main role="main">
+
+  <div id="stats_sidebar" class="sidebar">
+    {% include "course/paper/profile.html" %}
+  </div>
+
+  <h1 class="my-3">{{ g.course.name }} - {{ g.paper.title }}</h1>
+
+  {% if (g.paper.scores | length) != 0 %}
+  <p><small><em><b>Note:</b> This assessment cannot be edited because student scores have already been uploaded. To make an editable version of this paper, use the 'Duplicate' button.</em></small></p>
+  {% endif %}
+
+  <div class="d-flex p-0">
+    <div class="flex-grow-1 bd-highlight">
+      <button id="stats_toggle_button" onclick="toggle_sidebar()" role="button" aria-label="Open statistics" class="btn btn-primary btn-sm">
+        <span data-feather="activity"></span>
+        Profile
+      </button>
+      {% if (g.paper.scores | length) == 0 %}
+      <a class="btn btn-success btn-sm" href="{{ url_for('course.paper.edit')}}"><span data-feather="edit-2"></span> Edit </a>
+      {% endif %}
+      <a class="btn btn-success btn-sm" href="{{ url_for('course.paper.duplicate') }}" ><span data-feather="copy"></span> Duplicate </a>
+    </div>
+
+    <div class="bd-highlight">
+      <a class="btn btn-link btn-sm" href="{{ url_for('course.paper.printable') }}" target="_blank"><span data-feather="printer"></span> Print Assessment</a>
+      <a class="btn btn-link btn-sm" href="{{ url_for('course.paper.solutions_printable') }}" target="_blank"><span data-feather="printer"></span> Print Solutions</a>
+    </div>
+
+  </div>
+
+  <div class="container p-0">
+    <br>
+    <div id="paper_questions_area" class="col p-0">
+      {% include "course/paper/questions_list.html" %}
+    </div>
+  </div>
+
+
+</main>
+{% endblock course_main_content %}

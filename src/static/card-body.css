@@ -1,0 +1,24 @@
+.accordion-grid{
+  display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+.accordion-grid > div{
+  border: black dotted 1px;
+  padding: 1em;
+}
+.content-area{
+  grid-column:1;
+  grid-row:1/2;
+}
+.solution-area{
+  grid-column:1;
+  grid-row:2/3;
+}
+.tag-area{
+  grid-column:2;
+  grid-row:1/2;
+}
+.inclusions-area{
+  grid-column:2;
+  grid-row:2/3;
+}

@@ -1,0 +1,48 @@
+<!--
+Renders a form for question editing.
+
+form: the form object
+form_prefix: a prefix to identify the form on the page
+form_action: the form submit action
+question_id: the id of the question if editing a question, otherwise an empty string
+-->
+
+{% macro render_question_form(form, form_prefix, form_action, question_id) -%}
+
+<form method="POST" action="{{ form_action }}">
+  {{ form.hidden_tag() }}
+  <div class="form-row">
+    <div class="col-md-9 mb-3">
+      {{ form.content.label(class="form-control-label") }}
+      {{ form.content(class="form-control", rows="4") }}
+    </div>
+    <div class="col-md-3 mb-3">
+      <label for="{{ form_prefix }}new_tag_field">New Tag</label>
+      <input type="text" class="form-control mb-2" id="{{ form_prefix }}new_tag_field">
+      <button class="btn btn-success" id="{{ form_prefix }}newTag" type="button">Add Tag</button>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-9 mb-3">
+      {{ form.solution.label(class="form-control-label") }}
+      {{ form.solution(class="form-control", rows="4") }}
+    </div>
+    <div class="col-md-3 mb-3" id="{{ form_prefix }}course_tags">
+      <label>Available Tags</label><br />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 mb-3">
+      {{ form.points.label(class="form-control-label") }}
+      {{ form.points(class="form-control") }}
+    </div>
+    <div class="col-md-9 mb-3" id="{{ form_prefix }}question-tags">
+      <label>Tagged:</label><br />
+    </div>
+  </div>
+
+  <input type="hidden" name="question_id" value="{{ question_id }}" />
+  {{ form.submit(class="btn btn-primary", type="submit")}}
+</form>
+
+{%- endmacro %}
