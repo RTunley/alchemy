@@ -42,9 +42,11 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(len(grade_levels), 5)
 
         grade_A = GradeLevel.query.filter_by(grade = 'A').first()
-        print(grade_A)
         self.assertEqual(grade_A.lower_bound, 85)
         self.assertEqual(grade_A.upper_bound, 100)
+
+    # Test changing grade names (harmless)
+#    def test_change_grade_name(self):
 
 
 
