@@ -2,7 +2,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Question
+from alchemy.models import Account
 
 class BaseTestCase(TestCase):
 
@@ -14,8 +14,6 @@ class BaseTestCase(TestCase):
         db.create_all()
         test_account = Account(name = "Test School")
         db.session.add(test_account)
-        test_course = Course(name = "Test Course", account = test_account)
-        db.session.add(test_course)
         db.session.commit()
 
     def tearDown(self):

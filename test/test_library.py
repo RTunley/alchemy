@@ -27,7 +27,7 @@ class FlaskTestCase(BaseTestCase):
     def test_library_home(self):
         course = Course.query.first()
         course_id = course.id
-        response = self.client.get("/course/{}/library".format(course_id), content_type='html/text')
+        response = self.client.get("/course/{}/library".format(course_id), content_type='html/text', follow_redirects = True)
         self.assertEqual(response.status_code, 200)
 
     def test_new_question(self):
