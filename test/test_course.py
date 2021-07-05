@@ -49,6 +49,5 @@ class FlaskTestCase(BaseTestCase):
 #    def test_change_grade_name(self):
 
 
-
 if __name__ == '__main__':
     unittest.main()

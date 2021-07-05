@@ -2,7 +2,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Question
+from alchemy.models import Account, Course, Question, Tag
 
 class BaseTestCase(TestCase):
 
@@ -34,12 +34,33 @@ class FlaskTestCase(BaseTestCase):
         course = Course.query.first()
         course_id = course.id
         response = self.client.post('/course/{}/library/add_question'.format(course_id),
-        data = dict(content = 'New Question', solution = 'Famous Solution', points = '12'),
+        data = dict(content = 'New Question', solution = 'New Solution', points = 12),
         follow_redirects = True)
         # number of question in db should be 1
-        questions = Question.query.all()
-        num_questions = len(questions)
+        question = Question.query.filter_by(course_id = course_id).first()
+        num_questions = len(course.questions)
         self.assertEqual(num_questions, 1)
+
+        # question has correct attributes
+        self.assertEqual(question.content, 'New Question')
+        self.assertEqual(question.solution, 'New Solution')
+        self.assertEqual(question.points, 12)
+
+    # Test available tags
+    def test_available_tags(self):
+        course = Course.query.first()
+        course_id = course.id
+        tag_1_bytes = b'Familiar'
+        tag_2_bytes = b'Electricity'
+        tag_1 = Tag(name = str(tag_1_bytes), course_id = course.id)
+        tag_2 = Tag(name = str(tag_2_bytes), course_id = course.id)
+        db.session.add(tag_1)
+        db.session.add(tag_2)
+        db.session.commit()
+
+        response = self.client.get('/course/{}/library/add_question'.format(course_id))
+        self.assertTrue(tag_1_bytes in response.data)
+        self.assertTrue(tag_2_bytes in response.data)
 
 if __name__ == '__main__':
     unittest.main()
