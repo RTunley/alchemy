@@ -24,27 +24,6 @@ class BaseTestCase(TestCase):
 
 class FlaskTestCase(BaseTestCase):
 
-    #Ensure that flask was set up correctly
-    def test_index(self):
-        response = self.client.get('/', content_type='html/text')
-        self.assertEqual(response.status_code, 200)
-
-    #Check that the account homepage contains correct data
-    def test_account_home(self):
-        response = self.client.get('/', content_type='html/text')
-        account_home_body = b"This is the account homepage - But there's nothing interesting here yet."
-        account_home_header = b"Alchemy:"
-        account_home_false = b"We will never put these words on the home page"
-        self.assertTrue(account_home_body in response.data)
-        self.assertTrue(account_home_header in response.data)
-        self.assertFalse(account_home_false in response.data)
-
-    def test_course_home(self):
-        course = Course.query.first()
-        course_id = course.id
-        response = self.client.get("/course/{}".format(course_id), content_type='html/text')
-        self.assertEqual(response.status_code, 200)
-
     def test_library_home(self):
         course = Course.query.first()
         course_id = course.id
@@ -61,7 +40,6 @@ class FlaskTestCase(BaseTestCase):
         questions = Question.query.all()
         num_questions = len(questions)
         self.assertEqual(num_questions, 1)
-
 
 if __name__ == '__main__':
     unittest.main()
