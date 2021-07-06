@@ -4,13 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from flask_login import LoginManager
 
 application = Flask(__name__)
-
-application.config['SECRET_KEY'] = '00f9181c26987b00e43e23834b26f1f3'
-application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///master.db'
-application.config['MAX_CONTENT_LENGTH'] = 1000*1024*1025 #1 GB max upload limit
-
 #config
-
 application.config.from_object('alchemy.config.BaseConfig')
 db = SQLAlchemy(application)
 
