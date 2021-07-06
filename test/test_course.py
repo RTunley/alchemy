@@ -47,7 +47,14 @@ class FlaskTestCase(BaseTestCase):
 
     # Test changing grade names (harmless)
     def test_change_grade_name(self):
+        course = Course.query.first()
+        course_id = course.id
+        altered_grade_string = "Z,85,B,70,C,50,D,30,F,0"
+        response = self.client.post("course/{}/edit_grade_levels".format(course_id), data = dict(course_id = course_id, grade_levels = altered_grade_string))
 
+        grade_Z = GradeLevel.query.filter_by(grade = 'Z').first()
+        self.assertEqual(grade_Z.lower_bound, 85)
+        self.assertEqual(grade_Z.upper_bound, 100)
 
 if __name__ == '__main__':
     unittest.main()

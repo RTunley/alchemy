@@ -47,7 +47,25 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(question.solution, 'New Solution')
         self.assertEqual(question.points, 12)
 
-    # Testing added tags appear in html 
+    #Test whether question info appears on library homepage
+    def test_question_on_library_index(self):
+        course = Course.query.first()
+        course_id = course.id
+        q_tag_name = b"Difficult"
+        q_tag = Tag(name = str(q_tag_name), course_id = course_id)
+        db.session.add(q_tag)
+        q_content = b"A very challenging question."
+        q_soln = b"not an obvious solution"
+        q_points = 5
+        db.session.add(Question(content = str(q_content), solution = str(q_soln), points = q_points, course_id = course_id, tags = [q_tag]))
+        db.session.commit()
+
+        response = self.client.get("/course/{}/library".format(course_id), follow_redirects = True)
+        self.assertTrue(q_content in response.data)
+        self.assertTrue(q_soln in response.data)
+        self.assertTrue(q_tag_name in response.data)
+
+    # Testing added tags appear in html
     def test_available_tags(self):
         course = Course.query.first()
         course_id = course.id
