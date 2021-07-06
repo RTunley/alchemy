@@ -30,6 +30,7 @@ class FlaskTestCase(BaseTestCase):
         response = self.client.get("/course/{}/library".format(course_id), content_type='html/text', follow_redirects = True)
         self.assertEqual(response.status_code, 200)
 
+    # testing the add question endpoint
     def test_new_question(self):
         course = Course.query.first()
         course_id = course.id
@@ -46,7 +47,7 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(question.solution, 'New Solution')
         self.assertEqual(question.points, 12)
 
-    # Test available tags
+    # Testing added tags appear in html 
     def test_available_tags(self):
         course = Course.query.first()
         course_id = course.id
@@ -58,7 +59,8 @@ class FlaskTestCase(BaseTestCase):
         db.session.add(tag_2)
         db.session.commit()
 
-        response = self.client.get('/course/{}/library/add_question'.format(course_id))
+        response = self.client.get("/course/{}/library".format(course_id), follow_redirects = True)
+        print(response.data)
         self.assertTrue(tag_1_bytes in response.data)
         self.assertTrue(tag_2_bytes in response.data)
 

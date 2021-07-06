@@ -46,7 +46,7 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(grade_A.upper_bound, 100)
 
     # Test changing grade names (harmless)
-#    def test_change_grade_name(self):
+    def test_change_grade_name(self):
 
 
 if __name__ == '__main__':
