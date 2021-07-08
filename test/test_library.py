@@ -82,5 +82,27 @@ class FlaskTestCase(BaseTestCase):
         self.assertTrue(tag_1_bytes in response.data)
         self.assertTrue(tag_2_bytes in response.data)
 
+    # testing the add question endpoint
+    def test_edit_question(self):
+        course = Course.query.first()
+        course_id = course.id
+        old_q = Question(content = 'New Question', solution = 'New Solution', points = 12, course_id = course_id)
+        db.session.add(old_q)
+        db.session.commit()
+
+        old_q_id = old_q.id
+        response = self.client.post('/course/{}/library/edit_question_submit'.format(course_id),
+        data = dict(question_id = old_q_id, content = 'Edited Question', solution = 'Edited Solution', points = 10),
+        follow_redirects = True)
+        # number of question in db should be 1
+        num_questions = len(course.questions)
+        self.assertEqual(num_questions, 1)
+
+        # question has correct attributes
+        question = Question.query.filter_by(course_id = course_id).first()
+        self.assertEqual(question.content, 'Edited Question')
+        self.assertEqual(question.solution, 'Edited Solution')
+        self.assertEqual(question.points, 10)
+
 if __name__ == '__main__':
     unittest.main()
