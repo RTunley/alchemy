@@ -1,9 +1,8 @@
-import urllib
 import sqlalchemy
-import pdfkit
 import flask
 from flask import g
-from alchemy import db, models
+import urllib
+from alchemy import db, models, auth_manager
 
 bp_paper = flask.Blueprint('paper', __name__)
 
@@ -28,6 +27,7 @@ def before_request():
         g.html_title = f'{g.course.name} - {g.paper.title}'
 
 @bp_paper.route('/', methods = ['GET', 'POST'])
+@auth_manager.require_group
 def index():
     if g.paper is None:
         # Create a new paper
@@ -43,6 +43,7 @@ def index():
         return flask.render_template('course/paper/index.html')
 
 @bp_paper.route('/edit_title', methods = ['POST'])
+@auth_manager.require_group
 def edit_title():
     new_title = flask.request.form['paper_edit_modal_new_title']
     g.paper.title = new_title
@@ -50,6 +51,7 @@ def edit_title():
     return render_edit_paper(g.paper)
 
 @bp_paper.route('/remove')
+@auth_manager.require_group
 def remove():
     for paper_question in g.paper.paper_questions:
         db.session.delete(paper_question)
@@ -58,6 +60,7 @@ def remove():
     return flask.redirect(flask.url_for('course.index'))
 
 @bp_paper.route('/printable', methods = ['GET'])
+@auth_manager.require_group
 def printable():
     g.paper.paper_questions = sorted(g.paper.paper_questions, key = lambda x: x.order_number)
     return flask.render_template('course/paper/printable.html')
@@ -69,6 +72,7 @@ def printable():
     # return response
 
 @bp_paper.route('/solutions_printable')
+@auth_manager.require_group
 def solutions_printable():
     g.paper.paper_questions = sorted(g.paper.paper_questions, key = lambda x: x.order_number)
     return flask.render_template('course/paper/solutions_printable.html')
@@ -91,6 +95,7 @@ def questions_filtered_by_tag_filter(tag_filter):
     return models.Question.query.filter(models.Question.id.in_(filtered_question_ids)).all()
 
 @bp_paper.route('/filter_questions_by_tag')
+@auth_manager.require_group
 def filter_questions_by_tag():
     tag_filter = flask.request.args.get('tag_filter')
     filtered_questions = questions_filtered_by_tag_filter(tag_filter)
@@ -104,6 +109,7 @@ def filter_questions_by_tag():
         return flask.jsonify(question_accordion_html = render_question_accordion_html(available_questions))
 
 @bp_paper.route('/filter_questions_by_text')
+@auth_manager.require_group
 def filter_questions_by_text():
     search_text = flask.request.args.get('search_text').strip()
     if len(search_text) > 0:
@@ -145,6 +151,7 @@ def render_question_accordion_html(questions):
         ''', course_id = g.course.id, paper_id = paper_id, questions = questions)
 
 @bp_paper.route('/edit')
+@auth_manager.require_group
 def edit():
     return render_edit_paper(g.paper)
 
@@ -175,6 +182,7 @@ def paper_editing_json_response(paper, tag_filter = None):
             show_editing_controls = True), stats_sidebar_html = flask.render_template('course/paper/profile.html'))
 
 @bp_paper.route('/reorder_questions')
+@auth_manager.require_group
 def reorder_questions():
     question_id_list = urllib.parse.parse_qsl(flask.request.args.get('sorted_question_ids'))
     if len(question_id_list) > 0:
@@ -184,6 +192,7 @@ def reorder_questions():
     return paper_editing_json_response(g.paper)
 
 @bp_paper.route('/add_question')
+@auth_manager.require_group
 def add_question():
     question_id = int(flask.request.args.get('question_id'))
     question = models.Question.query.get_or_404(question_id)
@@ -196,6 +205,7 @@ def add_question():
     return paper_editing_json_response(g.paper, tag_filter)
 
 @bp_paper.route('/remove_question')
+@auth_manager.require_group
 def remove_question():
     question_id = int(flask.request.args.get('question_id'))
     question = models.Question.query.get_or_404(question_id)
@@ -211,6 +221,7 @@ def remove_question():
     return paper_editing_json_response(g.paper, tag_filter)
 
 @bp_paper.route('/duplicate')
+@auth_manager.require_group
 def duplicate():
     old_paper = g.paper
     new_paper = models.Paper(title = old_paper.title + ' (duplicate)', course_id = g.course.id)

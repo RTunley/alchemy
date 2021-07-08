@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from alchemy import db, models
+from alchemy import db, models, auth_manager
 
 bp_course = flask.Blueprint('course', __name__)
 
@@ -21,11 +21,13 @@ def before_request():
         g.html_title = f'Course - {g.course.name}'
 
 @bp_course.route('/')
+@auth_manager.require_group
 def index():
     g.course.order_grade_levels()
     return flask.render_template('course/index.html')
 
 @bp_course.route('/edit_grade_levels')
+@auth_manager.require_group
 def edit_grade_levels():
     course_id = int(flask.request.args.get('course_id'))
     course = models.Course.query.get_or_404(course_id)

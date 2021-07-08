@@ -1,4 +1,7 @@
+import os
+os.environ['ALCHEMY_CONFIG'] = 'TestConfig'
 from alchemy import application as app
+
 from alchemy import db
 from flask_testing import TestCase
 import unittest
@@ -10,7 +13,6 @@ grade_tuples = [('A',85,100), ('B',70,85), ('C',50,70), ('D',30,50), ('F',0,30)]
 class BaseTestCase(TestCase):
 
     def create_app(self):
-        app.config.from_object('alchemy.config.TestConfig')
         return app
 
     def setUp(self):

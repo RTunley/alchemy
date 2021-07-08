@@ -1,8 +1,8 @@
 import flask
 from flask import g
-from alchemy import db, models, score_manager, summary_profiles, file_input, file_output
-import os
 from werkzeug.utils import secure_filename
+from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
+import os
 
 bp_clazz = flask.Blueprint('clazz', __name__)
 
@@ -20,12 +20,14 @@ def before_request():
     g.html_title = f'Class - {g.clazz.code}'
 
 @bp_clazz.route('/')
+@auth_manager.require_group
 def index():
     for p in g.course.papers:
         p.check_clazz_scores(g.clazz)
     return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
 
 @bp_clazz.route('/upload_excel', methods=['POST'])
+@auth_manager.require_group
 def upload_excel():
     if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
@@ -54,6 +56,7 @@ def upload_excel():
             return flask.redirect(flask.url_for('clazz.index'))
 
 @bp_clazz.route('/download_excel', methods = ['GET', 'POST'])
+@auth_manager.require_group
 def download_excel():
     # TODO should not save files into the code repo.
     cwd = os.getcwd()
@@ -67,6 +70,7 @@ def download_excel():
         abort(404)
 
 @bp_clazz.route('/add_student', methods=['POST'])
+@auth_manager.require_group
 def add_student():
     new_given_name = flask.request.form['given_name']
     new_family_name = flask.request.form['family_name']
@@ -77,6 +81,7 @@ def add_student():
     return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
 
 @bp_clazz.route('/student_scores_update', methods=['POST'])
+@auth_manager.require_group
 def student_scores_update():
     update_data = flask.request.get_json()
     paper_id = update_data['paper_id']
@@ -137,6 +142,7 @@ def student_scores_update():
     return flask.jsonify(scores_table_json = all_score_set_lists)
 
 @bp_clazz.route('/download_results_excel')
+@auth_manager.require_group
 def download_results_excel():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
@@ -150,6 +156,7 @@ def download_results_excel():
         abort(404)
 
 @bp_clazz.route('/upload_results_excel', methods=['POST'])
+@auth_manager.require_group
 def upload_results_excel():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     if flask.request.method == 'POST':
@@ -178,6 +185,7 @@ def upload_results_excel():
             return flask.redirect(flask.url_for('clazz.paper_results', paper_id = paper.id))
 
 @bp_clazz.route('/paper_results')
+@auth_manager.require_group
 def paper_results():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
@@ -185,6 +193,7 @@ def paper_results():
     return flask.render_template('course/clazz/paper_results.html', paper = paper, score_sets = score_set_list)
 
 @bp_clazz.route('/paper_report')
+@auth_manager.require_group
 def paper_report():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
@@ -197,6 +206,7 @@ def paper_report():
     return flask.render_template('course/clazz/clazz_paper.html', paper = paper, clazz_report = clazz_report)
 
 @bp_clazz.route('/student_paper_report')
+@auth_manager.require_group
 def student_paper_report():
     student = models.User.query.get_or_404(flask.request.args.get('student_id'))
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
