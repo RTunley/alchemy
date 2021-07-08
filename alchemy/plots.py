@@ -50,7 +50,7 @@ def create_comparative_bar_chart(title, data_1, label_1, data_2, label_2, x_labe
 def create_distribution_plot(data, sd, mean, title, is_personal, x_value):
 
     img = io.BytesIO()
-    bins = [x*5 for x in range(20)]
+    bins = [x*5 for x in range(21)]
     fig_dist, (ax0, ax1, ax2) = plt.subplots(nrows = 3, ncols = 1)
 
     if is_personal == True:
@@ -61,7 +61,7 @@ def create_distribution_plot(data, sd, mean, title, is_personal, x_value):
     x = np.linspace(0, 100, 100)
     ax0.plot(x, gaussian(x, sd, mean))
     ax0.set_title(title)
-    ax0.set_xlim([0,100])
+    ax0.set_xlim([0,105])
     ax0.grid(True)
     ax0.set_yticks([])
     ax0.set_ylabel('Normal Distribution')
@@ -70,12 +70,13 @@ def create_distribution_plot(data, sd, mean, title, is_personal, x_value):
     ax1.yaxis.set_major_formatter(PercentFormatter(1))
     ax1.set_ylabel('Ratio of Students')
     ax1.grid(True)
-    ax1.set_xlim([0,100])
+    ax1.set_xlim([0,105])
+    ax1.set_xticks([x*5 for x in range(21)])
 
     ax2.boxplot(data, vert = False, whis = [0,100], showfliers = False)
     ax2.set_xlabel('Achievement (%)')
     ax2.grid(True)
-    ax2.set_xlim([0,100])
+    ax2.set_xlim([0,105])
     ax2.set_yticks([])
 
     plt.savefig(img, format='png')
