@@ -23,6 +23,17 @@
         </tr>
       </table>
       <br>
+      {% if student_report.next_highest_grade %}
+        <h3>Next Highest Grade Level</h3>
+        <p>Your achievement on this assessment was <b>{{ student_report.diff_higher_grade }}%</b> from <b>{{ student_report.next_highest_grade.grade }}</b> level.</p>
+        <br>
+      {% endif %}
+      {% if student_report.next_lowest_grade %}
+        <h3>Next Lowest Grade Level</h3>
+        <p>Your achievement on this assessment was <b>{{ student_report.diff_lower_grade }}%</b> from <b>{{ student_report.next_lowest_grade.grade }}</b> level.</p>
+        <br>
+      {% endif %}
+
       <p>The mean achievement for your class on this assessment is:</p>
       <table style="text-align:center" class="table table-hover">
         <thead>

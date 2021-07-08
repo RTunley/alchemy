@@ -44,6 +44,11 @@ def get_tag_profile(tag, paper):
         if tp.tag.name == tag.Name:
             return tp
 
+def get_grade_index(grade_list, grade):
+    for i in range(len(grade_list)):
+        if grade_list[i].grade == grade:
+            return i
+
 def filter_questions_by_tag(question_assoc_list, tag_string):
     question_id_list = []
     for q in question_assoc_list:
@@ -143,12 +148,12 @@ class TagHighlight(object):
 
 def determine_grade(value, course):
     grade_levels = course.grade_levels
-    for gl in grade_levels:
-        if value >= gl.lower_bound and value < gl.upper_bound:
-            new_grade = gl.grade
-        elif value == gl.upper_bound:
-            new_grade = gl.grade
-
+    for i in range(len(grade_levels)):
+        if i == 0:
+            if value >= grade_levels[i].lower_bound:
+                new_grade = grade_levels[i].grade
+        elif value >= grade_levels[i].lower_bound and value < grade_levels[i].upper_bound:
+            new_grade = grade_levels[i].grade
     return new_grade
 
 ## Score Sets ##
@@ -190,16 +195,16 @@ class StudentScoreSet(object):
             paper_total += paper_question.question.points
         self.percentage = round(self.total/paper_total*100, 2)
 
-    def determine_grade(self):
-        grade_levels = self.paper.course.grade_levels
-        for gl in grade_levels:
-            if self.percentage >= gl.lower_bound and self.percentage < gl.upper_bound:
-                self.grade = gl.grade
+    # def determine_grade(self):
+    #     grade_levels = self.paper.course.grade_levels
+    #     for gl in grade_levels:
+    #         if self.percentage >= gl.lower_bound and self.percentage < gl.upper_bound:
+    #             self.grade = gl.grade
 
     def build_self(self):
         self.calculate_total()
         self.calculate_percentage()
-        self.determine_grade()
+        self.grade = determine_grade(self.percentage, self.paper.course)
 
 class QuestionScoreSet(object):
     def __init__(self, paper_question, scores_list):
@@ -383,6 +388,10 @@ class StudentReport(object):
         self.total = None
         self.percentage = None
         self.grade = None
+        self.next_higher_grade = None
+        self.next_lower_grade = None
+        self.diff_highest_grade = None
+        self.diff_lowest_grade = None
         self.grade_batch_dict = None
         self.clazz_raw_mean = None
         self.clazz_percentage_mean = None
@@ -400,6 +409,29 @@ class StudentReport(object):
                 self.total = s.total
                 self.percentage = s.percentage
                 self.grade = s.grade
+
+    def build_grade_distances(self):
+        course = self.paper.course
+        grade_list = course.grade_levels
+        i = get_grade_index(grade_list, self.grade)
+
+        if i == 0:
+            self.next_lowest_grade = grade_list[i+1]
+            self.diff_lower_grade = round(self.percentage - self.next_lowest_grade.upper_bound, 1)
+            self.next_highest_grade = None
+            self.diff_higher_grade = None
+
+        elif i == len(grade_list)-1:
+            self.next_highest_grade = grade_list[i-1]
+            self.diff_higher_grade = round(self.next_highest_grade.lower_bound - self.percentage, 1)
+            self.next_lowest_grade = None
+            self.diff_lower_grade = None
+
+        else:
+            self.next_highest_grade = grade_list[i-1]
+            self.diff_higher_grade = round(self.next_highest_grade.lower_bound - self.percentage, 1)
+            self.next_lowest_grade = grade_list[i+1]
+            self.diff_lower_grade = round(self.percentage - self.next_lowest_grade.upper_bound, 1)
 
     def get_clazz_mean_data(self):
         raw_totals = []
@@ -453,6 +485,7 @@ class StudentReport(object):
 
     def build_self(self):
         self.get_totals_and_grade()
+        self.build_grade_distances()
         self.get_clazz_mean_data()
         self.make_grade_batch_dict()
         self.get_question_highlights()
