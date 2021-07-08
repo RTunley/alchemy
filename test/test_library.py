@@ -110,31 +110,32 @@ class FlaskTestCase(BaseTestCase):
         q = Question(content = 'New Question', solution = 'New Solution', points = 12, course_id = course_id)
         db.session.add(q)
         db.session.commit()
-        response = self.client.post('/course/{}/library/delete_question'.format(course_id),
-        data = dict(question_id = q.id), follow_redirects = True)
+        data = {'question_id':q.id}
+        response = self.client.get('/course/{}/library/delete_question'.format(course_id), query_string = data, follow_redirects = True)
 
         # number of question in db should be 0
         num_questions = len(course.questions)
         self.assertEqual(num_questions, 0)
 
-        #testing the delete question endpoint, with paper --> Problematic since the delete function above is not working, so this question won't be deleted either but for the wrong reason.
-    def test_delete_question(self):
+    #testing the delete question endpoint, with paper --> Problematic since the delete function above is not working, so this question won't be deleted either but for the wrong reason.
+    def test_delete_question_with_paper(self):
         course = Course.query.first()
         course_id = course.id
         q = Question(content = 'New Question', solution = 'New Solution', points = 12, course_id = course_id)
         db.session.add(q)
         paper = Paper(title = "Test paper", course_id = course_id)
         db.session.add(paper)
+        db.session.commit()
         pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
         db.session.add(pq)
         db.session.commit()
 
-        response = self.client.post('/course/{}/library/delete_question'.format(course_id),
-        data = dict(question_id = q.id), follow_redirects = True)
+        data = {'question_id':q.id}
+        response = self.client.get('/course/{}/library/delete_question'.format(course_id), query_string = data, follow_redirects = True)
 
         # number of question in db should be 0
         num_questions = len(course.questions)
-        self.assertEqual(num_questions, 0)
+        self.assertEqual(num_questions, 1)
 
 if __name__ == '__main__':
     unittest.main()
