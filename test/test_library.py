@@ -2,7 +2,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Question, Tag
+from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
 
 class BaseTestCase(TestCase):
 
@@ -78,11 +78,10 @@ class FlaskTestCase(BaseTestCase):
         db.session.commit()
 
         response = self.client.get("/course/{}/library".format(course_id), follow_redirects = True)
-        print(response.data)
         self.assertTrue(tag_1_bytes in response.data)
         self.assertTrue(tag_2_bytes in response.data)
 
-    # testing the add question endpoint
+    # testing the edit question endpoint
     def test_edit_question(self):
         course = Course.query.first()
         course_id = course.id
@@ -103,6 +102,39 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(question.content, 'Edited Question')
         self.assertEqual(question.solution, 'Edited Solution')
         self.assertEqual(question.points, 10)
+
+    # testing the delete question endpoint, no paper
+    def test_delete_question(self):
+        course = Course.query.first()
+        course_id = course.id
+        q = Question(content = 'New Question', solution = 'New Solution', points = 12, course_id = course_id)
+        db.session.add(q)
+        db.session.commit()
+        response = self.client.post('/course/{}/library/delete_question'.format(course_id),
+        data = dict(question_id = q.id), follow_redirects = True)
+
+        # number of question in db should be 0
+        num_questions = len(course.questions)
+        self.assertEqual(num_questions, 0)
+
+        #testing the delete question endpoint, with paper --> Problematic since the delete function above is not working, so this question won't be deleted either but for the wrong reason.
+    def test_delete_question(self):
+        course = Course.query.first()
+        course_id = course.id
+        q = Question(content = 'New Question', solution = 'New Solution', points = 12, course_id = course_id)
+        db.session.add(q)
+        paper = Paper(title = "Test paper", course_id = course_id)
+        db.session.add(paper)
+        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
+        db.session.add(pq)
+        db.session.commit()
+
+        response = self.client.post('/course/{}/library/delete_question'.format(course_id),
+        data = dict(question_id = q.id), follow_redirects = True)
+
+        # number of question in db should be 0
+        num_questions = len(course.questions)
+        self.assertEqual(num_questions, 0)
 
 if __name__ == '__main__':
     unittest.main()
