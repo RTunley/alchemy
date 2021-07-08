@@ -50,7 +50,8 @@ class FlaskTestCase(BaseTestCase):
         course = Course.query.first()
         course_id = course.id
         altered_grade_string = "Z,85,B,70,C,50,D,30,F,0"
-        response = self.client.post("course/{}/edit_grade_levels".format(course_id), data = dict(course_id = course_id, grade_levels = altered_grade_string))
+        data = {"course_id": course_id, "grade_levels": altered_grade_string}
+        response = self.client.get("course/{}/edit_grade_levels".format(course_id), query_string = data)
 
         grade_Z = GradeLevel.query.filter_by(grade = 'Z').first()
         self.assertEqual(grade_Z.lower_bound, 85)
