@@ -48,7 +48,7 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(question.points, 12)
 
     #Test whether question info appears on library homepage
-    def test_question_on_library_index(self):
+    def test_question_added(self):
         course = Course.query.first()
         course_id = course.id
         q_tag_name = b"Difficult"
@@ -66,7 +66,7 @@ class FlaskTestCase(BaseTestCase):
         self.assertTrue(q_tag_name in response.data)
 
     # Testing added tags appear in html
-    def test_available_tags(self):
+    def test_tags_added(self):
         course = Course.query.first()
         course_id = course.id
         tag_1_bytes = b'Familiar'
@@ -117,7 +117,7 @@ class FlaskTestCase(BaseTestCase):
         num_questions = len(course.questions)
         self.assertEqual(num_questions, 0)
 
-    #testing the delete question endpoint, with paper --> Problematic since the delete function above is not working, so this question won't be deleted either but for the wrong reason.
+    #testing the delete question endpoint, with paper
     def test_delete_question_with_paper(self):
         course = Course.query.first()
         course_id = course.id
