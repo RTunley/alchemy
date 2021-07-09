@@ -153,6 +153,7 @@ def render_edit_paper(paper):
     paper.paper_questions = sorted(paper.paper_questions, key = lambda x: x.order_number)
 
     course = models.Course.query.get(paper.course_id)
+    
     available_questions = questions_available_for_paper(paper, course.questions)
 
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
