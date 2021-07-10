@@ -17,7 +17,7 @@ class BaseTestCase(TestCase):
         db.session.add(test_account)
         test_course = Course(name = "Test Course", account = test_account)
         db.session.add(test_course)
-        test_paper = Paper(title = 'Test Paper')
+        test_paper = Paper(title = 'Test Paper', course = test_course)
         db.session.add(test_paper)
         db.session.commit()
 
@@ -68,7 +68,7 @@ class FlaskTestCase(BaseTestCase):
         print("Course id: ", course.id)
         print("Paper ID: ", paper.id)
         response = self.client.get("/course/{}/paper/{}/edit".format(course.id, paper.id), content_type='html/text')
-        assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     # def test_edit_title(self):
     #     course = Course.query.first()
