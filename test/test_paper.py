@@ -39,14 +39,14 @@ class FlaskTestCase(BaseTestCase):
         q_points = 5
         db.session.add(Question(content = str(q_content), solution = str(q_soln), points = q_points, course_id = course.id, tags = [q_tag]))
         db.session.commit()
-        response = self.client.get("/course/{}/paper/{}".format(course.id, paper.id), content_type='html/text', follow_redirects = True)
+        response = self.client.get("/course/{}/paper/{}".format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
 
     #Testing header and important buttons
     def test_index_contains_info(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        response = self.client.get("/course/{}/paper/{}".format(course.id, paper.id), content_type='html/text', follow_redirects = True)
+        response = self.client.get("/course/{}/paper/{}".format(course.id, paper.id), follow_redirects = True)
         header_text = "{} - {}".format(course.name, paper.title)
         header_text_bytes = bytes(header_text, 'utf-8')
         profile_btn = b"Profile"
@@ -64,20 +64,16 @@ class FlaskTestCase(BaseTestCase):
     def test_edit_paper_response(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        print("In Test")
-        print("Course id: ", course.id)
-        print("Paper ID: ", paper.id)
         response = self.client.get("/course/{}/paper/{}/edit".format(course.id, paper.id), content_type='html/text')
         self.assertEqual(response.status_code, 200)
 
-    # def test_edit_title(self):
-    #     course = Course.query.first()
-    #     paper = Paper.query.first()
-    #     new_title = "Edited Title"
-    #     response = self.client.post("/course/{}/paper/{}/edit_title".format(course.id, paper.id), content_type='html/text', data = dict(paper_edit_modal_new_title = new_title), follow_redirects = True)
-    #
-    #     paper = Paper.query.first()
-    #     self.assertEqual(paper.title, new_title)
+    def test_edit_title(self):
+        course = Course.query.first()
+        paper = Paper.query.first()
+        new_title = "Edited Title"
+        response = self.client.post("/course/{}/paper/{}/edit_title".format(course.id, paper.id), data = dict(paper_edit_modal_new_title = new_title), follow_redirects = True)
+        paper = Paper.query.first()
+        self.assertEqual(paper.title, new_title)
 
     def test_delete_paper(self):
         course = Course.query.first()

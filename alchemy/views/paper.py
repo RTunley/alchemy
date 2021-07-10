@@ -10,12 +10,10 @@ bp_paper = flask.Blueprint('paper', __name__)
 @bp_paper.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     paper_id = int(values.pop('paper_id', 0))
-    print("Paper ID in url_value_preprocessor: ", paper_id)
     if paper_id ==  0:
         g.paper = None  # We are creating a new paper
     else:
         g.paper = models.Paper.query.get_or_404(paper_id)
-    print("Paper in url_value_preprocessor: ", g.paper)
 
 @bp_paper.url_defaults
 def url_defaults(endpoint, values):
