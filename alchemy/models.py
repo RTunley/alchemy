@@ -78,15 +78,22 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(), nullable=False)
     solution = db.Column(db.String(), nullable=False)
-    # Assume a single dimensional grading scale for now #
     points = db.Column(db.Float(), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     tags = db.relationship('Tag', secondary=questions_tags, back_populates='questions')
     papers = db.relationship('PaperQuestion', back_populates='question')
     scores = db.relationship('Score', backref='question')
+    image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
+    image = db.relationship("Image", back_populates='questions')
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
+
+class Image(db.Model):
+    __tablename__ = 'image'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Binary, nullable=False)
+    questions = db.relationship('Question', backref='q_image')
 
 class Tag(db.Model):
     __tablename__ = 'tag'
