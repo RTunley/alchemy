@@ -64,6 +64,9 @@ class FlaskTestCase(BaseTestCase):
     def test_edit_paper_response(self):
         course = Course.query.first()
         paper = Paper.query.first()
+        print("In Test")
+        print("Course id: ", course.id)
+        print("Paper ID: ", paper.id)
         response = self.client.get("/course/{}/paper/{}/edit".format(course.id, paper.id), content_type='html/text')
         assertEqual(response.status_code, 200)
 

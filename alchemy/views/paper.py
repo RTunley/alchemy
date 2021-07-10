@@ -10,10 +10,12 @@ bp_paper = flask.Blueprint('paper', __name__)
 @bp_paper.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     paper_id = int(values.pop('paper_id', 0))
+    print("Paper ID in url_value_preprocessor: ", paper_id)
     if paper_id ==  0:
         g.paper = None  # We are creating a new paper
     else:
         g.paper = models.Paper.query.get_or_404(paper_id)
+    print("Paper in url_value_preprocessor: ", g.paper)
 
 @bp_paper.url_defaults
 def url_defaults(endpoint, values):
@@ -150,10 +152,15 @@ def edit():
 
 def render_edit_paper(paper):
     course = paper.course
+    print("In Edit function")
+    print("Course id: ", course.id)
+    print("Paper ID: ", paper.id)
     paper.paper_questions = sorted(paper.paper_questions, key = lambda x: x.order_number)
 
     course = models.Course.query.get(paper.course_id)
-    
+    print("Course id: ", course.id)
+    print("Paper ID: ", paper.id)
+
     available_questions = questions_available_for_paper(paper, course.questions)
 
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
