@@ -28,7 +28,7 @@ def save_image(form_image):
 
 @bp_library.route('/add_question', methods=['POST'])
 def add_question():
-    new_question_form = forms.NewQuestionForm(flask.request.form)
+    new_question_form = forms.NewQuestionForm()
     if new_question_form.validate_on_submit():
         question = models.Question(
             content = new_question_form.content.data,
