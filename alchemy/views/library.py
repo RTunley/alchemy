@@ -36,9 +36,12 @@ def add_question():
             points = new_question_form.points.data,
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
-        db.session.add(question)
+        #image.data is none here.
+        print(new_question_form.image.data)
         if new_question_form.image.data:
-             question.image = save_image(new_question_form.image)
+            print(question.image)
+            question.image = save_image(new_question_form.image)
+        db.session.add(question)
         db.session.commit()
         flask.flash('New question has been added to the library!', 'success')
         return flask.redirect(flask.url_for('course.library.index', course_id = g.course.id))
