@@ -8,6 +8,9 @@
   <div class="accordion-grid">
     <div class="content area">
       <p class="card-text">{{ question.content }}</p>
+      {% if question.image %}
+        <image src="{{ question.image }}">
+      {% endif %}
     </div>
     <div class="solution-area">
       <h5>Solution</h5>

@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired
 
 def build_course_tag_string(course):
@@ -12,7 +13,8 @@ class NewQuestionForm(FlaskForm):
     hidden_course_tags = HiddenField(id='new_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='new_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='new_question_new_tag')
-    submit = SubmitField('Add question', id='new_question_submit')
+    image = FileField('Add Image', id ='add_image', validators=[FileAllowed('jpg', 'png')])
+    submit = SubmitField('Add New Question', id='new_question_submit')
 
     def init_fields(self, course):
         self.hidden_course_tags.data = build_course_tag_string(course)
@@ -24,7 +26,8 @@ class EditQuestionForm(FlaskForm):
     hidden_course_tags = HiddenField(id='edit_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='edit_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='edit_question_new_tag')
-    submit = SubmitField('Update question', id='edit_question_submit')
+    image = FileField('Add Image', id ='add_image')
+    submit = SubmitField('Update Question', id='edit_question_submit')
 
     def init_fields(self, course, question):
         self.hidden_course_tags.data = build_course_tag_string(course)

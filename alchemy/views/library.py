@@ -3,6 +3,8 @@ from flask import g
 import sqlalchemy
 from alchemy import db, models
 from alchemy.views import forms
+import secrets
+import os
 
 bp_library = flask.Blueprint('library', __name__)
 
@@ -17,6 +19,13 @@ def index():
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
     return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags)
 
+def save_image(form_image):
+    new_image = models.Image(content = form_image.data)
+    db.session.add(new_image)
+    db.session.commit()
+
+    return new_image
+
 @bp_library.route('/add_question', methods=['POST'])
 def add_question():
     new_question_form = forms.NewQuestionForm(flask.request.form)
@@ -28,6 +37,8 @@ def add_question():
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
         db.session.add(question)
+        if new_question_form.image.data:
+             question.image = save_image(new_question_form.image)
         db.session.commit()
         flask.flash('New question has been added to the library!', 'success')
         return flask.redirect(flask.url_for('course.library.index', course_id = g.course.id))
@@ -43,6 +54,7 @@ def edit_question_submit():
         question.solution = edit_question_form.solution.data
         question.points = edit_question_form.points.data
         question.tags = build_question_tags(edit_question_form.hidden_question_tags.data, question.q_course, db)
+        question.image = edit_question_form.image.data
         db.session.commit()
         return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id))
     return '<html><body>Invalid form data!</body></html>'
