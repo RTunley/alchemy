@@ -37,7 +37,7 @@ def add_question():
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
         #image.data is none here.
-        print(new_question_form.image.data)
+        print(new_question_form.image)
         if new_question_form.image.data:
             print(question.image)
             question.image = save_image(new_question_form.image)

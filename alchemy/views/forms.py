@@ -13,7 +13,7 @@ class NewQuestionForm(FlaskForm):
     hidden_course_tags = HiddenField(id='new_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='new_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='new_question_new_tag')
-    image = FileField('Add Image', validators=[FileAllowed('jpg', 'png')])
+    image = FileField('Add Image', validators=[FileAllowed('jpg', 'png'),])
     submit = SubmitField('Add New Question', id='new_question_submit')
 
     def init_fields(self, course):
@@ -26,7 +26,7 @@ class EditQuestionForm(FlaskForm):
     hidden_course_tags = HiddenField(id='edit_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='edit_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='edit_question_new_tag')
-    image = FileField('Add Image', validators=[FileAllowed('jpg', 'png')])
+    image = FileField('Add Image', validators=[FileAllowed('jpg', 'png'),])
     submit = SubmitField('Update Question', id='edit_question_submit')
 
     def init_fields(self, course, question):
