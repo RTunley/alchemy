@@ -5,6 +5,7 @@ from alchemy import db, models
 from alchemy.views import forms
 import secrets
 import os
+import base64
 
 bp_library = flask.Blueprint('library', __name__)
 
@@ -19,12 +20,13 @@ def index():
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
     return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags)
 
-def save_image(form_image):
-    new_image = models.Image(content = form_image.data)
+def save_image(image_data):
+    new_image = models.Image(content = image_data)
     db.session.add(new_image)
     db.session.commit()
 
     return new_image
+
 
 @bp_library.route('/add_question', methods=['POST'])
 def add_question():
@@ -38,9 +40,11 @@ def add_question():
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
         #image.data is none here.
         print(new_question_form.image)
+        new_question_form.image.data.stream.seek(0)
+        image_string = base64.b64encode(new_question_form.image.data.read())
         if new_question_form.image.data:
-            print(question.image)
-            question.image = save_image(new_question_form.image)
+            # print(question.image)
+            question.q_image = save_image(image_string)
         db.session.add(question)
         db.session.commit()
         flask.flash('New question has been added to the library!', 'success')

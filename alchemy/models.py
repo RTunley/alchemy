@@ -92,7 +92,7 @@ class Question(db.Model):
 class Image(db.Model):
     __tablename__ = 'image'
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Binary, nullable=False)
+    content = db.Column(db.LargeBinary, nullable=False)
     questions = db.relationship('Question', backref='q_image')
 
 class Tag(db.Model):
