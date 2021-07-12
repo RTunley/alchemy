@@ -150,14 +150,9 @@ def edit():
 
 def render_edit_paper(paper):
     course = paper.course
-    print("In Edit function")
-    print("Course id: ", course.id)
-    print("Paper ID: ", paper.id)
     paper.paper_questions = sorted(paper.paper_questions, key = lambda x: x.order_number)
 
     course = models.Course.query.get(paper.course_id)
-    print("Course id: ", course.id)
-    print("Paper ID: ", paper.id)
 
     available_questions = questions_available_for_paper(paper, course.questions)
 

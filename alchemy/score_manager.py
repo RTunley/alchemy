@@ -424,7 +424,6 @@ class StudentReport(object):
         percentage_list = []
         for s in self.scoreset.score_list:
             percentage_list.append(round(s.value/s.question.points*100, 2))
-            print(percentage_list)
         highest_percentage = max(percentage_list)
         lowest_percentage = min(percentage_list)
         score_strengths_indexes = [x for x in range(len(percentage_list)) if percentage_list[x] == highest_percentage]

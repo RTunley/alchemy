@@ -86,7 +86,9 @@ class FlaskTestCase(BaseTestCase):
     def test_printable(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q = Question(content = 'New Question', solution = 'New Solution', points = 5, course_id = course.id)
+        q_content = b'New Question'
+        q_soln = b'New Solution'
+        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
         db.session.add(q)
         db.session.commit()
         pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
@@ -94,17 +96,16 @@ class FlaskTestCase(BaseTestCase):
         db.session.commit()
         response = self.client.get('/course/{}/paper/{}/printable'.format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(paper.paper_questions), 1)
+        self.assertTrue(q_content in response.data)
 
-        # bytes_q_content = bytes(q.content, 'utf-8')
-        # bytes_q_soln = bytes(q.solution, 'utf-8')
-        # bytes_q_points = bytes('{} Marks'.format(q.points), 'utf-8')
-        # self.assertEqual(len(paper.paper_questions), 1)
-        # self.assertTrue(bytes_q_content in response)
 
     def test_solutions(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q = Question(content = 'New Question', solution = 'New Solution', points = 5, course_id = course.id)
+        q_content = b'New Question'
+        q_soln = b'New Solution'
+        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
         db.session.add(q)
         db.session.commit()
         pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
@@ -112,7 +113,8 @@ class FlaskTestCase(BaseTestCase):
         db.session.commit()
         response = self.client.get('/course/{}/paper/{}/solutions_printable'.format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
-
+        self.assertTrue(q_content in response.data)
+        self.assertTrue(q_soln in response.data)
 
 
 
