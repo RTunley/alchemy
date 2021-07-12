@@ -3,6 +3,7 @@ from alchemy import db
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account
+import test.sample_data as data
 
 class BaseTestCase(TestCase):
 

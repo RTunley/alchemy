@@ -1,5 +1,4 @@
 import os, shutil
-import pylatex
 import openpyxl as opxl
 
 def output_results_excel(paper, clazz, dir):
