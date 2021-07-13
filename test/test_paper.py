@@ -116,9 +116,60 @@ class FlaskTestCase(BaseTestCase):
         self.assertTrue(q_content in response.data)
         self.assertTrue(q_soln in response.data)
 
+    def test_add_question(self):
+        course = Course.query.first()
+        paper = Paper.query.first()
+        q_content = b'New Question'
+        q_soln = b'New Solution'
+        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
+        db.session.add(q)
+        db.session.commit()
+        data = {'question_id': q.id}
+        response = self.client.get('/course/{}/paper/{}/add_question'.format(course.id, paper.id), query_string = data)
 
+        self.assertEqual(len(paper.paper_questions), 1)
+        added_pq = PaperQuestion.query.filter_by(paper_id = paper.id).first()
+        added_q = added_pq.question
+        self.assertEqual(added_q.content, q.content)
+        self.assertEqual(added_q.solution, q.solution)
+        self.assertEqual(added_q.points, q.points)
 
+    def test_remove_question(self):
+        course = Course.query.first()
+        paper = Paper.query.first()
+        q_content = b'New Question'
+        q_soln = b'New Solution'
+        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
+        db.session.add(q)
+        db.session.commit()
+        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
+        db.session.add(pq)
+        db.session.commit()
+        data = {'question_id': q.id}
+        self.assertEqual(len(paper.paper_questions), 1)
+        response = self.client.get('/course/{}/paper/{}/remove_question'.format(course.id, paper.id), query_string = data)
+        self.assertEqual(len(paper.paper_questions), 0)
 
+    def test_duplicate(self):
+        course = Course.query.first()
+        paper = Paper.query.first()
+        q_content = b'New Question'
+        q_soln = b'New Solution'
+        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
+        db.session.add(q)
+        db.session.commit()
+        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
+        db.session.add(pq)
+        db.session.commit()
+        self.assertEqual(len(course.papers), 1)
+        response = self.client.get('/course/{}/paper/{}/duplicate'.format(course.id, paper.id))
+
+        self.assertEqual(len(course.papers), 2)
+        paper_duplicate = Paper.query.filter_by(id = 2).first()
+        self.assertEqual(paper_duplicate.title, paper.title + ' (duplicate)')
+        duplicate_pq = PaperQuestion.query.filter_by(paper_id = paper_duplicate.id).first()
+        duplicate_q = duplicate_pq.question
+        self.assertEqual(duplicate_q, q)
 
 if __name__ == '__main__':
     unittest.main()
