@@ -38,12 +38,9 @@ def add_question():
             points = new_question_form.points.data,
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
-        #image.data is none here.
-        print(new_question_form.image)
-        new_question_form.image.data.stream.seek(0)
-        image_string = base64.b64encode(new_question_form.image.data.read())
         if new_question_form.image.data:
-            # print(question.image)
+            new_question_form.image.data.stream.seek(0)
+            image_string = base64.b64encode(new_question_form.image.data.read())
             question.q_image = save_image(image_string)
         db.session.add(question)
         db.session.commit()
