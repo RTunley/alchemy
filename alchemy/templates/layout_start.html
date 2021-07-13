@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-      <title>{{ g.html_title }}</title>
+      <title>{{ g.html_title or 'Alchemy' }}</title>
 
       <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -42,23 +42,35 @@
 
       <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
 
-        <h5 class="my-1 ml-3 mr-md-auto">Alchemy: {{ g.account.name }}</h5>
+        <h5 class="my-1 ml-3 mr-md-auto">
+          Alchemy{% if 'account' in g %}: {{ g.account.name }}{% endif %}
+        </h5>
 
-        <ul class="nav nav-pills">
+        {% if 'account' in g %}
+          <ul class="nav nav-pills">
+            <li class="nav-item dropdown mr-2">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
+              <div class="dropdown-menu">
+                {% for course in g.account.courses %}
+                <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
+                {% endfor %}
+              </div>
+            </li>
+            <li class="nav-item mr-2">
+              <a class="nav-link {{ 'active' if request.endpoint == 'account.index' }} {{ 'disabled' if request.endpoint == 'account.index' }}" href="{{ url_for('account.index') }}">Account</a>
+            </li>
+          </ul>
+        {% endif %}
 
-          <li class="nav-item dropdown mr-2">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
-            <div class="dropdown-menu">
-              {% for course in g.account.courses %}
-              <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
-              {% endfor %}
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link {{ 'active' if request.endpoint == 'bp_account.index' }}" href="{{ url_for('bp_account.index')}}">Account</a>
-          </li>
-
-        </ul>
+        {% if 'current_user' in g %}
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <span class="nav-link">Hello, {{ g.current_user.username }}!</span>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-info" href="{{ url_for('auth.sign_out') }}">Sign out</a>
+            </li>
+          </ul>
+        {% endif %}
 
       </div>

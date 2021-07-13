@@ -1,4 +1,7 @@
+import os
+os.environ['ALCHEMY_CONFIG'] = 'TestConfig'
 from alchemy import application as app
+
 from alchemy import db
 from flask_testing import TestCase
 import unittest
@@ -8,7 +11,6 @@ import test.create_test_objects as cto
 class BaseTestCase(TestCase):
 
     def create_app(self):
-        app.config.from_object('alchemy.config.TestConfig')
         return app
 
     def setUp(self):

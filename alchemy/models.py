@@ -1,5 +1,5 @@
-from alchemy import db
 import sqlalchemy
+from alchemy import db
 import alchemy.views.profile as paper_profile
 
 ## Database Models ##
@@ -44,6 +44,7 @@ class Clazz(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     users = db.relationship('User', secondary=clazzes_users, back_populates='clazzes')
 
+# TODO remove this class. Access level will be checked via groups instead.
 class AccessLevel(db.Model):
     __tablename__ = 'access_level'
     id = db.Column(db.Integer, primary_key=True)
@@ -51,6 +52,9 @@ class AccessLevel(db.Model):
     description = db.Column(db.String(50))
     users = db.relationship('User', backref='access')
 
+# TODO rename this table to 'Student' that just has attributes:
+#   clazz, scores
+# and also a ref to the 'AwsUser' for the student.
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -59,6 +63,19 @@ class User(db.Model):
     access_id = db.Column(db.Integer, db.ForeignKey('access_level.id'), nullable=False)
     clazzes = db.relationship('Clazz', secondary=clazzes_users, back_populates='users')
     scores = db.relationship('Score', backref='user')
+
+class AwsUser(db.Model):
+    __tablename__ = 'aws_user'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(64), unique=True, nullable=False) # UUID string
+    username = db.Column(db.String(64), nullable=False)
+    group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
+
+    # Other attributes
+    given_name = db.Column(db.String(32))
+    family_name = db.Column(db.String(32))
+    email = db.Column(db.String(64))
+
 
 questions_tags = db.Table('questions_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),

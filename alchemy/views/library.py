@@ -1,7 +1,8 @@
 import flask
 from flask import g
 import sqlalchemy
-from alchemy import db, models
+
+from alchemy import db, models, views, auth_manager
 from alchemy.views import forms
 import secrets
 import os
@@ -14,6 +15,7 @@ def before_request():
     g.html_title = f'{g.course.name} - Question Library'
 
 @bp_library.route('/')
+@auth_manager.require_group
 def index():
     form = forms.NewQuestionForm()
     form.init_fields(g.course)
@@ -29,6 +31,7 @@ def save_image(image_data):
 
 
 @bp_library.route('/add_question', methods=['POST'])
+@auth_manager.require_group
 def add_question():
     new_question_form = forms.NewQuestionForm()
     if new_question_form.validate_on_submit():
@@ -49,6 +52,7 @@ def add_question():
     return '<html><body>Invalid form data!</body></html>'
 
 @bp_library.route('/edit_question_submit', methods=['POST'])
+@auth_manager.require_group
 def edit_question_submit():
     edit_question_form = forms.EditQuestionForm(flask.request.form)
     if edit_question_form.validate_on_submit():
@@ -64,6 +68,7 @@ def edit_question_submit():
     return '<html><body>Invalid form data!</body></html>'
 
 @bp_library.route('/edit_question_render_form')
+@auth_manager.require_group
 def edit_question_render_form():
     question_id = int(flask.request.args.get('question_id'))
     question = models.Question.query.get_or_404(question_id)
@@ -80,6 +85,7 @@ def edit_question_render_form():
     return flask.jsonify(edit_question_html = flask.render_template_string(template_string, edit_question_form = edit_question_form))
 
 @bp_library.route('/delete_question')
+@auth_manager.require_group
 def delete_question():
     question_id = int(flask.request.args.get('question_id'))
     question = models.Question.query.get_or_404(question_id)
