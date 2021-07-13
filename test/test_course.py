@@ -3,6 +3,7 @@ from alchemy import db
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account, Course, GradeLevel
+import test.create_test_objects as cto
 
 grade_tuples = [('A',85,100), ('B',70,85), ('C',50,70), ('D',30,50), ('F',0,30)]
 
@@ -14,14 +15,9 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = Account(name = "Test School")
-        db.session.add(test_account)
-        test_course = Course(name = "Test Course", account = test_account)
-        db.session.add(test_course)
-        db.session.commit()
-        for t in grade_tuples:
-            db.session.add(GradeLevel(grade = t[0], lower_bound = t[1], upper_bound = t[2], course_id = test_course.id))
-        db.session.commit()
+        test_account = cto.create_account()
+        test_course = cto.create_course(test_account)
+        grade_levels = cto.create_grade_levels(test_course)
 
     def tearDown(self):
         db.session.remove()
