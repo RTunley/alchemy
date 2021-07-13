@@ -3,7 +3,7 @@ from alchemy import db
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account
-import test.sample_data as data
+import test.create_test_objects as cto
 
 class BaseTestCase(TestCase):
 
@@ -13,9 +13,7 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = Account(name = "Test School")
-        db.session.add(test_account)
-        db.session.commit()
+        test_account = cto.create_account()
 
     def tearDown(self):
         db.session.remove()
