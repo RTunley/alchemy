@@ -14,13 +14,9 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = Account(name = "Test School")
-        db.session.add(test_account)
-        test_course = Course(name = "Test Course", account = test_account)
-        db.session.add(test_course)
-        test_paper = Paper(title = 'Test Paper', course = test_course)
-        db.session.add(test_paper)
-        db.session.commit()
+        test_account = cto.create_account()
+        test_course = cto.create_course(test_account)
+        test_paper = cto.create_paper(test_course)
 
     def tearDown(self):
         db.session.remove()
@@ -32,14 +28,8 @@ class FlaskTestCase(BaseTestCase):
     def test_paper_index(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_tag_name = b"Difficult"
-        q_tag = Tag(name = str(q_tag_name), course_id = course.id)
-        db.session.add(q_tag)
-        q_content = b"A very challenging question."
-        q_soln = b"not an obvious solution"
-        q_points = 5
-        db.session.add(Question(content = str(q_content), solution = str(q_soln), points = q_points, course_id = course.id, tags = [q_tag]))
-        db.session.commit()
+        q = cto.create_question1(course)
+        tag = cto.create_attached_tag(course, q, "Difficult")
         response = self.client.get("/course/{}/paper/{}".format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
 
@@ -87,44 +77,27 @@ class FlaskTestCase(BaseTestCase):
     def test_printable(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_content = b'New Question'
-        q_soln = b'New Solution'
-        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
-        db.session.add(q)
-        db.session.commit()
-        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
-        db.session.add(pq)
-        db.session.commit()
+        q = cto.create_question1(course)
+        cto.add_question_to_paper(paper, q)
         response = self.client.get('/course/{}/paper/{}/printable'.format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(paper.paper_questions), 1)
-        self.assertTrue(q_content in response.data)
-
+        self.assertTrue(bytes(q.content, "utf-8") in response.data)
 
     def test_solutions(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_content = b'New Question'
-        q_soln = b'New Solution'
-        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
-        db.session.add(q)
-        db.session.commit()
-        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
-        db.session.add(pq)
-        db.session.commit()
+        q = cto.create_question1(course)
+        cto.add_question_to_paper(paper, q)
         response = self.client.get('/course/{}/paper/{}/solutions_printable'.format(course.id, paper.id), follow_redirects = True)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(q_content in response.data)
-        self.assertTrue(q_soln in response.data)
+        self.assertTrue(bytes(q.content, "UTF-8") in response.data)
+        self.assertTrue(bytes(q.solution, "UTF-8") in response.data)
 
     def test_add_question(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_content = b'New Question'
-        q_soln = b'New Solution'
-        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
-        db.session.add(q)
-        db.session.commit()
+        q = cto.create_question1(course)
         data = {'question_id': q.id}
         response = self.client.get('/course/{}/paper/{}/add_question'.format(course.id, paper.id), query_string = data)
 
@@ -138,14 +111,8 @@ class FlaskTestCase(BaseTestCase):
     def test_remove_question(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_content = b'New Question'
-        q_soln = b'New Solution'
-        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
-        db.session.add(q)
-        db.session.commit()
-        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
-        db.session.add(pq)
-        db.session.commit()
+        q = cto.create_question1(course)
+        cto.add_question_to_paper(paper, q)
         data = {'question_id': q.id}
         self.assertEqual(len(paper.paper_questions), 1)
         response = self.client.get('/course/{}/paper/{}/remove_question'.format(course.id, paper.id), query_string = data)
@@ -154,17 +121,9 @@ class FlaskTestCase(BaseTestCase):
     def test_duplicate(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        q_content = b'New Question'
-        q_soln = b'New Solution'
-        q = Question(content = str(q_content), solution = str(q_soln), points = 5, course_id = course.id)
-        db.session.add(q)
-        db.session.commit()
-        pq = PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = 1)
-        db.session.add(pq)
-        db.session.commit()
-        self.assertEqual(len(course.papers), 1)
+        q = cto.create_question1(course)
+        cto.add_question_to_paper(paper, q)
         response = self.client.get('/course/{}/paper/{}/duplicate'.format(course.id, paper.id))
-
         self.assertEqual(len(course.papers), 2)
         paper_duplicate = Paper.query.filter_by(id = 2).first()
         self.assertEqual(paper_duplicate.title, paper.title + ' (duplicate)')
