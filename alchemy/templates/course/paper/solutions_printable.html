@@ -11,11 +11,12 @@
     <br>
     {% for paper_question in g.paper.paper_questions %}
       <h3>Question {{ paper_question.order_number }}</h3>
+      <b>[{{ paper_question.question.points | prettify_number }} Marks]</b>
       <p>{{ paper_question.question.content }}</p>
-      <b style="text-align:right">[{{ paper_question.question.points | prettify_number }}]</b>
       <br>
       <h3>Solution</h3>
       <p>{{ paper_question.question.solution }}</p>
+      <b>[Total: {{ paper_question.question.points | prettify_number }} Marks]</b>
       <br>
     {% endfor %}
   </body>
