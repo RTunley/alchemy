@@ -7,8 +7,8 @@ def create_account():
     db.session.commit()
     return test_account
 
-def create_course():
-    test_course = m.Course(name = "Test Course", account = test_account)
+def create_course(account):
+    test_course = m.Course(name = "Test Course", account = account)
     db.session.add(test_course)
     db.session.commit()
     return test_course
@@ -39,20 +39,26 @@ def create_question2(course):
     db.session.commit()
     return test_question
 
-def create_tag1(course):
-    test_tag = m.Tag(name = "Familiar", course_id = course.id)
+def create_lone_tag(course, name):
+    test_tag = m.Tag(name = name, course_id = course.id)
     db.session.add(test_tag)
     db.session.commit()
     return test_tag
 
-def create_tag2(course):
-    test_tag = m.Tag(name = "Explanation", course_id = test_course1.id)
+def create_attached_tag(course, question, name):
+    test_tag = m.Tag(name = name, course_id = course.id, questions = [question])
     db.session.add(test_tag)
     db.session.commit()
     return test_tag
 
 def create_paper(course):
-    test_paper = m.Paper(title = "A Very Short Quiz", course_id = test_course1.id)
+    test_paper = m.Paper(title = "A Very Short Quiz", course_id = course.id)
     db.session.add(test_paper)
     db.session.commit()
     return test_paper
+
+def add_question_to_paper(paper, question):
+    index = len(paper.paper_questions)
+    pq = m.PaperQuestion(paper_id = paper.id, question_id = question.id, order_number = index+1)
+    db.session.add(pq)
+    db.session.commit()

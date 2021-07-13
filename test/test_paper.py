@@ -4,6 +4,7 @@ import flask
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
+import test.create_test_objects as cto
 
 class BaseTestCase(TestCase):
 
