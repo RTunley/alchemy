@@ -13,6 +13,11 @@
       <h3>Question {{ paper_question.order_number }}</h3>
       <b>[{{ paper_question.question.points | prettify_number }} Marks]</b>
       <p>{{ paper_question.question.content }}</p>
+      {% if paper_question.question.image %}
+        <p class="aligncenter">
+          <image class="center" src="data:image/png;base64,{{ paper_question.question.decode_image() }}">
+        </p>
+      {% endif %}
       <br>
       <h3>Solution</h3>
       <p>{{ paper_question.question.solution }}</p>

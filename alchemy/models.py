@@ -1,6 +1,8 @@
 import sqlalchemy
 from alchemy import db
 import alchemy.views.profile as paper_profile
+import base64
+import io
 
 ## Database Models ##
 
@@ -102,6 +104,10 @@ class Question(db.Model):
     scores = db.relationship('Score', backref='question')
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
     image = db.relationship("Image", back_populates='questions')
+
+    def decode_image(self):
+            img_str = self.q_image.content.decode('ascii')
+            return img_str
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id

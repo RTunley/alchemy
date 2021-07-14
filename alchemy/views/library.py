@@ -1,12 +1,12 @@
 import flask
 from flask import g
 import sqlalchemy
-
 from alchemy import db, models, views, auth_manager
 from alchemy.views import forms
 import secrets
 import os
 import base64
+import io
 
 bp_library = flask.Blueprint('library', __name__)
 
