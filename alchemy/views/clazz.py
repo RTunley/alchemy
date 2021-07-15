@@ -75,7 +75,7 @@ def add_student():
     new_given_name = flask.request.form['given_name']
     new_family_name = flask.request.form['family_name']
     student_access = models.AccessLevel.query.get(3)
-    new_student = models.User(given_name = new_given_name, family_name= new_family_name, access = student_access, clazzes = [g.clazz])
+    new_student = models.Student(given_name = new_given_name, family_name= new_family_name, clazzes = [g.clazz])
     db.session.add(new_student)
     db.session.commit()
     return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
@@ -208,7 +208,7 @@ def paper_report():
 @bp_clazz.route('/student_paper_report')
 @auth_manager.require_group
 def student_paper_report():
-    student = models.User.query.get_or_404(flask.request.args.get('student_id'))
+    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     student_scoreset_list = score_manager.make_student_scoreset_list(g.clazz, paper)

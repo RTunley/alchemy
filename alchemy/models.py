@@ -26,9 +26,9 @@ class Course(db.Model):
     def order_grade_levels(self):
         self.grade_levels.sort(key=lambda x: x.lower_bound,  reverse = True)
 
-clazzes_users = db.Table('clazzes_users',
+clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    db.Column('student_id', db.Integer, db.ForeignKey('student.aws_id'))
     )
 
 class GradeLevel(db.Model):
@@ -44,27 +44,22 @@ class Clazz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
-    users = db.relationship('User', secondary=clazzes_users, back_populates='clazzes')
-
-# TODO remove this class. Access level will be checked via groups instead.
-class AccessLevel(db.Model):
-    __tablename__ = 'access_level'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(20), unique=True, nullable=False)
-    description = db.Column(db.String(50))
-    users = db.relationship('User', backref='access')
+    students = db.relationship('Student', secondary=clazzes_students, back_populates='clazzes')
 
 # TODO rename this table to 'Student' that just has attributes:
 #   clazz, scores
 # and also a ref to the 'AwsUser' for the student.
-class User(db.Model):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    given_name = db.Column(db.String(20), nullable=False)
-    family_name = db.Column(db.String(20), nullable=False)
-    access_id = db.Column(db.Integer, db.ForeignKey('access_level.id'), nullable=False)
-    clazzes = db.relationship('Clazz', secondary=clazzes_users, back_populates='users')
-    scores = db.relationship('Score', backref='user')
+
+class Student(db.Model):
+    __tablename__ = 'student'
+    clazzes = db.relationship('Clazz', secondary=clazzes_students, back_populates='students')
+    scores = db.relationship('Score', backref='student')
+    aws_id = db.Column(db.Integer, db.ForeignKey('aws_user.id'))
+    aws_user = db.relationship('AwsUser', backref='student')
+
+    __table_args__ = (
+        sqlalchemy.PrimaryKeyConstraint(aws_id),
+    )
 
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
@@ -72,7 +67,6 @@ class AwsUser(db.Model):
     user_id = db.Column(db.String(64), unique=True, nullable=False) # UUID string
     username = db.Column(db.String(64), nullable=False)
     group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
-
     # Other attributes
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
@@ -207,8 +201,8 @@ class Paper(db.Model):
         scores = Score.query.filter_by(paper_id = self.id).all()
         clazz_scores = []
         for s in scores:
-            student_id = s.user_id
-            student = User.query.get_or_404(student_id)
+            student_id = s.student_id
+            student = Student.query.get_or_404(student_id)
             if clazz in student.clazzes:
                 clazz_scores.append(s)
         for s in clazz_scores:
@@ -222,8 +216,8 @@ class Score(db.Model):
     value = db.Column(db.Float)
     paper_id = db.Column(db.Integer, db.ForeignKey('paper.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.aws_id'), nullable=False)
 
     __table_args__ = (
-        sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, user_id),
+        sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),
     )

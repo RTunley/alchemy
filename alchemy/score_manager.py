@@ -26,12 +26,12 @@ def make_question_scoreset_list(clazz, paper):
     for paper_question in paper.paper_questions:
         score_list = ordered_paper_score_list(paper, models.Score.query.filter_by(paper_id = paper.id, question_id = paper_question.question.id).all())
         for s in score_list:
-            user = models.User.query.filter_by(id = s.user_id).first()
-            user_clazz_codes = []
-            for c in user.clazzes:
-                user_clazz_codes.append(c.code)
+            student = models.Student.query.filter_by(id = s.user_id).first()
+            clazz_codes = []
+            for c in student.clazzes:
+                clazz_codes.append(c.code)
 
-            if clazz.code not in user_clazz_codes:
+            if clazz.code not in clazz_codes:
                 score_list.remove(s)
 
         new_question_set = QuestionScoreSet(paper_question, score_list)
