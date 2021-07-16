@@ -24,18 +24,16 @@ def get_upload_directory(clazz):
     return clazz_folder
 
 def delete_current_clazzlist(clazz, db):
-    for u in clazz.students:
-        if u.access_id == 3:
-            db.session.delete(u)
+    for s in clazz.students:
+        db.session.delete(s)
     db.session.commit()
 
 def parse_results_excel(filename, clazz, paper):
     wb = opxl.load_workbook(filename)
     ws = wb.active
     student_list = []
-    for u in clazz.students:
-        if u.access_id == 3:
-            student_list.append(u)
+    for s in clazz.students:
+        student_list.append(s)
     num_students = len(student_list)
     scores_list = []
     first_student_row = 6

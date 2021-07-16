@@ -14,10 +14,9 @@ def make_student_paper_scoreset(student, paper):
 
 def make_student_scoreset_list(clazz, paper):
     score_set_list = []
-    for u in clazz.users:
-        if u.access_id == 3:
-            new_student_set = make_student_paper_scoreset(u, paper)
-            score_set_list.append(new_student_set)
+    for s in clazz.students:
+        new_student_set = make_student_paper_scoreset(s, paper)
+        score_set_list.append(new_student_set)
 
     return score_set_list
 
@@ -72,10 +71,9 @@ def make_tag_totalset_list(clazz, paper):
     tag_totalset_list = []
     for tp in paper.profile.tag_profile_list:
         tag_totals = []
-        for u in clazz.users:
-            if u.access_id == 3:
-                user_tag_total = get_user_tag_total(u, tp.name, paper)
-                tag_totals.append(user_tag_total)
+        for s in clazz.students:
+            student_tag_total = get_user_tag_total(s, tp.name, paper)
+            tag_totals.append(student_tag_total)
 
         new_tag_totalset = TagTotalSet(tp.tag, tag_totals, tp.allocated_points)
         tag_totalset_list.append(new_tag_totalset)

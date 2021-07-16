@@ -7,11 +7,9 @@
 
   <h2>Teachers / Administrators</h2>
   <ul>
-    {% for user in g.clazz.users %}
-      {% if user.access_id != 3 %}
-      <li>{{user.given_name}} {{user.family_name}}</li>
+    {% for s in g.clazz.students %}
+      <li>{{s.aws_user.given_name}} {{s.aws_user.family_name}}</li>
       <!-- Include access descriptor above? -->
-      {% endif %}
     {% endfor %}
   </ul>
   <h2>Assessments</h2>
@@ -90,8 +88,8 @@
           </a>
         </td>
         <td class="align-middle">{{ profile.student.id }}</td>
-        <td class="align-middle">{{ profile.student.family_name }}</td>
-        <td class="align-middle">{{ profile.student.given_name }}</td>
+        <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
+        <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
         {% for s in profile.scoreset_list %}
           {% if s.has_all_scores %}
             <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>

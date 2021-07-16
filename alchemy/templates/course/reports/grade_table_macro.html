@@ -13,7 +13,7 @@
           <table style="text-align:center" class="table table-hover">
             {% for grade_batch in grade_batch_dict[grade] %}
               <tr>
-                <td>{{grade_batch.student.family_name}}, {{ grade_batch.student.given_name }}</td>
+                <td>{{grade_batch.student.aws_user.family_name}}, {{ grade_batch.student.aws_user.given_name }}</td>
                 <td>{{ grade_batch.percentage }}%</td>
               </tr>
             {% endfor %}

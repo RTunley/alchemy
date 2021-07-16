@@ -23,8 +23,8 @@
         <tbody>
           {% for score_set in clazz_report.student_scoresets %}
             <tr>
-              <td>{{ score_set.student.given_name }}</td>
-              <td>{{ score_set.student.family_name }}</td>
+              <td>{{ score_set.student.aws_user.given_name }}</td>
+              <td>{{ score_set.student.aws_user.family_name }}</td>
               <td>{{ score_set.total }}</td>
               <td>{{ score_set.percentage }}</td>
             </tr>

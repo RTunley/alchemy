@@ -46,10 +46,6 @@ class Clazz(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     students = db.relationship('Student', secondary=clazzes_students, back_populates='clazzes')
 
-# TODO rename this table to 'Student' that just has attributes:
-#   clazz, scores
-# and also a ref to the 'AwsUser' for the student.
-
 class Student(db.Model):
     __tablename__ = 'student'
     clazzes = db.relationship('Clazz', secondary=clazzes_students, back_populates='students')
