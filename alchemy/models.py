@@ -212,3 +212,10 @@ class Score(db.Model):
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),
     )
+
+class JwtBlocklist(db.Model):
+    __tablename__ = 'jwt_blocklist'
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False)
+    issued_at = db.Column(db.DateTime, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
