@@ -61,13 +61,11 @@ class AwsUser(db.Model):
     __tablename__ = 'aws_user'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), unique=True, nullable=False) # UUID string
-    username = db.Column(db.String(64), nullable=False)
-    group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
-    # Other attributes
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
     email = db.Column(db.String(64))
-
+    username = db.Column(db.String(64), nullable=False)
+    group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
 
 questions_tags = db.Table('questions_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
