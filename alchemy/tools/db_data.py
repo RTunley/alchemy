@@ -4,13 +4,13 @@ from alchemy import db
 def add_account():
     account = m.Account(name = "School of Rock")
     db.session.add(account)
-    db.commit()
+    db.session.commit()
     return(account)
 
 
 def add_course(account):
-    test_course = m.Course(name = "IGCSE Physics", account = account)
-    db.session.add(test_course)
+    course = m.Course(name = "IGCSE Physics", account = account)
+    db.session.add(course)
     db.session.commit()
     return(course)
 
@@ -33,9 +33,9 @@ def add_grade_levels(course):
     return(course_grades)
 
 def add_questions_and_tags(course):
-    tag_1 = m.Tag(name = 'Algebra', course = course.id)
-    tag_2 = m.Tag(name = 'Calculate', course = course.id)
-    tag_3 = m.Tag(name = 'Explain', course = course.id)
+    tag_1 = m.Tag(name = 'Algebra', course_id = course.id)
+    tag_2 = m.Tag(name = 'Calculate', course_id = course.id)
+    tag_3 = m.Tag(name = 'Explain', course_id = course.id)
 
     tags = [tag_1, tag_2, tag_3]
     for t in tags:
@@ -84,13 +84,13 @@ def add_questions_and_tags(course):
 def add_paper(course):
     paper = m.Paper(title = 'Mechanics Quiz', course_id = course.id)
     db.session.add(paper)
-    db.commit()
+    db.session.commit()
     return(paper)
 
 def add_questions_to_paper(paper, questions):
     for q in questions:
         index = len(paper.paper_questions)
-        pq = m.PaperQuestion(paper_id = paper.id, question_id = question.id, order_number = index+1)
+        pq = m.PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = index+1)
         db.session.add(pq)
 
     db.session.commit()
@@ -98,7 +98,7 @@ def add_questions_to_paper(paper, questions):
 def add_clazz(course):
     clazz = m.Clazz(code = 'IGPHY01', course_id = course.id)
     db.session.add(clazz)
-    db.commit()
+    db.session.commit()
     return(clazz)
 
 def add_admin():
@@ -108,7 +108,7 @@ def add_admin():
     db.session.commit()
 
 def make_userid(given_name, family_name, index):
-    user_id = given_name + family_name + index
+    user_id = given_name + family_name + str(index)
     return user_id
 
 def make_email(userid):
@@ -126,7 +126,7 @@ def add_students_and_aws_users(course):
         family = user_tuples[i][1]
         userid = make_userid(given, family, index+i)
         email = make_email(userid)
-        aws_user = m.AwsUser(given_name = given, family_name = family, id = index, user_id = userid, email = email, group = 'student', username = userid)
+        aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, user_id = userid, email = email, group = 'student', username = userid)
         student = m.Student(aws_user = aws_user, clazzes = [clazz])
         student_list.append(student)
         db.session.add(student)
@@ -140,7 +140,7 @@ def add_scores(paper, student_list):
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id
-            student_id = student_list[i].id
+            student_id = student_list[i].aws_id
             new_score = m.Score(value = score_tuples[i][j], paper_id = paper.id, question_id = question_id, student_id = student_id)
             db.session.add(new_score)
 

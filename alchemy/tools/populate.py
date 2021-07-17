@@ -1,7 +1,6 @@
 from alchemy.tools import db_data
-from alchemy import db
 
-def populate_db(db):
+def populate_db():
     account = db_data.add_account()
     course = db_data.add_course(account)
     course_grades = db_data.add_grade_levels(course)
