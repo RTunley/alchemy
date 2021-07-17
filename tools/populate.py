@@ -1,4 +1,11 @@
-from alchemy.tools import db_data
+'''
+Populates the Alchemy database with a set of dummy data for testing/development.
+
+Run this from the root alchemy directory:
+    python -m tools.populate
+'''
+from alchemy import application
+from tools import db_data
 
 def populate_db():
     account = db_data.add_account()
@@ -11,3 +18,6 @@ def populate_db():
     db_data.add_admin()
     student_list = db_data.add_students_and_aws_users(course)
     db_data.add_scores(paper, student_list)
+
+if __name__ == '__main__':
+    populate_db()

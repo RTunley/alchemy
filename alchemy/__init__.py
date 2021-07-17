@@ -40,7 +40,6 @@ from alchemy import auth_manager
 auth_manager.init_app(application)
 
 from alchemy.views import auth, account, course, clazz, paper, library
-import alchemy.tools.populate as populate
 
 course.bp_course.register_blueprint(clazz.bp_clazz, url_prefix='/clazz/<clazz_id>')
 course.bp_course.register_blueprint(paper.bp_paper, url_prefix='/paper/<paper_id>')
@@ -51,4 +50,3 @@ application.register_blueprint(auth.bp_auth, url_prefix='/auth')
 
 # Create any tables not already in the db
 db.create_all()
-populate.populate_db()
