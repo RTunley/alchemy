@@ -4,7 +4,7 @@ from alchemy import models, plots
 def make_student_paper_scoreset(student, paper):
     score_list = []
     for paper_question in paper.ordered_paper_questions():
-        score = models.Score.query.filter_by(paper_id = paper.id, user_id = student.id, question_id = paper_question.question_id).first()
+        score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.aws_id, question_id = paper_question.question_id).first()
         if not score:
             score = None
 
@@ -25,7 +25,7 @@ def make_question_scoreset_list(clazz, paper):
     for paper_question in paper.paper_questions:
         score_list = ordered_paper_score_list(paper, models.Score.query.filter_by(paper_id = paper.id, question_id = paper_question.question.id).all())
         for s in score_list:
-            student = models.Student.query.filter_by(id = s.user_id).first()
+            student = models.Student.query.filter_by(aws_id = s.student_id).first()
             clazz_codes = []
             for c in student.clazzes:
                 clazz_codes.append(c.code)
@@ -57,8 +57,8 @@ def filter_questions_by_tag(question_assoc_list, tag_string):
 
     return(question_id_list)
 
-def get_user_tag_total(user, tag_string, paper):
-    scores = models.Score.query.filter_by(paper_id = paper.id, user_id = user.id).all()
+def get_user_tag_total(student, tag_string, paper):
+    scores = models.Score.query.filter_by(paper_id = paper.id, student_id = student.aws_id).all()
     tag_total = 0
     question_id_list = filter_questions_by_tag(paper.paper_questions, tag_string)
     for s in scores:

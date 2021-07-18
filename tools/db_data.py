@@ -20,10 +20,10 @@ def add_grade_levels(course):
     grade_B = m.GradeLevel(grade = 'B', lower_bound = 65, upper_bound = 75, course_id = course.id)
     grade_C = m.GradeLevel(grade = 'C', lower_bound = 55, upper_bound = 65, course_id = course.id)
     grade_D = m.GradeLevel(grade = 'D', lower_bound = 45, upper_bound = 55, course_id = course.id)
-    grade_E = m.GradeLevel(grade = 'F', lower_bound = 35, upper_bound = 45, course_id = course.id)
+    grade_E = m.GradeLevel(grade = 'E', lower_bound = 35, upper_bound = 45, course_id = course.id)
     grade_F = m.GradeLevel(grade = 'F', lower_bound = 25, upper_bound = 35, course_id = course.id)
-    grade_G = m.GradeLevel(grade = 'F', lower_bound = 15, upper_bound = 25, course_id = course.id)
-    grade_U = m.GradeLevel(grade = 'F', lower_bound = 0, upper_bound = 15, course_id = course.id)
+    grade_G = m.GradeLevel(grade = 'G', lower_bound = 15, upper_bound = 25, course_id = course.id)
+    grade_U = m.GradeLevel(grade = 'U', lower_bound = 0, upper_bound = 15, course_id = course.id)
 
     course_grades = [grade_Astar, grade_A, grade_B, grade_C, grade_D, grade_E, grade_F, grade_G, grade_U]
 

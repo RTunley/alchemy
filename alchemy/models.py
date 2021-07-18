@@ -104,7 +104,7 @@ class Image(db.Model):
     __tablename__ = 'image'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.LargeBinary, nullable=False)
-    questions = db.relationship('Question', backref='q_image')
+    questions = db.relationship('Question', back_populates='image')
 
 class Tag(db.Model):
     __tablename__ = 'tag'
