@@ -102,17 +102,17 @@ def add_clazz(course):
     return(clazz)
 
 def add_admin():
-    admin = m.AwsUser(user_id = 'some funky string of coolness', username = 'rtunley', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
+    admin = m.AwsUser(sub = 'some funky string of coolness', username = 'rtunley', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
 
     db.session.add(admin)
     db.session.commit()
 
-def make_userid(given_name, family_name, index):
-    user_id = given_name + family_name + str(index)
-    return user_id
+def make_sub(given_name, family_name, index):
+    sub = given_name + family_name + str(index)
+    return sub
 
-def make_email(userid):
-    email = userid+'@schoolofrock.com'
+def make_email(sub):
+    email = sub + '@schoolofrock.com'
     return email
 
 def add_students_and_aws_users(course):
@@ -124,9 +124,9 @@ def add_students_and_aws_users(course):
     for i in range(len(user_tuples)):
         given = user_tuples[i][0]
         family = user_tuples[i][1]
-        userid = make_userid(given, family, index+i)
-        email = make_email(userid)
-        aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, user_id = userid, email = email, group = 'student', username = userid)
+        sub = make_sub(given, family, index+i)
+        email = make_email(sub)
+        aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, sub = sub, email = email, group = 'student', username = sub)
         student = m.Student(aws_user = aws_user, clazzes = [clazz])
         student_list.append(student)
         db.session.add(student)

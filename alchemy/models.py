@@ -60,7 +60,7 @@ class Student(db.Model):
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(64), unique=True, nullable=False) # UUID string
+    sub = db.Column(db.String(64), unique=True, nullable=False) # UUID string
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
     email = db.Column(db.String(64))
