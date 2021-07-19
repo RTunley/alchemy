@@ -6,7 +6,7 @@ bp_cohort = flask.Blueprint('cohort', __name__)
 
 @bp_cohort.before_request
 def before_request():
-    g.html_title = f'{{g.course.name}} - Current Cohort'
+    g.html_title = f'{{{ g.course.name }}} - Current Cohort'
 
 @bp_cohort.route('/cohort/index')
 def index():

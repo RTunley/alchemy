@@ -3,6 +3,7 @@
 {% block course_main_content %}
   <main role="main">
     <h1 class="my-3">{{ g.course.name }} - Current Cohort</h1>
+
     <h2>Classes ({{ g.course.clazzes | length }})</h2>
     <br>
     <table class="table table-hover">
@@ -19,6 +20,22 @@
       </tr>
       {% endfor %}
     </table>
+
+    <h2>Assessments</h2>
+    <br>
+    <table class="table table-hover">
+      {% for paper in g.course.papers %}
+        <tr>
+          <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+          <td>
+            {% if (paper.paper_questions | length) != 0 %}
+                <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Cohort Report</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
     <h2>Students</h2>
     <br>
     <table class="table table-hover">
