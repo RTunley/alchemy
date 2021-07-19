@@ -100,12 +100,12 @@ def build_question_tags(tag_string, course, db):
     tag_list = tag_string.split(',')
     tag_obj_list = []
     for course_tag in course.tags:
-        for t in tag_list:
-            if t == course_tag.name:
+        for tag in tag_list:
+            if tag == course_tag.name:
                 tag_obj_list.append(course_tag)
-                tag_list.remove(t)
-    for t in tag_list:
-        new_tag = models.Tag(name = t, tag_course = course)
+                tag_list.remove(tag)
+    for tag in tag_list:
+        new_tag = models.Tag(name = tag, tag_course = course)
         tag_obj_list.append(new_tag)
         db.session.add(new_tag)
     return tag_obj_list

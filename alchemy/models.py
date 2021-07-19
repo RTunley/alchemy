@@ -57,7 +57,7 @@ class Student(db.Model):
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
     id = db.Column(db.Integer, primary_key=True)
-    sub = db.Column(db.String(64), unique=True, nullable=False) # UUID string
+    sub = db.Column(db.String(64), unique=True) # UUID string
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
     email = db.Column(db.String(64))
@@ -176,12 +176,12 @@ class Paper(db.Model):
         tag_list = []
         for paper_question in self.paper_questions:
             self.profile.total_points += paper_question.question.points
-            for t in paper_question.question.tags:
-                if t not in tag_list:
-                    tag_list.append(t)
+            for tag in paper_question.question.tags:
+                if tag not in tag_list:
+                    tag_list.append(tag)
 
-        for t in tag_list:
-            new_tag_profile = paper_profile.build_tag_profile(self, t)
+        for tag in tag_list:
+            new_tag_profile = paper_profile.build_tag_profile(self, tag)
             new_tag_profile.calculate_q_percentage(self.profile)
             new_tag_profile.calculate_p_percentage(self.profile)
             self.profile.tag_profile_list.append(new_tag_profile)
@@ -191,13 +191,13 @@ class Paper(db.Model):
         clazz_id = clazz.id
         scores = Score.query.filter_by(paper_id = self.id).all()
         clazz_scores = []
-        for s in scores:
-            student_id = s.student_id
+        for score in scores:
+            student_id = score.student_id
             student = Student.query.get_or_404(student_id)
             if clazz in student.clazzes:
-                clazz_scores.append(s)
-        for s in clazz_scores:
-            if s == None:
+                clazz_scores.append(score)
+        for score in clazz_scores:
+            if score == None:
                 self.has_all_scores = False
             else:
                 self.has_all_scores = True

@@ -136,10 +136,10 @@ def filter_questions_by_text():
 def questions_available_for_paper(paper, from_question_list):
     available_questions = []
     paper_current_questions = paper.question_objects()
-    for q in from_question_list:
+    for question in from_question_list:
         # Inject a temporary variable that can be checked when loading the html. A bit hacky and not recommended in the general case.
-        q.__question_added_to_paper = (q in paper_current_questions)
-        available_questions.append(q)
+        question.__question_added_to_paper = (question in paper_current_questions)
+        available_questions.append(question)
     return available_questions
 
 def render_question_accordion_html(questions):

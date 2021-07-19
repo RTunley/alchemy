@@ -38,8 +38,8 @@ def add_questions_and_tags(course):
     tag_3 = m.Tag(name = 'Explain', course_id = course.id)
 
     tags = [tag_1, tag_2, tag_3]
-    for t in tags:
-        db.session.add(t)
+    for tag in tags:
+        db.session.add(tag)
     db.session.commit()
 
     content_1 = """Calculate the average acceleration of a cyclist whose velocity changes from 2.1 m/s \([S]\) to 2.5 m/s \([W]\) over 3.5 seconds. """
@@ -76,8 +76,8 @@ def add_questions_and_tags(course):
 
     questions = [question_1, question_2, question_3, question_4]
 
-    for q in questions:
-        db.session.add(q)
+    for question in questions:
+        db.session.add(question)
     db.session.commit()
     return(questions)
 
@@ -88,9 +88,9 @@ def add_paper(course):
     return(paper)
 
 def add_questions_to_paper(paper, questions):
-    for q in questions:
+    for question in questions:
         index = len(paper.paper_questions)
-        pq = m.PaperQuestion(paper_id = paper.id, question_id = q.id, order_number = index+1)
+        pq = m.PaperQuestion(paper_id = paper.id, question_id = question.id, order_number = index+1)
         db.session.add(pq)
 
     db.session.commit()

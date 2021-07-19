@@ -1,10 +1,10 @@
 
-def build_tag_profile(paper, tag):
+def build_tag_profile(paper, primary_tag):
     allocated_questions = 0
     allocated_points = 0
     for paper_question in paper.paper_questions:
-        for t in paper_question.question.tags:
-            if t.name == tag.name:
+        for tag in paper_question.question.tags:
+            if tag.name == primary_tag.name:
                 allocated_questions += 1
                 allocated_points += paper_question.question.points
     tag_profile = TagProfile(tag, allocated_questions, allocated_points)

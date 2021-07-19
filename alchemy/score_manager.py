@@ -14,8 +14,8 @@ def make_student_paper_scoreset(student, paper):
 
 def make_student_scoreset_list(clazz, paper):
     score_set_list = []
-    for s in clazz.students:
-        new_student_set = make_student_paper_scoreset(s, paper)
+    for student in clazz.students:
+        new_student_set = make_student_paper_scoreset(student, paper)
         score_set_list.append(new_student_set)
 
     return score_set_list
@@ -24,14 +24,14 @@ def make_question_scoreset_list(clazz, paper):
     score_set_list = []
     for paper_question in paper.paper_questions:
         score_list = ordered_paper_score_list(paper, models.Score.query.filter_by(paper_id = paper.id, question_id = paper_question.question.id).all())
-        for s in score_list:
-            student = models.Student.query.filter_by(id = s.student_id).first()
+        for score in score_list:
+            student = models.Student.query.filter_by(id = score.student_id).first()
             clazz_codes = []
-            for c in student.clazzes:
-                clazz_codes.append(c.code)
+            for clazz in student.clazzes:
+                clazz_codes.append(clazz.code)
 
             if clazz.code not in clazz_codes:
-                score_list.remove(s)
+                score_list.remove(score)
 
         new_question_set = QuestionScoreSet(paper_question, score_list)
         score_set_list.append(new_question_set)
@@ -39,9 +39,9 @@ def make_question_scoreset_list(clazz, paper):
     return score_set_list
 
 def get_tag_profile(tag, paper):
-    for tp in paper.profile.tag_profile_list:
-        if tp.tag.name == tag.Name:
-            return tp
+    for tag_profile in paper.profile.tag_profile_list:
+        if tag_profile.tag.name == tag.Name:
+            return tag_profile
 
 def get_grade_index(grade_list, grade):
     for i in range(len(grade_list)):
@@ -50,9 +50,9 @@ def get_grade_index(grade_list, grade):
 
 def filter_questions_by_tag(question_assoc_list, tag_string):
     question_id_list = []
-    for q in question_assoc_list:
-        for t in q.question.tags:
-            if t.name == tag_string:
+    for question_assoc in question_assoc_list:
+        for tag in question_assoc.question.tags:
+            if tag.name == tag_string:
                 question_id_list.append(q.question.id)
 
     return(question_id_list)
@@ -61,35 +61,35 @@ def get_user_tag_total(student, tag_string, paper):
     scores = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id).all()
     tag_total = 0
     question_id_list = filter_questions_by_tag(paper.paper_questions, tag_string)
-    for s in scores:
-        if s.question_id in question_id_list:
-            tag_total += s.value
+    for score in scores:
+        if score.question_id in question_id_list:
+            tag_total += score.value
 
     return tag_total
 
 def make_tag_totalset_list(clazz, paper):
     tag_totalset_list = []
-    for tp in paper.profile.tag_profile_list:
+    for tag_profile in paper.profile.tag_profile_list:
         tag_totals = []
-        for s in clazz.students:
-            student_tag_total = get_user_tag_total(s, tp.name, paper)
+        for student in clazz.students:
+            student_tag_total = get_user_tag_total(student, tag_profile.name, paper)
             tag_totals.append(student_tag_total)
 
-        new_tag_totalset = TagTotalSet(tp.tag, tag_totals, tp.allocated_points)
+        new_tag_totalset = TagTotalSet(tag_profile.tag, tag_totals, tag_profile.allocated_points)
         tag_totalset_list.append(new_tag_totalset)
     return tag_totalset_list
 
 def filter_student_scoresets_by_grade(student_scoreset_list, grade_levels):
     grade_batch_dict = {}
-    for gl in grade_levels:
+    for grade_level in grade_levels:
         grade_batch = []
-        for s in student_scoreset_list:
-            if s.grade == gl.grade:
-                grade_batch.append(s)
-        grade_batch_dict[gl.grade] = grade_batch
+        for scoreset in student_scoreset_list:
+            if scoreset.grade == grade_level.grade:
+                grade_batch.append(scoreset)
+        grade_batch_dict[grade_level.grade] = grade_batch
 
-    for l in grade_batch_dict:
-        grade_batch_dict[l].sort(key=lambda x: x.percentage, reverse=True)
+    for level in grade_batch_dict:
+        grade_batch_dict[level].sort(key=lambda x: x.percentage, reverse=True)
 
     return grade_batch_dict
 
@@ -186,18 +186,11 @@ class StudentScoreSet(object):
                 self.total += score.value
                 self.has_all_scores = True
 
-
     def calculate_percentage(self):
         paper_total = 0
         for paper_question in self.paper.paper_questions:
             paper_total += paper_question.question.points
         self.percentage = round(self.total/paper_total*100, 2)
-
-    # def determine_grade(self):
-    #     grade_levels = self.paper.course.grade_levels
-    #     for gl in grade_levels:
-    #         if self.percentage >= gl.lower_bound and self.percentage < gl.upper_bound:
-    #             self.grade = gl.grade
 
     def build_self(self):
         self.calculate_total()
@@ -218,12 +211,12 @@ class QuestionScoreSet(object):
         self.build_self()
 
     def make_values_list(self):
-        for s in self.scores_list:
-            self.values_list.append(s.value)
+        for score in self.scores_list:
+            self.values_list.append(score.value)
 
     def make_percentages_list(self):
-        for v in self.values_list:
-            self.percentages_list.append(round(v/self.paper_question.question.points*100, 2))
+        for value in self.values_list:
+            self.percentages_list.append(round(value/self.paper_question.question.points*100, 2))
 
     def make_statsumm(self):
         self.raw_statsumm = calculate_stat_summary(self.values_list)
@@ -253,8 +246,8 @@ class TagTotalSet(object):
         self.build_self()
 
     def make_percentages_list(self):
-        for v in self.values_list:
-            self.percentages_list.append(round(v/self.total*100, 2))
+        for value in self.values_list:
+            self.percentages_list.append(round(value/self.total*100, 2))
 
     def make_statsumm(self):
         self.raw_statsumm = calculate_stat_summary(self.values_list)
@@ -291,12 +284,12 @@ class ClassReport(object):
         self.build_self()
 
     def make_totals_list(self):
-        for s in self.student_scoresets:
-            self.totals_list.append(s.total)
+        for scoreset in self.student_scoresets:
+            self.totals_list.append(scoreset.total)
 
     def make_percentages_list(self):
-        for s in self.student_scoresets:
-            self.percentages_list.append(s.percentage)
+        for scoreset in self.student_scoresets:
+            self.percentages_list.append(scoreset.percentage)
 
     def make_statsumm_raw(self):
         self.raw_statsumm = calculate_stat_summary(self.totals_list)
@@ -336,13 +329,13 @@ class ClassReport(object):
         sd_list = []
         iq_range_list = []
         labels = []
-        for t in self.tag_totalsets:
-            means.append(t.norm_statsumm.mean)
-            medians.append(t.norm_statsumm.fivenumsumm[2])
-            sd_list.append(t.norm_statsumm.sd)
-            iq_range = t.norm_statsumm.fivenumsumm[3] - t.norm_statsumm.fivenumsumm[1]
+        for totalset in self.tag_totalsets:
+            means.append(totalset.norm_statsumm.mean)
+            medians.append(totalset.norm_statsumm.fivenumsumm[2])
+            sd_list.append(totalset.norm_statsumm.sd)
+            iq_range = totalset.norm_statsumm.fivenumsumm[3] - totalset.norm_statsumm.fivenumsumm[1]
             iq_range_list.append(iq_range)
-            labels.append(t.tag.name)
+            labels.append(totalset.tag.name)
 
         self.tag_center_bar = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
         self.tag_spread_bar = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iq_range_list, 'Interquartile Range', labels, 'Tag')
@@ -353,13 +346,13 @@ class ClassReport(object):
         sd_list = []
         iq_range_list = []
         labels = []
-        for q in self.question_scoresets:
-            means.append(q.norm_statsumm.mean)
-            medians.append(q.norm_statsumm.fivenumsumm[2])
-            sd_list.append(q.norm_statsumm.sd)
-            iq_range = q.norm_statsumm.fivenumsumm[3] - q.norm_statsumm.fivenumsumm[1]
+        for scoreset in self.question_scoresets:
+            means.append(scoreset.norm_statsumm.mean)
+            medians.append(scoreset.norm_statsumm.fivenumsumm[2])
+            sd_list.append(scoreset.norm_statsumm.sd)
+            iq_range = scoreset.norm_statsumm.fivenumsumm[3] - scoreset.norm_statsumm.fivenumsumm[1]
             iq_range_list.append(iq_range)
-            labels.append(q.order_number)
+            labels.append(scoreset.order_number)
 
         self.question_center_bar = plots.create_comparative_bar_chart('Question Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Question Number')
         self.question_spread_bar = plots.create_comparative_bar_chart('Question Comparison: Spread', sd_list, 'Standard Deviation', iq_range_list, 'Interquartile Range', labels, 'Question Number')
@@ -401,12 +394,12 @@ class StudentReport(object):
         self.build_self()
 
     def get_totals_and_grade(self):
-        for s in self.student_scoresets:
-            if s.student == self.student:
-                self.scoreset = s
-                self.total = s.total
-                self.percentage = s.percentage
-                self.grade = s.grade
+        for scoreset in self.student_scoresets:
+            if scoreset.student == self.student:
+                self.scoreset = scoreset
+                self.total = scoreset.total
+                self.percentage = scoreset.percentage
+                self.grade = scoreset.grade
 
     def build_grade_distances(self):
         course = self.paper.course
@@ -434,16 +427,16 @@ class StudentReport(object):
     def get_clazz_mean_data(self):
         raw_totals = []
         percentage_totals = []
-        for s in self.student_scoresets:
-            raw_totals.append(s.total)
-            percentage_totals.append(s.percentage)
+        for scoreset in self.student_scoresets:
+            raw_totals.append(scoreset.total)
+            percentage_totals.append(scoreset.percentage)
             self.clazz_raw_mean = calculate_mean(raw_totals)
             self.clazz_percentage_mean = calculate_mean(percentage_totals)
 
         grade_levels = self.paper.course.grade_levels
-        for gl in grade_levels:
-            if self.clazz_percentage_mean >= gl.lower_bound and self.clazz_percentage_mean < gl.upper_bound:
-                self.clazz_mean_grade = gl.grade
+        for grade in grade_levels:
+            if self.clazz_percentage_mean >= grade.lower_bound and self.clazz_percentage_mean < gl.upper_bound:
+                self.clazz_mean_grade = grade.grade
 
     def make_grade_batch_dict(self):
         self.grade_batch_dict = filter_student_scoresets_by_grade(self.student_scoresets, self.paper.course.grade_levels)
@@ -452,8 +445,8 @@ class StudentReport(object):
         self.question_strengths = []
         self.question_weaknesses = []
         percentage_list = []
-        for s in self.scoreset.score_list:
-            percentage_list.append(round(s.value/s.question.points*100, 2))
+        for score in self.scoreset.score_list:
+            percentage_list.append(round(score.value/score.question.points*100, 2))
         highest_percentage = max(percentage_list)
         lowest_percentage = min(percentage_list)
         score_strengths_indexes = [x for x in range(len(percentage_list)) if percentage_list[x] == highest_percentage]
@@ -467,9 +460,9 @@ class StudentReport(object):
         self.tag_strengths = []
         self.tag_weaknesses = []
         percentage_list = []
-        for tp in self.paper.profile.tag_profile_list:
-            student_total = get_user_tag_total(self.student, tp.name, self.paper)
-            percentage_list.append(round(student_total/tp.allocated_points*100, 2))
+        for profile in self.paper.profile.tag_profile_list:
+            student_total = get_user_tag_total(self.student, profile.name, self.paper)
+            percentage_list.append(round(student_total/profile.allocated_points*100, 2))
 
         highest_percentage = max(percentage_list)
         lowest_percentage = min(percentage_list)

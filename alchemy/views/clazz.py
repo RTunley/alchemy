@@ -74,7 +74,6 @@ def download_excel():
 def add_student():
     new_given_name = flask.request.form['given_name']
     new_family_name = flask.request.form['family_name']
-    student_access = models.AccessLevel.query.get(3)
     new_asw_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = new_given_name+'.'+new_family_name, group = 'student')## TODO create student group?
     new_student = models.Student(clazzes = [g.clazz], aws_user = new_aws_user)
     db.session.add(new_student)
@@ -220,7 +219,7 @@ def student_paper_report():
 
 def get_student_profiles(clazz):
     student_course_profile_list = []
-    for s in clazz.students:
-        new_course_profile = summary_profiles.make_student_course_profile(s, clazz.course)
+    for student in clazz.students:
+        new_course_profile = summary_profiles.make_student_course_profile(student, clazz.course)
         student_course_profile_list.append(new_course_profile)
     return student_course_profile_list
