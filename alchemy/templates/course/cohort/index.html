@@ -21,7 +21,7 @@
       {% endfor %}
     </table>
 
-    <h2>Assessments</h2>
+    <h2>Assessments ({{ g.course.papers | length }})</h2>
     <br>
     <table class="table table-hover">
       {% for paper in g.course.papers %}

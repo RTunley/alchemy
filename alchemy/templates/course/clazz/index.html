@@ -5,9 +5,10 @@
 <main role="main">
   <h1 class="my-3">{{ g.clazz.code }} - {{ g.course.name }}</h1>
 
-  <h2>Teachers / Administrators</h2>
+  <h2>Teacher</h2>
+    <p style='margin-left:20px'>TEACHER! (eventually)</p>
   <!-- Eventually include a for teachers in clazz.teachers loop -->
-  <h2>Assessments</h2>
+  <h2>Assessments ({{ g.course.papers | length }})</h2>
   <br>
   <table class="table table-hover">
     {% for paper in g.course.papers %}
@@ -30,7 +31,7 @@
       </tr>
     {% endfor %}
   </table>
-  <h2>Students</h2>
+  <h2>Students ({{ g.clazz.students | length }})</h2>
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
   Add Student
   </button>
