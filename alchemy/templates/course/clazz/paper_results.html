@@ -40,8 +40,8 @@
         {% for score_set in score_sets %}
         <tr>
         <td>{{ score_set.student.id }}</td>
-        <td>{{ score_set.student.given_name }}</td>
-        <td>{{ score_set.student.family_name }}</td>
+        <td>{{ score_set.student.aws_user.given_name }}</td>
+        <td>{{ score_set.student.aws_user.family_name }}</td>
 
         {% for score in score_set.score_list %}
           <td>{{ score.value | prettify_number }}</td>

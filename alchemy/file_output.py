@@ -4,9 +4,8 @@ import openpyxl as opxl
 def output_results_excel(paper, clazz, dir):
     num_questions = len(paper.paper_questions)
     student_list = []
-    for u in clazz.users:
-        if u.access_id == 3:
-            student_list.append(u)
+    for s in clazz.students:
+        student_list.append(s)
     num_students = len(student_list)
     wb = opxl.Workbook()
     ws = wb.active

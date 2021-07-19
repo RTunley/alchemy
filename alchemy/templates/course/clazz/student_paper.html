@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 {% include "course/reports/layout_start.html" %}
   <body>
-    <h1 style="text-align:center">{{ student_report.student.family_name }}, {{ student_report.student.given_name }} - Achievement Report</h1>
+    <h1 style="text-align:center">{{ student_report.student.aws_user.family_name }}, {{ student_report.student.aws_user.given_name }} - Achievement Report</h1>
     <h1 style="text-align:center">{{ g.clazz.course.name }} ({{ g.clazz.code }}): {{ paper.title }}</h1>
 
     <div class="section">
@@ -58,14 +58,14 @@
             {% for grade in student_report.grade_batch_dict %}
               <td>
                 <table style="text-align:center" class="table table-hover">
-                  {% for student in student_report.grade_batch_dict[grade] %}
+                  {% for student_scoreset in student_report.grade_batch_dict[grade] %}
                     <tr>
-                      {% if student == student_report.scoreset %}
-                      <td class="table-primary"><b>{{student.student.family_name}}, {{ student.student.given_name }}</b></td>
-                      <td class="table-primary"><b>{{ student.percentage }}%</b></td>
+                      {% if student_scoreset == student_report.scoreset %}
+                      <td class="table-primary"><b>{{student_scoreset.student.aws_user.family_name}}, {{ student_scoreset.student.aws_user.given_name }}</b></td>
+                      <td class="table-primary"><b>{{ student_scoreset.percentage }}%</b></td>
                       {% else %}
                       <td>xxxxx, xxxxx</td>
-                      <td>{{ student.percentage }}%</td>
+                      <td>{{ student_scoreset.percentage }}%</td>
                       {% endif %}
                     </tr>
                   {% endfor %}

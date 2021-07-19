@@ -35,6 +35,6 @@ class EditQuestionForm(FlaskForm):
         self.solution.data = question.solution
         self.points.data = question.points
         tag_name_list = []
-        for t in question.tags:
-            tag_name_list.append(t.name)
+        for tag in question.tags:
+            tag_name_list.append(tag.name)
         self.hidden_question_tags.data = ','.join(tag_name_list)

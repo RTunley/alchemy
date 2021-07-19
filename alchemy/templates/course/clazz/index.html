@@ -6,14 +6,7 @@
   <h1 class="my-3">{{ g.clazz.code }} - {{ g.course.name }}</h1>
 
   <h2>Teachers / Administrators</h2>
-  <ul>
-    {% for user in g.clazz.users %}
-      {% if user.access_id != 3 %}
-      <li>{{user.given_name}} {{user.family_name}}</li>
-      <!-- Include access descriptor above? -->
-      {% endif %}
-    {% endfor %}
-  </ul>
+  <!-- Eventually include a for teachers in clazz.teachers loop -->
   <h2>Assessments</h2>
   <br>
   <table class="table table-hover">
@@ -28,9 +21,9 @@
         <td>
           {% if (paper.paper_questions | length) != 0 %}
             {% if paper.has_all_scores %}
-              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id)}}">View Class Report</a>
             {% else %}
-              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id)}}">View Class Report</a>
             {% endif %}
           {% endif %}
         </td>
@@ -74,7 +67,6 @@
   <br>
   <table class="table table-hover">
     <thead>
-      <th></th>
       <th>Student ID</th>
       <th>Family Name</th>
       <th>Given Name</th>
@@ -84,19 +76,15 @@
     </thead>
     {% for profile in profiles %}
       <tr>
-        <td class="align-middle">
-          <a class="btn btn-link" aria-label="Delete question btn-sm">
-            <span data-feather="trash-2"></span>
-          </a>
-        </td>
         <td class="align-middle">{{ profile.student.id }}</td>
-        <td class="align-middle">{{ profile.student.family_name }}</td>
-        <td class="align-middle">{{ profile.student.given_name }}</td>
-        {% for s in profile.scoreset_list %}
-          {% if s.has_all_scores %}
-            <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>
+        <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
+        <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
+        {% for scoreset in profile.scoreset_list %}
+          {% if scoreset.has_all_scores %}
+            <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
           {% else %}
-            <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm disabled" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>
+            <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
+            </td>
           {% endif %}
         {% endfor %}
       </tr>

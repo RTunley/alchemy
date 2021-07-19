@@ -27,10 +27,10 @@ def aws_user_from_payload(jwt_payload):
             raise ValueError(f'Error: field {field} not found in JWT payload: {jwt_payload}')
     if len(groups) > 1:
         raise ValueError('Error: only 1 group supported, but user {username} has multiple groups: {groups}')
-    aws_user = models.AwsUser.query.filter_by(user_id = aws_client_id).first()
+    aws_user = models.AwsUser.query.filter_by(sub = aws_client_id).first()
     if aws_user is None:
-        print(f'Creating new user: user_id={aws_client_id}, username={username}, group={groups[0]}')
-        aws_user = models.AwsUser(user_id = aws_client_id, username = username, group = groups[0])
+        print(f'Creating new user: sub={aws_client_id}, username={username}, group={groups[0]}')
+        aws_user = models.AwsUser(sub = aws_client_id, username = username, group = groups[0])
         db.session.add(aws_user)
         db.session.commit()
     return aws_user
