@@ -28,7 +28,7 @@ class Course(db.Model):
 
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
-    db.Column('student_id', db.Integer, db.ForeignKey('student.aws_id'))
+    db.Column('student_id', db.Integer, db.ForeignKey('student.id'))
     )
 
 class GradeLevel(db.Model):
@@ -48,14 +48,11 @@ class Clazz(db.Model):
 
 class Student(db.Model):
     __tablename__ = 'student'
+    id = db.Column(db.Integer, primary_key=True)
+    aws_id = db.Column(db.Integer, db.ForeignKey('aws_user.id'))
+    aws_user = db.relationship('AwsUser')
     clazzes = db.relationship('Clazz', secondary=clazzes_students, back_populates='students')
     scores = db.relationship('Score', backref='student')
-    aws_id = db.Column(db.Integer, db.ForeignKey('aws_user.id'))
-    aws_user = db.relationship('AwsUser', backref='student')
-
-    __table_args__ = (
-        sqlalchemy.PrimaryKeyConstraint(aws_id),
-    )
 
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
@@ -210,7 +207,7 @@ class Score(db.Model):
     value = db.Column(db.Float)
     paper_id = db.Column(db.Integer, db.ForeignKey('paper.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.aws_id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
 
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),

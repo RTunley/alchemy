@@ -209,8 +209,7 @@ def clazz_paper_report():
 @bp_clazz.route('/student_paper_report')
 @auth_manager.require_group
 def student_paper_report():
-    student = models.Student.query.get_or_404(flask.request.args.get('aws_id'))
-    print("AWS ID: + ", flask.request.args.get('aws_id'))
+    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     student_scoreset_list = score_manager.make_student_scoreset_list(g.clazz, paper)

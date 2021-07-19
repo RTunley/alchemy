@@ -103,12 +103,11 @@ def add_clazz(course):
 
 def add_admin():
     admin = m.AwsUser(sub = 'some funky string of coolness', username = 'rtunley', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
-
     db.session.add(admin)
     db.session.commit()
 
 def make_sub(given_name, family_name, index):
-    sub = given_name + family_name + str(index)
+    sub = 'aws-sub' + given_name + '-' + family_name + '-' + str(index)
     return sub
 
 def make_email(sub):
@@ -140,7 +139,7 @@ def add_scores(paper, student_list):
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id
-            student_id = student_list[i].aws_id
+            student_id = student_list[i].id
             new_score = m.Score(value = score_tuples[i][j], paper_id = paper.id, question_id = question_id, student_id = student_id)
             db.session.add(new_score)
 

@@ -76,14 +76,14 @@
     </thead>
     {% for profile in profiles %}
       <tr>
-        <td class="align-middle">{{ profile.student.aws_id }}</td>
+        <td class="align-middle">{{ profile.student.id }}</td>
         <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
         <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
         {% for s in profile.scoreset_list %}
           {% if s.has_all_scores %}
             <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = s.paper.id) }}" >View Report</a></td>
           {% else %}
-            <td>{{ s.percentage }}% | {{ s.grade }}  <br><a class="btn btn-success btn-sm disabled"  href="{{ url_for('course.clazz.student_paper_report', aws_id = profile.student.aws_id, paper_id = s.paper.id) }}" >View Report</a>
+            <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
             </td>
           {% endif %}
         {% endfor %}
