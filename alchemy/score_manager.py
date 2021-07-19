@@ -53,7 +53,7 @@ def filter_questions_by_tag(question_assoc_list, tag_string):
     for question_assoc in question_assoc_list:
         for tag in question_assoc.question.tags:
             if tag.name == tag_string:
-                question_id_list.append(q.question.id)
+                question_id_list.append(question_assoc.question.id)
 
     return(question_id_list)
 
@@ -435,7 +435,7 @@ class StudentReport(object):
 
         grade_levels = self.paper.course.grade_levels
         for grade in grade_levels:
-            if self.clazz_percentage_mean >= grade.lower_bound and self.clazz_percentage_mean < gl.upper_bound:
+            if self.clazz_percentage_mean >= grade.lower_bound and self.clazz_percentage_mean < grade.upper_bound:
                 self.clazz_mean_grade = grade.grade
 
     def make_grade_batch_dict(self):

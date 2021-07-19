@@ -1,10 +1,54 @@
-{% include "layout_start.html" %}
+{% extends "course/course_layout.html" %}
 
 {% block course_main_content %}
   <main role="main">
-    <h2>SOME STUFF ABOUT THE COHORT</h2>
-
+    <h1 class="my-3">{{ g.course.name }} - Current Cohort</h1>
+    <h2>Classes ({{ g.course.clazzes | length }})</h2>
+    <br>
+    <table class="table table-hover">
+      <thead>
+        <th>Class</th>
+        <th>Teacher</th>
+        <th>Number of Students</th>
+      </thead>
+      {% for clazz in g.course.clazzes %}
+      <tr>
+        <td>{{ clazz.code }}</td>
+        <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
+        <td>{{ clazz.students | length }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <h2>Students</h2>
+    <br>
+    <table class="table table-hover">
+      <thead>
+        <th>Student ID</th>
+        <th>Family Name</th>
+        <th>Given Name</th>
+        <th>Class</th>
+        {% for paper in g.course.papers %}
+          <th>{{ paper.title }}</th>
+        {% endfor %}
+      </thead>
+      {% for tuple in profile_tuples %}
+        {% for profile in tuple[1] %}
+          <tr>
+            <td class="align-middle">{{ profile.student.id }}</td>
+            <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
+            <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
+            <td class="align-middle">{{ tuple[0].code }}</td>
+            {% for scoreset in profile.scoreset_list %}
+              {% if scoreset.has_all_scores %}
+                <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id, clazz_id = tuple[0].id) }}" >View Report</a></td>
+              {% else %}
+                <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
+                </td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    </table>
   </main>
 {% endblock course_main_content %}
-
-{% include "layout_end.html" %}

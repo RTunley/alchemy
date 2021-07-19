@@ -10,10 +10,10 @@ bp_clazz = flask.Blueprint('clazz', __name__)
 def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
 
-@bp_clazz.url_defaults
-def url_defaults(endpoint, values):
-    if 'clazz_id' not in values:
-        values['clazz_id'] = g.clazz.id
+# @bp_clazz.url_defaults
+# def url_defaults(endpoint, values):
+#     if 'clazz_id' not in values:
+#         values['clazz_id'] = g.clazz.id
 
 @bp_clazz.before_request
 def before_request():
@@ -24,7 +24,7 @@ def before_request():
 def index():
     for p in g.course.papers:
         p.check_clazz_scores(g.clazz)
-    return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
+    return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
 
 @bp_clazz.route('/upload_excel', methods=['POST'])
 @auth_manager.require_group
@@ -217,7 +217,7 @@ def student_paper_report():
     student_report = score_manager.StudentReport(student, paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
     return flask.render_template('course/clazz/student_paper.html', paper = paper, student_report = student_report)
 
-def get_student_profiles(clazz):
+def get_clazz_student_profiles(clazz):
     student_course_profile_list = []
     for student in clazz.students:
         new_course_profile = summary_profiles.make_student_course_profile(student, clazz.course)

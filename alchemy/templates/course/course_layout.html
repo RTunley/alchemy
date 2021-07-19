@@ -19,8 +19,8 @@
         <a class="dropdown-item" data-toggle="modal" data-target="#paper_create_modal" href="#">New Assessment</a>
       </div>
     </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link {{ 'active' if request.endpoint == 'course.cohort.index' }}" href="{{ url_for('course.cohort.index') }}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cohort</a>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.cohort.index' }}" href="{{ url_for('course.cohort.index', course_id=g.course.id) }}">Cohort</a>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Classes</a>
