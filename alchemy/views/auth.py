@@ -25,8 +25,10 @@ def aws_cognito_callback():
     # Put access token in a cookie that flask_jwt_extended can load later
     # to check token validity and return user info
     access_token = auth_manager.aws_auth.get_access_token(flask.request.args)
+    auth_manager.create_or_update_aws_user(flask_jwt_extended.decode_token(access_token),
+            auth_manager.aws_user_info(access_token))
     response = flask.redirect(flask.url_for('auth.redirect_to_user_home'))
-    flask_jwt_extended.set_access_cookies(response, access_token, max_age=30*60)
+    flask_jwt_extended.set_access_cookies(response, access_token, max_age=60*60)
     return response
 
 @bp_auth.route('/sign_in')

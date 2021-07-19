@@ -2,6 +2,8 @@ import flask
 from flask import g
 import flask_jwt_extended
 import flask_awscognito
+import requests
+
 import functools, datetime
 from alchemy import application, models, db
 
@@ -31,7 +33,7 @@ def require_group(func):
     @functools.wraps(func)
     def deco(*args, **kwargs):
         if not auth_enabled():
-            g.current_user = {'username': 'Alchemy User'}
+            g.current_user = None
         elif flask_jwt_extended.verify_jwt_in_request(optional=True):
             g.current_user = flask_jwt_extended.get_current_user()
         else:
@@ -40,8 +42,34 @@ def require_group(func):
         return func(*args, **kwargs)
     return deco
 
+def create_or_update_aws_user(jwt_payload, user_info):
+    try:
+        aws_user = models.AwsUser.from_jwt(jwt_payload)
+    except ValueError:
+        flask.abort(401)
+    is_new_user = False
+    if not aws_user.id:
+        db.session.add(aws_user)
+        is_new_user = True
+    if is_new_user or aws_user.update_optional_fields(user_info):
+        db.session.commit()
+    return aws_user
+
+def aws_user_info(access_token):
+    'Calls the AWS User Pools Auth API to request user info.'
+    user_url = f'{aws_auth.cognito_service.domain}/oauth2/userInfo'
+    header = {'Authorization': f'Bearer {access_token}'}
+    try:
+        response = requests.post(user_url, headers=header)
+        response_json = response.json()
+    except requests.exceptions.RequestException as e:
+        print('Unable to retrieve user info!', e)
+        flask.abort(401)
+    return response_json
+
 @application.errorhandler(401)
 def authorization_error(e):
+    'Handles 401 (authorization) errors for e.g. when flask.abort(401) is called.'
     return flask.redirect(flask.url_for('auth.sign_in'))
 
 
@@ -50,22 +78,7 @@ def authorization_error(e):
 @jwt_manager.user_lookup_loader
 def user_lookup_loader(jwt_header, jwt_payload):
     'Returns an AwsUser object matching the user info in a JWT payload.'
-    aws_client_id = jwt_payload.get('sub')
-    username = jwt_payload.get('username')
-    groups = jwt_payload.get('cognito:groups')
-    for field in (aws_client_id, username, groups):
-        if not field:
-            print(f'Error: field {field} not found in JWT payload: {jwt_payload}')
-            return None
-    if len(groups) > 1:
-        raise ValueError('Error: only 1 group supported, but user {username} has multiple groups: {groups}')
-    aws_user = models.AwsUser.query.filter_by(sub = aws_client_id).first()
-    if aws_user is None:
-        print(f'Creating new user: sub={aws_client_id}, username={username}, group={groups[0]}')
-        aws_user = models.AwsUser(sub = aws_client_id, username = username, group = groups[0])
-        db.session.add(aws_user)
-        db.session.commit()
-    return aws_user
+    return models.AwsUser.query.filter_by(sub = jwt_payload.get('sub')).first()
 
 @jwt_manager.token_in_blocklist_loader
 def token_in_blocklist_loader(jwt_header, jwt_payload):
