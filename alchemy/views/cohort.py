@@ -48,15 +48,13 @@ def upload_class_data():
     if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
             flask.flash('No File Found.')
-            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
 
         file = flask.request.files['file']
 
         if file.filename == '':
             flask.flash('No File Selected For Upload')
-            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
 
-        if file and file_input.allowed_file(file.filename):
+        if file_input.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             extension = file_input.get_extension(filename)
             upload_dir = file_input.get_upload_directory(g.course)
@@ -69,12 +67,14 @@ def upload_class_data():
             else:
                 csv_file_path = os.path.join(upload_dir, filename)
 
-                new_clazz_code = flask.request.form['clazz_code']
-                new_clazz = models.Clazz(course = g.course, code = new_clazz_code)
-                db.session.add(new_clazz)
-                file_input.add_new_clazz(db, csv_file_path, new_clazz)
-                return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
+            new_clazz_code = flask.request.form['clazz_code']
+            new_clazz = models.Clazz(course = g.course, code = new_clazz_code)
+            db.session.add(new_clazz)
+            file_input.add_new_clazz(db, csv_file_path, new_clazz)
+            #delete directory here
 
         else:
             flask.flash('Allowed File Type Is .xlxs or .csv')
-            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
+
+    return flask.render_template('course/cohort/index.html',
+            profile_tuples = get_all_student_profiles(g.course))
