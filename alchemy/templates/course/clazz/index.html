@@ -32,39 +32,6 @@
     {% endfor %}
   </table>
   <h2>Students ({{ g.clazz.students | length }})</h2>
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
-  Add Student
-  </button>
-
-  <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="add_student_modal_label">Add New Student</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <form action="{{ url_for('course.clazz.add_student') }}" method="post">
-          <div class="modal-body">
-            <div class="form-group">
-             <label for="student_given_name">Given Name</label>
-             <input id="student_given_name" name="given_name" type="text" value="" class="form-control" required />
-             <label for="student_family_name">Family Name</label>
-             <input id="student_family_name" name="family_name" type="text" value="" class="form-control" required />
-             <input type="hidden" name="course_id" value="{{ g.course.id }}" />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" value="Add Student" />
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <br>
   <br>
   <table class="table table-hover">
     <thead>

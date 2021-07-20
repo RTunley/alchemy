@@ -67,5 +67,29 @@
         {% endfor %}
       {% endfor %}
     </table>
+    <br>
+    <h2>Edit Cohort</h2>
+    <br>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
+    Add Student
+    </button>
+    <!-- Add Student Modal goes here -->
+    {% import "course/cohort/add_student_macro.html" as add_student %}
+    <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="add_student_modal_label">Add New Student</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>{{ add_student.render_add_student(g.course) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </main>
 {% endblock course_main_content %}

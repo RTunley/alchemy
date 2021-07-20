@@ -69,17 +69,6 @@ def download_excel():
     except FileNotFoundError:
         abort(404)
 
-@bp_clazz.route('/add_student', methods=['POST'])
-@auth_manager.require_group
-def add_student():
-    new_given_name = flask.request.form['given_name']
-    new_family_name = flask.request.form['family_name']
-    new_asw_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = new_given_name+'.'+new_family_name, group = 'student')## TODO create student group?
-    new_student = models.Student(clazzes = [g.clazz], aws_user = new_aws_user)
-    db.session.add(new_student)
-    db.session.commit()
-    return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
-
 @bp_clazz.route('/student_scores_update', methods=['POST'])
 @auth_manager.require_group
 def student_scores_update():
