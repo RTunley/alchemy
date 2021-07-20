@@ -1,6 +1,5 @@
 import flask
 from flask import g
-from werkzeug.utils import secure_filename
 from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
 import os
 
@@ -25,35 +24,6 @@ def index():
     for p in g.course.papers:
         p.check_clazz_scores(g.clazz)
     return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
-
-@bp_clazz.route('/upload_excel', methods=['POST'])
-@auth_manager.require_group
-def upload_excel():
-    if flask.request.method == 'POST':
-        if 'file' not in flask.request.files:
-            flask.flash('No File Found.')
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        file = flask.request.files['file']
-
-        if file.filename == '':
-            flask.flash('No File Selected For Upload')
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        if file and file_input.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            upload_dir = file_input.get_upload_directory(g.clazz)
-            file.save(os.path.join(upload_dir, filename))
-            flask.flash('File successfully uploaded')
-            file_input.delete_current_clazzlist(g.clazz, db)
-            excel_file_path = os.path.join(upload_dir, filename)
-            new_user_list = file_input.parse_clazz_excel(excel_file_path, g.clazz)
-            file_input.write_users_to_db(db, new_user_list)
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        else:
-            flask.flash('Allowed File Type Is .xlxs or .ods')
-            return flask.redirect(flask.url_for('clazz.index'))
 
 @bp_clazz.route('/download_excel', methods = ['GET', 'POST'])
 @auth_manager.require_group

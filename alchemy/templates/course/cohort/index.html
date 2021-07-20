@@ -72,7 +72,7 @@
     <br>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
     Add Student
-    </button>
+    </button> Add a sinlge student to any class by using this button.
     <!-- Add Student Modal goes here -->
     {% import "course/cohort/add_student_macro.html" as add_student %}
     <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
@@ -90,6 +90,29 @@
         </div>
       </div>
     </div>
-    
+    <br>
+    <br>
+    <h3>Upload Class Data</h3>
+    <p>You can add an entire class list by uploading a pre-formatted file with the student information.</p>
+    <p>Acceptable file formats are: .CSV, .XLSX (Excel), and .ODS (Open Document Spreadheet)</p>
+    <p>Once it is completed, upload below to add your students.</p>
+    <p>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+      {% endwith %}
+    </p>
+    <form method="post" action="{{ url_for('course.cohort.upload_class_data') }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <input type="file" name="file" autocomplete="off" required>
+        <input type="text" name="clazz_code" placeholder='New Class Code' required>
+      </div>
+      <input type="submit" value="Submit">
+    </form>
   </main>
 {% endblock course_main_content %}

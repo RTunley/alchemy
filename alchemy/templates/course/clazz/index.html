@@ -59,32 +59,6 @@
     {% endfor %}
   </table>
 
-  <h3>Upload Class Data</h3>
-  <p>You can add multiple students at a time by uploading a pre-formatted excel spreadsheet with the relevant information.</p>
-  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_excel') }}">here</a></p>
-  <p>Once it is completed, upload below to add your students.</p>
-  <p>
-  	{% with messages = get_flashed_messages() %}
-  	  {% if messages %}
-  		<ul class=flashes>
-  		{% for message in messages %}
-  		  <li>{{ message }}</li>
-  		{% endfor %}
-  		</ul>
-  	  {% endif %}
-  	{% endwith %}
-  </p>
-  <form method="post" action="{{ url_for('course.clazz.upload_excel') }}" enctype="multipart/form-data">
-    <dl>
-      <p>
-        <input type="file" name="file" autocomplete="off" required>
-      </p>
-    </dl>
-    <p>
-      <input type="submit" value="Submit">
-    </p>
-  </form>
-
 </main>
 
 {% endblock course_main_content %}
