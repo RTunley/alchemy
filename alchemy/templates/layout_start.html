@@ -65,7 +65,7 @@
         {% if 'current_user' in g %}
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <span class="nav-link">Hello, {{ g.current_user.username }}!</span>
+              <span class="nav-link">Hello, {{ g.current_user.given_name or g.current_user.username }}!</span>
             </li>
             <li class="nav-item">
               <a class="btn btn-info" href="{{ url_for('auth.sign_out') }}">Sign out</a>

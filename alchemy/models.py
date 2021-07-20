@@ -58,11 +58,40 @@ class AwsUser(db.Model):
     __tablename__ = 'aws_user'
     id = db.Column(db.Integer, primary_key=True)
     sub = db.Column(db.String(64), unique=True) # UUID string
+    username = db.Column(db.String(64), nullable=False)
+    group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
+
+    # additional fields
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
     email = db.Column(db.String(64))
-    username = db.Column(db.String(64), nullable=False)
-    group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
+
+    def update_optional_fields(self, user_info):
+        updated = False
+        extra_fields = ('given_name', 'family_name', 'email')
+        for field_key in extra_fields:
+            field_value = user_info.get(field_key, '')
+            if field_value != getattr(self, field_key):
+                setattr(self, field_key, field_value)
+                updated = True
+        return updated
+
+    @staticmethod
+    def from_jwt(jwt_payload):
+        sub = jwt_payload.get('sub')
+        username = jwt_payload.get('username')
+        groups = jwt_payload.get('cognito:groups')
+        for field in (sub, username, groups):
+            if not field:
+                raise ValueError(f'Error: field {field} not found in JWT payload: {jwt_payload}')
+        if len(groups) > 1:
+            raise ValueError('Error: only 1 group supported, but user {username} has multiple groups: {groups}')
+        aws_user = AwsUser.query.filter_by(sub = sub).first()
+        if aws_user is None:
+            print(f'Creating new user from payload', jwt_payload)
+            aws_user = AwsUser(sub = sub, username = username, group = groups[0])
+        return aws_user
+
 
 questions_tags = db.Table('questions_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -212,3 +241,10 @@ class Score(db.Model):
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),
     )
+
+class JwtBlocklist(db.Model):
+    __tablename__ = 'jwt_blocklist'
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False)
+    issued_at = db.Column(db.DateTime, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)

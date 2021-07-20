@@ -1,8 +1,9 @@
+import datetime
 import flask
 from flask import g
 import flask_jwt_extended
 import flask_awscognito
-from alchemy import auth_manager, models
+from alchemy import auth_manager, models, db
 
 bp_auth = flask.Blueprint('auth', __name__)
 
@@ -24,8 +25,10 @@ def aws_cognito_callback():
     # Put access token in a cookie that flask_jwt_extended can load later
     # to check token validity and return user info
     access_token = auth_manager.aws_auth.get_access_token(flask.request.args)
+    auth_manager.create_or_update_aws_user(flask_jwt_extended.decode_token(access_token),
+            auth_manager.aws_user_info(access_token))
     response = flask.redirect(flask.url_for('auth.redirect_to_user_home'))
-    flask_jwt_extended.set_access_cookies(response, access_token, max_age=30*60)
+    flask_jwt_extended.set_access_cookies(response, access_token, max_age=60*60)
     return response
 
 @bp_auth.route('/sign_in')
@@ -36,4 +39,13 @@ def sign_in():
 
 @bp_auth.route('/sign_out')
 def sign_out():
-    return 'Nope, you are stuck here forever. Or at least, until the access token expires.'
+    response = flask.redirect('/')
+    if flask_jwt_extended.verify_jwt_in_request(optional=True):
+        # Block this token from being reused.
+        payload = flask_jwt_extended.get_jwt()
+        iat = datetime.datetime.fromtimestamp(payload['iat'])
+        exp = datetime.datetime.fromtimestamp(payload['exp'])
+        db.session.add(models.JwtBlocklist(jti=payload['jti'], issued_at=iat, expires_at=exp))
+        db.session.commit()
+        flask_jwt_extended.unset_jwt_cookies(response)
+    return response
