@@ -16,7 +16,7 @@
         <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
         <td>
           {% if (paper.paper_questions | length) != 0 %}
-            <a class="btn btn-info btn-sm" href="{{ url_for('course.clazz.paper_results', paper_id = paper.id, clazz_id = g.clazz.id)}}">Edit Results</a>
+            <a class="btn btn-info btn-sm" href="{{ url_for('course.clazz.paper_results', paper_id = paper.id) }}">Edit Results</a>
           {% endif %}
         </td>
         <td>
@@ -24,7 +24,7 @@
             {% if paper.has_all_scores %}
               <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
             {% else %}
-              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id)}}">View Class Report</a>
             {% endif %}
           {% endif %}
         </td>
@@ -46,7 +46,7 @@
           </button>
         </div>
 
-        <form action="{{ url_for('course.clazz.add_student', clazz_id = g.clazz.id) }}" method="post">
+        <form action="{{ url_for('course.clazz.add_student') }}" method="post">
           <div class="modal-body">
             <div class="form-group">
              <label for="student_given_name">Given Name</label>
@@ -82,7 +82,7 @@
         <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
         {% for scoreset in profile.scoreset_list %}
           {% if scoreset.has_all_scores %}
-            <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id, clazz_id = g.clazz.id) }}" >View Report</a></td>
+            <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
             </td>
@@ -94,7 +94,7 @@
 
   <h3>Upload Class Data</h3>
   <p>You can add multiple students at a time by uploading a pre-formatted excel spreadsheet with the relevant information.</p>
-  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_excel', clazz_id = g.clazz.id) }}">here</a></p>
+  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_excel') }}">here</a></p>
   <p>Once it is completed, upload below to add your students.</p>
   <p>
   	{% with messages = get_flashed_messages() %}
@@ -107,7 +107,7 @@
   	  {% endif %}
   	{% endwith %}
   </p>
-  <form method="post" action="{{ url_for('course.clazz.upload_excel', clazz_id = g.clazz.id)}}" enctype="multipart/form-data">
+  <form method="post" action="{{ url_for('course.clazz.upload_excel') }}" enctype="multipart/form-data">
     <dl>
       <p>
         <input type="file" name="file" autocomplete="off" required>

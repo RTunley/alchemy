@@ -9,6 +9,7 @@ def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
 
 @bp_cohort.route('/cohort/index')
+@auth_manager.require_group
 def index():
     return flask.render_template('course/cohort/index.html', profile_tuples = get_all_student_profiles(g.course))
 

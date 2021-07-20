@@ -10,10 +10,10 @@ bp_clazz = flask.Blueprint('clazz', __name__)
 def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
 
-# @bp_clazz.url_defaults
-# def url_defaults(endpoint, values):
-#     if 'clazz_id' not in values:
-#         values['clazz_id'] = g.clazz.id
+@bp_clazz.url_defaults
+def url_defaults(endpoint, values):
+    if 'clazz_id' not in values:
+        values['clazz_id'] = g.clazz.id
 
 @bp_clazz.before_request
 def before_request():
