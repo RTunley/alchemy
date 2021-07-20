@@ -48,13 +48,13 @@ def upload_class_data():
     if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
             flask.flash('No File Found.')
-            return flask.redirect(flask.url_for('course.cohort.index'))
+            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
 
         file = flask.request.files['file']
 
         if file.filename == '':
             flask.flash('No File Selected For Upload')
-            return flask.redirect(flask.url_for('course.cohort.index'))
+            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
 
         if file and file_input.allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -62,16 +62,19 @@ def upload_class_data():
             upload_dir = file_input.get_upload_directory(g.course)
             file.save(os.path.join(upload_dir, filename))
             flask.flash('File successfully uploaded')
-            if extension == '.xlsx' or extension  == '.ods':
-                csv_file_path = file_input.convert_to_csv(file)
+            if extension == '.xlsx':
+                file_path = os.path.join(upload_dir, filename)
+                csv_filename = file_input.convert_to_csv(file_path)
+                csv_file_path = os.path.join(upload_dir, csv_filename)
             else:
                 csv_file_path = os.path.join(upload_dir, filename)
+
                 new_clazz_code = flask.request.form['clazz_code']
                 new_clazz = models.Clazz(course = g.course, code = new_clazz_code)
                 db.session.add(new_clazz)
                 file_input.add_new_clazz(db, csv_file_path, new_clazz)
-                return flask.redirect(flask.url_for('course.cohort.index'))
+                return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))
 
         else:
-            flask.flash('Allowed File Type Is .xlxs or .ods')
-            return flask.redirect(flask.url_for('course.cohort.index'))
+            flask.flash('Allowed File Type Is .xlxs or .csv')
+            return flask.redirect(flask.url_for('course.cohort.index', profile_tuples = get_all_student_profiles(g.course)))

@@ -3,7 +3,7 @@ from alchemy import application, models
 import os
 import csv
 
-ALLOWED_EXTENSIONS = set(['xlsx','ods', 'csv'])
+ALLOWED_EXTENSIONS = set(['xlsx', 'csv'])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -41,6 +41,18 @@ def add_new_clazz(db, filename, clazz):
             db.session.add(new_student)
 
     db.session.commit()
+
+def convert_to_csv(file_path):
+    (new_file_title, ext) = os.path.splitext(file_path)
+    wb = opxl.load_workbook(file_path)
+    sheet = wb.active
+    csv_filename = new_file_title+'.csv'
+    col = csv.writer(open(csv_filename, 'w', newline=""))
+
+    for r in sheet.rows:
+        col.writerow([cell.value for cell in r])
+
+    return(csv_filename)
 
 # def parse_clazz_excel(filename, clazz):
 #     wb = opxl.load_workbook(filename)
