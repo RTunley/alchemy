@@ -1,7 +1,7 @@
 import flask
 from flask import g
 from werkzeug.utils import secure_filename
-from alchemy import db, models, auth_manager, summary_profiles, file_input
+from alchemy import db, models, auth_manager, summary_profiles, file_input, file_output
 import os
 
 bp_cohort = flask.Blueprint('cohort', __name__)
@@ -82,3 +82,19 @@ def upload_class_data():
 
     return flask.render_template('course/cohort/index.html',
             profile_tuples = get_all_student_profiles(g.course))
+
+@bp_cohort.route('/download_excel', methods = ['GET', 'POST'])
+@auth_manager.require_group
+def download_class_template():
+    temp_dir = file_output.get_temp_directory()
+    template_filename = file_output.make_class_template(temp_dir)
+    try:
+        return flask.send_from_directory(temp_dir.name, template_filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
+    # TODO should not save files into the code repo.
+    # cwd = os.getcwd()
+    # alchemy = os.path.join(cwd, 'alchemy')
+    # downloads = os.path.join(alchemy, 'downloads')
+    # filename = 'clazz_template.xlsx'

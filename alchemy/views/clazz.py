@@ -25,20 +25,6 @@ def index():
         p.check_clazz_scores(g.clazz)
     return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
 
-@bp_clazz.route('/download_excel', methods = ['GET', 'POST'])
-@auth_manager.require_group
-def download_excel():
-    # TODO should not save files into the code repo.
-    cwd = os.getcwd()
-    alchemy = os.path.join(cwd, 'alchemy')
-    downloads = os.path.join(alchemy, 'downloads')
-    filename = 'clazz_template.xlsx'
-
-    try:
-        return flask.send_from_directory(downloads, filename, as_attachment=True)
-    except FileNotFoundError:
-        abort(404)
-
 @bp_clazz.route('/student_scores_update', methods=['POST'])
 @auth_manager.require_group
 def student_scores_update():

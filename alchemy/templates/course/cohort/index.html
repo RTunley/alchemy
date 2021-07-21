@@ -110,7 +110,8 @@
     <br>
     <h3>Upload Class Data</h3>
     <p>You can add an entire class list by uploading a pre-formatted file with the student information.</p>
-    <p>Acceptable file formats are: <b>.CSV</b> and <b>.XLSX</b> (Excel)</p>
+    <p>Download a preformatted Excel sheet <a href="{{ url_for('course.cohort.download_class_template') }}">here</a>.</p>
+    <p>Acceptable file formats are: <b>.csv</b> and <b>.xlsx</b> (Excel)</p>
     <p>Once it is completed, upload below to add your students.</p>
     <p>
       {% with messages = get_flashed_messages() %}
