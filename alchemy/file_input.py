@@ -2,6 +2,7 @@ import openpyxl as opxl
 from alchemy import application, models
 import os
 import csv
+import tempfile
 
 ALLOWED_EXTENSIONS = set(['xlsx', 'csv'])
 
@@ -13,17 +14,13 @@ def get_extension(filename):
     ext = split_tuple[1]
     return(ext)
 
-def get_upload_directory(course):
-    account = course.account
-    path = os.getcwd()
-    account_folder = os.path.join(path, account.name)
-    if not os.path.isdir(account_folder):
-        os.makedirs(account_folder)
-    course_folder = os.path.join(account_folder, course.name)
-    if not os.path.isdir(course_folder):
-        os.makedirs(course_folder)
-    application.config['UPLOAD_FOLDER'] = course_folder
-    return course_folder
+def get_temp_directory():
+    temp_dir = tempfile.TemporaryDirectory()
+    application.config['UPLOAD_FOLDER'] = temp_dir
+    return temp_dir
+
+def delete_temp_directory(temp_dir):
+    temp_dir.cleanup()
 
 #Expects student info in the following columns: [family name, given name, ID, e-mail]
 def add_new_clazz(db, filename, clazz):
@@ -31,9 +28,9 @@ def add_new_clazz(db, filename, clazz):
         reader = csv.reader(csv_file)
         next(reader)
         for line in reader:
-            family_name = line[0]
-            given_name = line[1]
-            student_id = line[2]
+            student_id = line[0]
+            family_name = line[1]
+            given_name = line[2]
             email = line[3]
             new_aws_user = models.AwsUser(family_name = family_name, given_name = given_name, email = email, username = given_name+family_name+str(student_id), group = 'student', sub = 'aws-sub'+given_name+family_name+str(student_id))
             new_student = models.Student(aws_user = new_aws_user, id = student_id, clazzes = [clazz])

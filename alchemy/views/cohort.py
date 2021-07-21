@@ -57,21 +57,21 @@ def upload_class_data():
         if file_input.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             extension = file_input.get_extension(filename)
-            upload_dir = file_input.get_upload_directory(g.course)
-            file.save(os.path.join(upload_dir, filename))
+            temp_dir = file_input.get_temp_directory()
+            file.save(os.path.join(temp_dir.name, filename))
             flask.flash('File successfully uploaded')
             if extension == '.xlsx':
-                file_path = os.path.join(upload_dir, filename)
+                file_path = os.path.join(temp_dir.name, filename)
                 csv_filename = file_input.convert_to_csv(file_path)
-                csv_file_path = os.path.join(upload_dir, csv_filename)
+                csv_file_path = os.path.join(temp_dir.name, csv_filename)
             else:
-                csv_file_path = os.path.join(upload_dir, filename)
+                csv_file_path = os.path.join(temp_dir.name, filename)
 
             new_clazz_code = flask.request.form['clazz_code']
             new_clazz = models.Clazz(course = g.course, code = new_clazz_code)
             db.session.add(new_clazz)
             file_input.add_new_clazz(db, csv_file_path, new_clazz)
-            #delete directory here
+            file_input.delete_temp_directory(temp_dir)
 
         else:
             flask.flash('Allowed File Type Is .xlxs or .csv')
