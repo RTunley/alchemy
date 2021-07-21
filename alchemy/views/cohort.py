@@ -13,7 +13,11 @@ def before_request():
 @bp_cohort.route('/cohort/index')
 @auth_manager.require_group
 def index():
-    return flask.render_template('course/cohort/index.html', profile_tuples = get_all_student_profiles(g.course))
+    num_students = 0
+    for clazz in g.course.clazzes:
+        num_students+=len(clazz.students)
+
+    return flask.render_template('course/cohort/index.html', num_students = num_students, profile_tuples = get_all_student_profiles(g.course))
 
 def get_all_student_profiles(course):
     clazz_profile_tuples = []
