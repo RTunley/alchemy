@@ -6,6 +6,12 @@ import os
 
 bp_cohort = flask.Blueprint('cohort', __name__)
 
+def get_cohort_size(course):
+    num_students = 0
+    for clazz in course.clazzes:
+        num_students+=len(clazz.students)
+    return num_students
+
 @bp_cohort.before_request
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
@@ -13,11 +19,7 @@ def before_request():
 @bp_cohort.route('/index')
 @auth_manager.require_group
 def index():
-    num_students = 0
-    for clazz in g.course.clazzes:
-        num_students+=len(clazz.students)
-
-    return flask.render_template('course/cohort/index.html', num_students = num_students, profile_tuples = get_all_student_profiles(g.course))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course))
 
 def get_all_student_profiles(course):
     clazz_profile_tuples = []
@@ -44,7 +46,7 @@ def add_student():
     db.session.add(new_aws_user)
     db.session.add(new_student)
     db.session.commit()
-    return flask.render_template('course/cohort/index.html', profile_tuples = get_all_student_profiles(g.course))
+    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
 
 @bp_cohort.route('/upload_excel', methods=['POST'])
 @auth_manager.require_group
@@ -80,8 +82,7 @@ def upload_class_data():
         else:
             flask.flash('Allowed File Type Is .xlxs or .csv')
 
-    return flask.render_template('course/cohort/index.html',
-            profile_tuples = get_all_student_profiles(g.course))
+    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
 
 @bp_cohort.route('/download_excel', methods = ['GET', 'POST'])
 @auth_manager.require_group
