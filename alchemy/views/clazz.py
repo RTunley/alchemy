@@ -1,6 +1,5 @@
 import flask
 from flask import g
-from werkzeug.utils import secure_filename
 from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
 import os
 
@@ -24,61 +23,7 @@ def before_request():
 def index():
     for p in g.course.papers:
         p.check_clazz_scores(g.clazz)
-    return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
-
-@bp_clazz.route('/upload_excel', methods=['POST'])
-@auth_manager.require_group
-def upload_excel():
-    if flask.request.method == 'POST':
-        if 'file' not in flask.request.files:
-            flask.flash('No File Found.')
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        file = flask.request.files['file']
-
-        if file.filename == '':
-            flask.flash('No File Selected For Upload')
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        if file and file_input.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            upload_dir = file_input.get_upload_directory(g.clazz)
-            file.save(os.path.join(upload_dir, filename))
-            flask.flash('File successfully uploaded')
-            file_input.delete_current_clazzlist(g.clazz, db)
-            excel_file_path = os.path.join(upload_dir, filename)
-            new_user_list = file_input.parse_clazz_excel(excel_file_path, g.clazz)
-            file_input.write_users_to_db(db, new_user_list)
-            return flask.redirect(flask.url_for('clazz.index'))
-
-        else:
-            flask.flash('Allowed File Type Is .xlxs or .ods')
-            return flask.redirect(flask.url_for('clazz.index'))
-
-@bp_clazz.route('/download_excel', methods = ['GET', 'POST'])
-@auth_manager.require_group
-def download_excel():
-    # TODO should not save files into the code repo.
-    cwd = os.getcwd()
-    alchemy = os.path.join(cwd, 'alchemy')
-    downloads = os.path.join(alchemy, 'downloads')
-    filename = 'clazz_template.xlsx'
-
-    try:
-        return flask.send_from_directory(downloads, filename, as_attachment=True)
-    except FileNotFoundError:
-        abort(404)
-
-@bp_clazz.route('/add_student', methods=['POST'])
-@auth_manager.require_group
-def add_student():
-    new_given_name = flask.request.form['given_name']
-    new_family_name = flask.request.form['family_name']
-    new_asw_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = new_given_name+'.'+new_family_name, group = 'student')## TODO create student group?
-    new_student = models.Student(clazzes = [g.clazz], aws_user = new_aws_user)
-    db.session.add(new_student)
-    db.session.commit()
-    return flask.render_template('course/clazz/index.html', profiles = get_student_profiles(g.clazz))
+    return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
 
 @bp_clazz.route('/student_scores_update', methods=['POST'])
 @auth_manager.require_group
@@ -141,49 +86,6 @@ def student_scores_update():
     # Return the table data in JSON form
     return flask.jsonify(scores_table_json = all_score_set_lists)
 
-@bp_clazz.route('/download_results_excel')
-@auth_manager.require_group
-def download_results_excel():
-    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
-    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    cwd = os.getcwd()
-    alchemy = os.path.join(cwd, 'alchemy')
-    downloads = os.path.join(alchemy, 'downloads')
-    filename = file_output.output_results_excel(paper, g.clazz, downloads)
-    try:
-        return flask.send_from_directory(downloads, filename, as_attachment=True)
-    except FileNotFoundError:
-        abort(404)
-
-@bp_clazz.route('/upload_results_excel', methods=['POST'])
-@auth_manager.require_group
-def upload_results_excel():
-    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
-    if flask.request.method == 'POST':
-        if 'file' not in flask.request.files:
-            flask.flash('No File Found.')
-            return flask.redirect(flask.url_for('clazz.paper_results', paper_id = paper.id))
-
-        file = flask.request.files['file']
-
-        if file.filename == '':
-            flask.flash('No File Selected For Upload')
-            return flask.redirect(flask.url_for('clazz.paper_results', paper_id = paper.id))
-
-        if file and file_input.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            upload_dir = file_input.get_upload_directory(g.clazz)
-            file.save(os.path.join(upload_dir, filename))
-            flask.flash('File successfully uploaded')
-            excel_file_path = os.path.join(upload_dir, filename)
-            scores_list = file_input.parse_results_excel(excel_file_path, g.clazz, paper)
-            file_input.write_scores_to_db(db, scores_list)
-            return flask.redirect(flask.url_for('clazz.paper_results', paper_id = paper.id))
-
-        else:
-            flask.flash('Allowed File Type Is .xlxs or .ods')
-            return flask.redirect(flask.url_for('clazz.paper_results', paper_id = paper.id))
-
 @bp_clazz.route('/paper_results')
 @auth_manager.require_group
 def paper_results():
@@ -217,7 +119,7 @@ def student_paper_report():
     student_report = score_manager.StudentReport(student, paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
     return flask.render_template('course/clazz/student_paper.html', paper = paper, student_report = student_report)
 
-def get_student_profiles(clazz):
+def get_clazz_student_profiles(clazz):
     student_course_profile_list = []
     for student in clazz.students:
         new_course_profile = summary_profiles.make_student_course_profile(student, clazz.course)

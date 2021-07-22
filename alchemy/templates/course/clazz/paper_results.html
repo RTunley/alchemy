@@ -59,22 +59,6 @@
   <br>
   <input id="save_scores_button" class="btn btn-primary" type="button" value="Save" onclick="update_student_data()" disabled>
   <br>
-  <br>
-  <h4>Option 2: Upload a Custom Excel Spreadsheet</h4>
-  <br>
-  <p>Download the template excel sheet <a href="{{ url_for('course.clazz.download_results_excel', paper_id = paper.id) }}">here</a></p>
-  <p>Upload your completed template using the form below.</p>
-  <br>
-  <form method="post" action="{{ url_for('course.clazz.upload_results_excel', paper_id = paper.id)}}" enctype="multipart/form-data">
-    <dl>
-      <p>
-        <input type="file" name="file" autocomplete="off" required>
-      </p>
-    </dl>
-    <p>
-      <input type="submit" value="Submit">
-    </p>
-  </form>
 </main>
 
 <script type="text/javascript">

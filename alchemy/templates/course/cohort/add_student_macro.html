@@ -1,0 +1,36 @@
+{% macro render_add_student(course) -%}
+
+<form action="{{ url_for('course.cohort.add_student') }}" method="post">
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+       <input id="student_given_name" name="given_name" type="text" placeholder='Given Name' value="" class="form-control" required />
+       <br>
+       <input id="student_id" name="student_id" type="int" value="" placeholder='Student ID' class="form-control" required />
+       <br>
+       <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classes</label>
+       <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name='clazz_id'>
+         <option selected>Class</option>
+         {% for clazz in course.clazzes %}\
+           <option value="{{ clazz.id }}">{{ clazz.code }}</option>
+         {% endfor %}
+       </select>
+       <input type="hidden" name="course_id" value="{{ g.course.id }}" />
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <input id="student_family_name" name="family_name" type="text" placeholder='Family Name' value="" class="form-control" required />
+        <br>
+        <input id="student_email" name="student_email" type="email" placeholder='Student E-mail' value="" class="form-control" required />
+        <br>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <input type="submit" class="btn btn-primary" value="Add Student" />
+  </div>
+</form>
+
+{%- endmacro %}
