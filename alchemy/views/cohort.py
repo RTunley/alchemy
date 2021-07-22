@@ -10,7 +10,7 @@ bp_cohort = flask.Blueprint('cohort', __name__)
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
 
-@bp_cohort.route('/cohort/index')
+@bp_cohort.route('/index')
 @auth_manager.require_group
 def index():
     num_students = 0
@@ -39,7 +39,7 @@ def add_student():
     student_id = flask.request.form['student_id']
     email = flask.request.form['student_email']
     clazz = models.Clazz.query.get_or_404(clazz_id)
-    new_aws_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = given_name+family_name+str(student_id), group = 'student')## TODO create student group?
+    new_aws_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = new_given_name+new_family_name+str(student_id), group = 'student')## TODO create student group?
     new_student = models.Student(clazzes = [clazz], aws_user = new_aws_user, id = student_id) ## TODO might need to append clazz to student.clazzes rather than create it
     db.session.add(new_aws_user)
     db.session.add(new_student)
@@ -92,9 +92,3 @@ def download_class_template():
         return flask.send_from_directory(temp_dir.name, template_filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
-
-    # TODO should not save files into the code repo.
-    # cwd = os.getcwd()
-    # alchemy = os.path.join(cwd, 'alchemy')
-    # downloads = os.path.join(alchemy, 'downloads')
-    # filename = 'clazz_template.xlsx'
