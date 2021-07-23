@@ -9,7 +9,7 @@ import alchemy.config
 application = flask.Flask(__name__)
 
 def set_config():
-    config_class_name = os.environ.get('ALCHEMY_CONFIG', 'LocalDevelopmentConfig')
+    config_class_name = os.environ.get('ALCHEMY_CONFIG', 'DevelopmentConfig')
     config_class = getattr(alchemy.config, config_class_name)
     print('Loading Alchemy config:', config_class_name)
     application.config.from_object(config_class())

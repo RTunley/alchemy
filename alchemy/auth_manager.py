@@ -88,7 +88,8 @@ def require_group(func):
 def create_or_update_aws_user(jwt_payload, user_info):
     try:
         aws_user = models.AwsUser.from_jwt(jwt_payload)
-    except ValueError:
+    except ValueError as valueError:
+        print('Unable to load user!', valueError)
         flask.abort(401)
     is_new_user = False
     if not aws_user.id:
@@ -117,4 +118,3 @@ def authorization_error(e):
 
 
 ### The following functions use flask_jwt_extended decorators for handling various features: ###
-

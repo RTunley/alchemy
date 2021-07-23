@@ -80,10 +80,12 @@ class AwsUser(db.Model):
     def from_jwt(jwt_payload):
         sub = jwt_payload.get('sub')
         username = jwt_payload.get('username')
-        groups = jwt_payload.get('cognito:groups')
-        for field in (sub, username, groups):
+        for field in (sub, username):
             if not field:
                 raise ValueError(f'Error: field {field} not found in JWT payload: {jwt_payload}')
+        groups = jwt_payload.get('cognito:groups')
+        if not groups:
+            raise ValueError(f'Error: user is not in a group! JWT payload: {jwt_payload}')
         if len(groups) > 1:
             raise ValueError('Error: only 1 group supported, but user {username} has multiple groups: {groups}')
         aws_user = AwsUser.query.filter_by(sub = sub).first()
