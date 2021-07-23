@@ -10,14 +10,57 @@ from alchemy import application, models, db
 def auth_enabled():
     return application.config['ALCHEMY_CONFIG'] != 'TestConfig'
 
-jwt_manager = flask_jwt_extended.JWTManager() if auth_enabled() else None
-aws_auth = flask_awscognito.AWSCognitoAuthentication() if auth_enabled() else None
+jwt_manager = None
+aws_auth = None
 
 def init_app(application):
     if not auth_enabled():
         return
-    jwt_manager.init_app(application)
-    aws_auth.init_app(application)
+    global jwt_manager, aws_auth
+    jwt_manager = flask_jwt_extended.JWTManager(application)
+    aws_auth = flask_awscognito.AWSCognitoAuthentication(application)
+
+    @jwt_manager.user_lookup_loader
+    def user_lookup_loader(jwt_header, jwt_payload):
+        'Returns an AwsUser object matching the user info in a JWT payload.'
+        return models.AwsUser.query.filter_by(sub = jwt_payload.get('sub')).first()
+
+    @jwt_manager.token_in_blocklist_loader
+    def token_in_blocklist_loader(jwt_header, jwt_payload):
+        'Called to check whether a token has been revoked (i.e. if user has signed out).'
+        jti = jwt_payload["jti"]
+        token = db.session.query(models.JwtBlocklist.id).filter_by(jti=jti).scalar()
+        # While we're here, check whether any expired tokens should be removed.
+        remove_expired_tokens()
+        return token is not None
+
+    @jwt_manager.revoked_token_loader
+    def revoked_token_loader(jwt_header, jwt_payload):
+        'Called when user tries to access a protected page after signing out.'
+        return flask.redirect(flask.url_for('auth.sign_in'))
+
+    @jwt_manager.expired_token_loader
+    def expired_token_loader(jwt_header, jwt_payload):
+        'Called when user tries to access a protected page after the access token has expired.'
+        return flask.redirect(flask.url_for('auth.sign_in'))
+
+    @jwt_manager.invalid_token_loader
+    def invalid_token_loader(error_string):
+        'Called when the JWT is invalid.'
+        print('Invalid JWT encountered!', error_string)
+        return flask.redirect(flask.url_for('auth.sign_in'))
+
+    @jwt_manager.unauthorized_loader
+    def unauthorized_loader(error_string):
+        'Called when no JWT is found.'
+        print('No JWT found!', error_string)
+        return flask.redirect(flask.url_for('auth.sign_in'))
+
+    @jwt_manager.user_lookup_error_loader
+    def user_lookup_error_loader(jwt_header, jwt_payload):
+        'Called a user cannot be found from the JWT payload.'
+        print('Failed to find user from payload:', jwt_payload)
+        return flask.redirect(flask.url_for('auth.sign_in'))
 
 def remove_expired_tokens():
     now = datetime.datetime.now()
@@ -75,44 +118,3 @@ def authorization_error(e):
 
 ### The following functions use flask_jwt_extended decorators for handling various features: ###
 
-@jwt_manager.user_lookup_loader
-def user_lookup_loader(jwt_header, jwt_payload):
-    'Returns an AwsUser object matching the user info in a JWT payload.'
-    return models.AwsUser.query.filter_by(sub = jwt_payload.get('sub')).first()
-
-@jwt_manager.token_in_blocklist_loader
-def token_in_blocklist_loader(jwt_header, jwt_payload):
-    'Called to check whether a token has been revoked (i.e. if user has signed out).'
-    jti = jwt_payload["jti"]
-    token = db.session.query(models.JwtBlocklist.id).filter_by(jti=jti).scalar()
-    # While we're here, check whether any expired tokens should be removed.
-    remove_expired_tokens()
-    return token is not None
-
-@jwt_manager.revoked_token_loader
-def revoked_token_loader(jwt_header, jwt_payload):
-    'Called when user tries to access a protected page after signing out.'
-    return flask.redirect(flask.url_for('auth.sign_in'))
-
-@jwt_manager.expired_token_loader
-def expired_token_loader(jwt_header, jwt_payload):
-    'Called when user tries to access a protected page after the access token has expired.'
-    return flask.redirect(flask.url_for('auth.sign_in'))
-
-@jwt_manager.invalid_token_loader
-def invalid_token_loader(error_string):
-    'Called when the JWT is invalid.'
-    print('Invalid JWT encountered!', error_string)
-    return flask.redirect(flask.url_for('auth.sign_in'))
-
-@jwt_manager.unauthorized_loader
-def unauthorized_loader(error_string):
-    'Called when no JWT is found.'
-    print('No JWT found!', error_string)
-    return flask.redirect(flask.url_for('auth.sign_in'))
-
-@jwt_manager.user_lookup_error_loader
-def user_lookup_error_loader(jwt_header, jwt_payload):
-    'Called a user cannot be found from the JWT payload.'
-    print('Failed to find user from payload:', jwt_payload)
-    return flask.redirect(flask.url_for('auth.sign_in'))
