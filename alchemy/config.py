@@ -55,8 +55,8 @@ class TestConfig(BaseConfig):
     WTF_CSRF_ENABLED = False
     PRESERVE_CONTEXT_ON_EXCEPTION = False
 
-class LocalDevelopmentConfig(BaseConfig):
-    ALCHEMY_CONFIG = 'LocalDevelopmentConfig'
+class DevelopmentConfig(BaseConfig):
+    ALCHEMY_CONFIG = 'DevelopmentConfig'
     FLASK_ENV = 'development'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///master.db'
     SECRET_KEY = non_production_flask_secret_key()
@@ -65,30 +65,30 @@ class LocalDevelopmentConfig(BaseConfig):
         # Use the Alchemy Development user pool.
         flask_awscognito_config = {
             'AWS_DEFAULT_REGION': 'ap-southeast-1',
-            'AWS_COGNITO_DOMAIN': 'https://alchemy-dev.auth.ap-southeast-1.amazoncognito.com',
-            'AWS_COGNITO_USER_POOL_ID': 'ap-southeast-1_O0rRyXHZH',
-            'AWS_COGNITO_USER_POOL_CLIENT_ID': '2chtn4uoa9bv9pbtc0g87v5uv',
-            'AWS_COGNITO_USER_POOL_CLIENT_SECRET': 'teli8ecv2jt87ohjod95v1q9lqjfknem4eu4lkji9nlsqrcr8t2',
+            'AWS_COGNITO_DOMAIN': 'https://alchemy.auth.ap-southeast-1.amazoncognito.com',
+            'AWS_COGNITO_USER_POOL_ID': 'ap-southeast-1_k8sm2XbyZ',
+            'AWS_COGNITO_USER_POOL_CLIENT_ID': '2fiehmng5ksikubsknapoe6efr',
+            'AWS_COGNITO_USER_POOL_CLIENT_SECRET': '1v605kvedkhcjfpg6jchgs4nv4hkhhrc5og82og9363no77spsj2',
             'AWS_COGNITO_REDIRECT_URL': 'http://localhost:5000/auth/aws_cognito_callback',
         }
         configure_flask_awscognito(self, flask_awscognito_config)
         configure_flask_jwt_extended(self)
 
-class RemoteDevelopmentConfig(BaseConfig):
-    ALCHEMY_CONFIG = 'RemoteDevelopmentConfig'
-    FLASK_ENV = 'development'
+class ProductionConfig(BaseConfig):
+    ALCHEMY_CONFIG = 'ProductionConfig'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///master.db'
-    SECRET_KEY = non_production_flask_secret_key()
 
     def __init__(self):
+        self.SECRET_KEY = os.environ['SECRET_KEY']
+
         # Use the Alchemy Development user pool.
         flask_awscognito_config = {
-            'AWS_DEFAULT_REGION': 'ap-southeast-1',
-            'AWS_COGNITO_DOMAIN': 'https://alchemy-dev.auth.ap-southeast-1.amazoncognito.com',
-            'AWS_COGNITO_USER_POOL_ID': 'ap-southeast-1_O0rRyXHZH',
-            'AWS_COGNITO_USER_POOL_CLIENT_ID': '1rp5emoi14vmkrgv2fcj9tar55',
-            'AWS_COGNITO_USER_POOL_CLIENT_SECRET': '1qfo8m4gg6ch1mii9mlm0glv803fm8foe9a5jlaci7248cm6uq3c',
-            'AWS_COGNITO_REDIRECT_URL': 'https://alchemydev-env.eba-nk3jmbzp.ap-southeast-1.elasticbeanstalk.com/auth/aws_cognito_callback',
+            'AWS_DEFAULT_REGION': os.environ['AWS_DEFAULT_REGION'],
+            'AWS_COGNITO_DOMAIN': os.environ['AWS_COGNITO_DOMAIN'],
+            'AWS_COGNITO_USER_POOL_ID': os.environ['AWS_COGNITO_USER_POOL_ID'],
+            'AWS_COGNITO_USER_POOL_CLIENT_ID': os.environ['AWS_COGNITO_USER_POOL_CLIENT_ID'],
+            'AWS_COGNITO_USER_POOL_CLIENT_SECRET': os.environ['AWS_COGNITO_USER_POOL_CLIENT_SECRET'],
+            'AWS_COGNITO_REDIRECT_URL': os.environ['AWS_COGNITO_REDIRECT_URL'],
         }
         configure_flask_awscognito(self, flask_awscognito_config)
         configure_flask_jwt_extended(self)
