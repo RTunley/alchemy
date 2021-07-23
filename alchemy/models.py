@@ -61,20 +61,28 @@ class AwsUser(db.Model):
     username = db.Column(db.String(64), nullable=False)
     group = db.Column(db.String(64), nullable=False) # Would we support multiple groups per user?
 
-    # additional fields
+    # Additional user attributes in the user pool
+    email = db.Column(db.String(64))
     given_name = db.Column(db.String(32))
     family_name = db.Column(db.String(32))
-    email = db.Column(db.String(64))
 
-    def update_optional_fields(self, user_info):
+    USER_ATTRIBUTES = ('given_name', 'family_name', 'email')
+
+    def update_user_attributes(self, user_attrs):
         updated = False
-        extra_fields = ('given_name', 'family_name', 'email')
-        for field_key in extra_fields:
-            field_value = user_info.get(field_key, '')
-            if field_value != getattr(self, field_key):
+        for field_key in AwsUser.USER_ATTRIBUTES:
+            field_value = getattr(user_attrs, field_key, '')
+            if field_value != getattr(self, field_key, ''):
                 setattr(self, field_key, field_value)
                 updated = True
         return updated
+
+    def matches_user_attributes(self, user_attrs):
+        for field_key in AwsUser.USER_ATTRIBUTES:
+            field_value = user_attrs.get(field_key, '')
+            if field_value != getattr(self, field_key, ''):
+                return False
+        return True
 
     @staticmethod
     def from_jwt(jwt_payload):

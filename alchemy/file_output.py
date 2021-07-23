@@ -14,9 +14,9 @@ def make_class_template(dir):
     ws1.title = "Class Template"
 
     ws1["A1"] = "Student Id"
-    ws1["B1"] = "Family Name"
-    ws1["C1"] = "Given Name"
-    ws1["D1"] = "E-mail"
+    ws1["B1"] = "E-mail"
+    ws1["C1"] = "Family Name"
+    ws1["D1"] = "Given Name"
 
     filename = 'Class_Template.xlsx'
     wb.save(os.path.join(dir.name, filename))
