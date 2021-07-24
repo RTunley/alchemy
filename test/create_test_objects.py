@@ -62,3 +62,35 @@ def add_question_to_paper(paper, question):
     pq = m.PaperQuestion(paper_id = paper.id, question_id = question.id, order_number = index+1)
     db.session.add(pq)
     db.session.commit()
+
+def add_clazz(course):
+    clazz = m.Clazz(code = 'clazz01', course_id = course.id)
+    db.session.add(clazz)
+    db.session.commit()
+    return clazz
+
+def make_sub(given_name, family_name, index):
+    sub = 'aws-sub-' + given_name + '-' + family_name + '-' + str(index)
+    return sub
+
+def make_email(given_name, family_name, id):
+    email = given_name+'.'+family_name+str(id)+'@schoolofrock.com'
+    return email
+
+def add_students_and_aws_users(course, clazz):
+    index = 1000
+    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle')]
+    student_list = []
+
+    for i in range(len(user_tuples)):
+        given = user_tuples[i][0]
+        family = user_tuples[i][1]
+        sub = make_sub(given, family, index+i)
+        email = make_email(given, family, index+i)
+        aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, sub = sub, email = email, group = 'student', username = sub)
+        student = m.Student(aws_user = aws_user, clazzes = [clazz])
+        student_list.append(student)
+        db.session.add(student)
+
+    db.session.commit()
+    return(student_list)

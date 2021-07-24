@@ -3,7 +3,6 @@ os.environ['ALCHEMY_CONFIG'] = 'TestConfig'
 from alchemy import application as app
 
 from alchemy import db
-import flask
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
