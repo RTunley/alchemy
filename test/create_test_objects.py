@@ -18,7 +18,7 @@ def create_grade_levels(course):
     grade_B = m.GradeLevel(grade = 'B', lower_bound = 70, upper_bound = 85, course_id = course.id)
     grade_C = m.GradeLevel(grade = 'C', lower_bound = 50, upper_bound = 70, course_id = course.id)
     grade_D = m.GradeLevel(grade = 'D', lower_bound = 30, upper_bound = 50, course_id = course.id)
-    grade_F = m.GradeLevel(grade = 'F', lower_bound = 30, upper_bound = 0, course_id = course.id)
+    grade_F = m.GradeLevel(grade = 'F', lower_bound = 0, upper_bound = 30, course_id = course.id)
 
     course_grades = [grade_A, grade_B, grade_C, grade_D, grade_F]
 
@@ -34,7 +34,7 @@ def create_question1(course):
     return test_question
 
 def create_question2(course):
-    test_question = m.Question(content = 'Very Challenging', solution = 'Difficult Solution', points = 2, course_id = test_course1.id)
+    test_question = m.Question(content = 'Very Challenging', solution = 'Difficult Solution', points = 2, course_id = course.id)
     db.session.add(test_question)
     db.session.commit()
     return test_question
@@ -78,7 +78,7 @@ def make_email(given_name, family_name, id):
     return email
 
 def add_students_and_aws_users(course, clazz):
-    index = 1000
+    index = 2000
     user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle')]
     student_list = []
 
@@ -88,9 +88,23 @@ def add_students_and_aws_users(course, clazz):
         sub = make_sub(given, family, index+i)
         email = make_email(given, family, index+i)
         aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, sub = sub, email = email, group = 'student', username = sub)
+        db.session.add(aws_user)
         student = m.Student(aws_user = aws_user, clazzes = [clazz])
         student_list.append(student)
         db.session.add(student)
+        print("Student aws id: ", student.aws_user.id)
 
     db.session.commit()
     return(student_list)
+
+def add_scores(paper, student_list):
+    #test_paper contains two questions totallying 6 points (see add_question1 and add_question2). Need tuples for four students.
+    score_tuples = [(4,2), (3,1), (2,0), (0,0)]
+    for i in range(len(student_list)):
+        for j in range(len(paper.paper_questions)):
+            question_id = paper.paper_questions[j].question.id
+            student_id = student_list[i].id
+            new_score = m.Score(value = score_tuples[i][j], paper_id = paper.id, question_id = question_id, student_id = student_id)
+            db.session.add(new_score)
+
+    db.session.commit()
