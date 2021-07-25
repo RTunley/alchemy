@@ -92,7 +92,6 @@ def add_students_and_aws_users(course, clazz):
         student = m.Student(aws_user = aws_user, clazzes = [clazz])
         student_list.append(student)
         db.session.add(student)
-        print("Student aws id: ", student.aws_user.id)
 
     db.session.commit()
     return(student_list)

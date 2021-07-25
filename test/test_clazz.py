@@ -5,7 +5,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Clazz, AwsUser, Student
+from alchemy.models import Account, Course, Clazz, AwsUser, Student, Paper
 import test.create_test_objects as cto
 
 class BaseTestCase(TestCase):
@@ -51,9 +51,11 @@ class FlaskTestCase(BaseTestCase):
     def test_paper_results(self):
         course = Course.query.first()
         clazz = Clazz.query.first()
-        response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id))
+        paper = Paper.query.first()
+        data = {'paper_id': paper.id}
+        response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id), query_string = data)
         self.assertEqual(response.status_code, 200)
-        #Some issue arises here related to a null public key, maybe this is related to the error that occurs when trying to add scores. Oddly, it doesn't occur the first 2 times that setUp is called...
+
 
 
 if __name__ == '__main__':
