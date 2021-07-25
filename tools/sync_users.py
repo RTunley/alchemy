@@ -158,7 +158,7 @@ class CognitoOperator:
         self.group = group
         self.aws_client = boto3.client('cognito-idp', region_name = application.config['AWS_DEFAULT_REGION'])
         self.existing_cognito_users = self.find_users_in_pool()
-        print(f'Found {len(self.existing_cognito_users)} existing users in "{group}" group:', self.existing_cognito_users)
+        print(f'Found {len(self.existing_cognito_users)} existing users in user pool "{group}" group:', self.existing_cognito_users)
 
     def sync_users_to_cognito(self, user_infos):
         # Upload a new user if it is not in the user pool. If it is already in the pool, update
@@ -311,12 +311,13 @@ def main():
     else:
         raise ValueError('One of the --from options must be set! See --help for options.')
 
+    cognito_operator = CognitoOperator(args.group)
+
     if not args.from_db:
         print('\nSyncing to local database...')
         sync_users_to_db(user_infos, args.group)
 
     print(f'\nSyncing to Cognito user pool "{args.group}" group...')
-    cognito_operator = CognitoOperator(args.group)
     cognito_operator.sync_users_to_cognito(user_infos)
 
 if __name__ == '__main__':
