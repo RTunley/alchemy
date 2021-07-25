@@ -95,7 +95,7 @@ def create_or_update_aws_user(jwt_payload, user_info):
     if not aws_user.id:
         db.session.add(aws_user)
         is_new_user = True
-    if is_new_user or aws_user.update_optional_fields(user_info):
+    if is_new_user or aws_user.update_user_attributes(user_info):
         db.session.commit()
     return aws_user
 
