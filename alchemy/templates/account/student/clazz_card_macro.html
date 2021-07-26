@@ -1,0 +1,10 @@
+{% macro render_clazz_card(clazz) -%}
+
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{ clazz.course.name }}</h5>
+    <p class="card-text">{{ clazz.code }}</p>
+  </div>
+</div>
+
+{%- endmacro %}

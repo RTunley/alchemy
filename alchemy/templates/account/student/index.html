@@ -1,5 +1,82 @@
-{% include "layout_start.html" %}
+{% include "account/student/student_layout_start.html" %}
 
-<h2>Welcome back, {{ g.student.aws_user.given_name }}!</h2>
+<div class='container'>
+  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <h2>Welcome back, {{ g.student.aws_user.given_name }}!</h2>
+  </div>
+</div>
 
-{% include "layout_end.html" %}
+<div class='container'>
+  <div class="accordion" id="daily-header">
+    <div class="card">
+      <div class="card-header" id="header-title">
+        <h3 class="mb-0">
+          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#header-content" aria-expanded="true" aria-controls="header-content">
+            Quote of the Day
+          </button>
+        </h3>
+      </div>
+      <div id="header-content" class="collapse show" aria-labelledby="header-content" data-parent="#daily-header">
+        <div class="card-body">
+          <p>"My friends, love is better than anger. Hope is better than fear. Optimism is better than despair. So let us be loving, hopeful and optimistic. And we’ll change the world." - Jack Layton</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div class='container'>
+  <div id='daily-notices'>
+    <div class="accordion" id="daily-notices">
+      <div class="card">
+        <div class="card-header" id="notices-head">
+          <h3 class="mb-0">
+            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#notices-content" aria-expanded="true" aria-controls="notices-content">
+              Daily Notices
+            </button>
+          </h3>
+        </div>
+        <div id="notices-content" class="collapse show" aria-labelledby="notices-head" data-parent="#daily-notices">
+          <div class="card-body">
+            <p> A bunch of important notices for students</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+
+<div class="container">
+  <h3>Your Courses:</h3>
+  <div class="carousel slide" data-ride="carousel" id="multi_item">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="row">
+          {% import "account/student/clazz_card_macro.html" as clazz_card %}
+          {% for clazz in g.student.clazzes %}
+            <div class="col-sm">{{ clazz_card.render_clazz_card(clazz) }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- <div class="carousel-item">
+        <div class="row">
+          <div class="col-sm"><img class="d-block w-100" alt="4 slide"></div>
+          <div class="col-sm"><img class="d-block w-100" alt="5 slide"></div>
+          <div class="col-sm"><img class="d-block w-100" alt="6 slide"></div>
+        </div>
+      </div> -->
+    </div>
+    <a class="carousel-control-prev" href="#multi_item" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only"></span>
+    </a>
+    <a class="carousel-control-next" href="#multi_item" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only"></span>
+    </a>
+  </div>
+</div>
+<br>
+
+{% include "account/student/student_layout_end.html" %}

@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from alchemy import db, models, auth_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, auth_manager
 
 bp_student = flask.Blueprint('student', __name__)
 
@@ -16,4 +16,4 @@ def url_defaults(endpoint, values):
 @bp_student.route('/index')
 @auth_manager.require_group
 def index():
-    return flask.render_template('/student/index.html')
+    return flask.render_template('account/student/index.html')

@@ -114,9 +114,8 @@ def make_email(sub):
     email = sub + '@schoolofrock.com'
     return email
 
-def add_students_and_aws_users(course):
+def add_students_and_aws_users(clazzes):
     index = 1000
-    clazz = m.Clazz.query.filter_by(course_id = course.id).first()
     user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead')]
     student_list = []
 
@@ -126,7 +125,7 @@ def add_students_and_aws_users(course):
         sub = make_sub(given, family, index+i)
         email = make_email(sub)
         aws_user = m.AwsUser(given_name = given, family_name = family, id = index+i, sub = sub, email = email, group = 'student', username = sub)
-        student = m.Student(aws_user = aws_user, clazzes = [clazz])
+        student = m.Student(aws_user = aws_user, clazzes = clazzes)
         student_list.append(student)
         db.session.add(student)
 
