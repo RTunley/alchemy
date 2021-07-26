@@ -39,7 +39,7 @@ from alchemy import models
 from alchemy import auth_manager
 auth_manager.init_app(application)
 
-from alchemy.views import auth, account, course, clazz, paper, library, cohort
+from alchemy.views import auth, account, course, clazz, paper, library, cohort, student
 
 course.bp_course.register_blueprint(clazz.bp_clazz, url_prefix='/clazz/<clazz_id>')
 course.bp_course.register_blueprint(paper.bp_paper, url_prefix='/paper/<paper_id>')

@@ -8,8 +8,8 @@ def add_account():
     return(account)
 
 
-def add_course(account):
-    course = m.Course(name = "IGCSE Physics", account = account)
+def add_course(account, name):
+    course = m.Course(name = name, account = account)
     db.session.add(course)
     db.session.commit()
     return(course)
@@ -95,8 +95,8 @@ def add_questions_to_paper(paper, questions):
 
     db.session.commit()
 
-def add_clazz(course):
-    clazz = m.Clazz(code = 'IGPHY01', course_id = course.id)
+def add_clazz(course, code):
+    clazz = m.Clazz(code = code, course_id = course.id)
     db.session.add(clazz)
     db.session.commit()
     return(clazz)
