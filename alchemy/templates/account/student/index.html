@@ -12,7 +12,7 @@
       <div class="card-header" id="header-title">
         <h3 class="mb-0">
           <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#header-content" aria-expanded="true" aria-controls="header-content">
-            Quote of the Day
+            <h4>Quote of the Day</h4>
           </button>
         </h3>
       </div>
@@ -32,7 +32,7 @@
         <div class="card-header" id="notices-head">
           <h3 class="mb-0">
             <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#notices-content" aria-expanded="true" aria-controls="notices-content">
-              Daily Notices
+              <h4>Daily Notices</h4>
             </button>
           </h3>
         </div>
@@ -54,7 +54,7 @@
       <div class="carousel-item active">
         <div class="row">
           {% import "account/student/clazz_card_macro.html" as clazz_card %}
-          {% for clazz in g.student.clazzes %}
+          {% for clazz in g.student.clazzes | shuffle %}
             <div class="col-sm">{{ clazz_card.render_clazz_card(clazz) }}</div>
           {% endfor %}
         </div>

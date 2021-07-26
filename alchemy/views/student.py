@@ -1,8 +1,18 @@
 import flask
 from flask import g
-from alchemy import db, models, auth_manager
+import random
+from alchemy import application, db, models, auth_manager
 
 bp_student = flask.Blueprint('student', __name__)
+
+@application.template_filter('shuffle')
+def filter_shuffle(seq):
+    try:
+        result = list(seq)
+        random.shuffle(result)
+        return result
+    except:
+        return seq
 
 @bp_student.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
