@@ -26,7 +26,7 @@ class BaseTestCase(TestCase):
         cto.add_question_to_paper(test_paper, q1)
         q2 = cto.create_question2(test_course)
         cto.add_question_to_paper(test_paper, q2)
-        #add_scores(test_paper, student_list)
+        cto.add_scores(test_paper, student_list)
 
     def tearDown(self):
         db.session.remove()
@@ -56,6 +56,24 @@ class FlaskTestCase(BaseTestCase):
         response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id), query_string = data)
         self.assertEqual(response.status_code, 200)
 
+    # def_test_update_scores(self):
+        #Should look like:
+        # 1) Get student score data with
+        # response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id)
+        # 2) make a change to one student scores using student_scores in response.data...?
+        # 3) send the new new changes
+        # response = self.client.post('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id), data = dict(student_scores = new_student_scores))
+        # check that new values are in the db for that student
+
+    def test_clazz_paper_report(self):
+        course = Course.query.first()
+        clazz = Clazz.query.first()
+        paper = Paper.query.first()
+        data = {'paper_id': paper.id}
+        response = self.client.get('/course/{}/clazz/{}/paper_report'.format(course.id, clazz.id), query_string = data)
+        self.assertEqual(response.status_code, 200)
+
+    # Don't write a test for student_paper_report because that will eventually be moved to the student view
 
 
 if __name__ == '__main__':
