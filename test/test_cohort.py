@@ -1,12 +1,19 @@
 import os
 os.environ['ALCHEMY_CONFIG'] = 'TestConfig'
 from alchemy import application as app
-
 from alchemy import db
 from flask_testing import TestCase
 import unittest
 from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion, Clazz, Student
 import test.create_test_objects as cto
+import csv
+
+def course_student_number(course):
+    num_students = 0
+    for clazz in course.clazzes:
+        num_students+= len(clazz.students)
+
+    return num_students
 
 class BaseTestCase(TestCase):
 
@@ -48,6 +55,27 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(new_student.aws_user.given_name, given_name)
         self.assertEqual(new_student.aws_user.email, new_email)
 
+    def test_add_class(self):
+        course = Course.query.first()
+        initial_num_students = course_student_number(course)
+        with open('new_class.csv', 'r+') as class_csv:
+            filewriter = csv.writer(class_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            filewriter.writerow(['ID', 'family name', 'given name', 'e-mail'])
+            filewriter.writerow(['4321', 'Trench', 'Mariana', 'mariana.trench@schoolofrock.com'])
+            data = dict(file = class_csv, class_code = b'newclasscode')
+            response = self.client.post('/course/{}/cohort/upload_excel'.format(course.id), data = data,
+            follow_redirects = True)
+            os.remove('new_class.csv')
+
+        self.assertEqual(len(course.clazzes), 2)
+        new_num_students = course_student_number(course)
+        self.assertEqual(new_num_students, initial_num_students+1)
+        new_clazz = Clazz.query.filter_by(code = 'newclasscode').first()
+        self.assertTrue(len(new_clazz.students), 1)
+        new_student = Student.query.filter_by(id = 4321).first()
+        self.assertEqual(new_student.aws_user.family_name, 'Trench')
+        self.assertEqual(new_student.aws_user.given_name, 'Mariana')
+        self.assertEqual(new_student.aws_user.email, 'mariana.trench@schoolofrock.com')
 
 
 
