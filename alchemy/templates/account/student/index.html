@@ -55,7 +55,7 @@
         <div class="row">
           {% import "account/student/clazz_card_macro.html" as clazz_card %}
           {% for clazz in g.student.clazzes | shuffle %}
-            <div class="col-sm">{{ clazz_card.render_clazz_card(clazz) }}</div>
+            <div class="col-sm"><a href="url_for('account.student.course_view', course_id = {{ clazz.course.id }})">{{ clazz_card.render_clazz_card(clazz) }}</a></div>
           {% endfor %}
         </div>
       </div>
