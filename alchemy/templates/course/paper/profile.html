@@ -15,8 +15,8 @@
 
         <h5 class="card-subtitle mt-4 mb-2">Tags</h5>
         <ul>
-          {% for tag in g.paper.profile.tag_profile_list %}
-            <li>{{ tag.name }}</li>
+          {% for tag_profile in g.paper.profile.tag_profile_list %}
+            <li>{{ tag_profile.name }}</li>
           {% endfor %}
         </ul>
 

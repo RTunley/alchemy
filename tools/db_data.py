@@ -88,9 +88,8 @@ def add_paper(course):
     return(paper)
 
 def add_questions_to_paper(paper, questions):
-    for question in questions:
-        index = len(paper.paper_questions)
-        pq = m.PaperQuestion(paper_id = paper.id, question_id = question.id, order_number = index+1)
+    for i in range(len(questions)):
+        pq = m.PaperQuestion(paper_id = paper.id, question_id = questions[i].id, order_number = i+1)
         db.session.add(pq)
 
     db.session.commit()
