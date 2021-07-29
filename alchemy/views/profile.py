@@ -7,7 +7,7 @@ def build_tag_profile(paper, primary_tag):
             if tag.name == primary_tag.name:
                 allocated_questions += 1
                 allocated_points += paper_question.question.points
-    tag_profile = TagProfile(tag, allocated_questions, allocated_points)
+    tag_profile = TagProfile(primary_tag, allocated_questions, allocated_points)
     return tag_profile
 
 class PaperProfile:
