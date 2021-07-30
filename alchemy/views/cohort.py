@@ -41,6 +41,7 @@ def add_student():
     student_id = int(flask.request.form['student_id'])
     email = flask.request.form['student_email']
     clazz = models.Clazz.query.get_or_404(clazz_id)
+<<<<<<< HEAD
     username = email.split('@')[0].lower()
     if models.AwsUser.query.get(student_id) is not None:
         flask.flash(f'User {student_id} already exists!')
@@ -52,6 +53,13 @@ def add_student():
         db.session.add(aws_user)
         db.session.add(new_student)
         db.session.commit()
+=======
+    new_aws_user = models.AwsUser(given_name = new_given_name, family_name= new_family_name, username = new_given_name+new_family_name+str(student_id), group = 'student', email = email) ## TODO create student group?
+    new_student = models.Student(clazzes = [clazz], aws_user = new_aws_user, id = student_id) ## TODO might need to append clazz to student.clazzes rather than create it
+    db.session.add(new_aws_user)
+    db.session.add(new_student)
+    db.session.commit()
+>>>>>>> more_testing
     return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
 
 @bp_cohort.route('/upload_excel', methods=['POST'])
