@@ -8,6 +8,7 @@ from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion,
 import test.create_test_objects as cto
 import csv
 import io
+import openpyxl as opxl
 
 def course_student_number(course):
     num_students = 0
@@ -56,7 +57,7 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(new_student.aws_user.given_name, given_name)
         self.assertEqual(new_student.aws_user.email, new_email)
 
-    def test_add_class(self):
+    def test_add_class_csv(self):
         course = Course.query.first()
         initial_num_students = course_student_number(course)
         cwd = os.getcwd()
@@ -86,9 +87,34 @@ class FlaskTestCase(BaseTestCase):
         self.assertEqual(new_student.aws_user.email, 'mariana.trench@schoolofrock.com')
 
 
+    def test_add_class_xlxs(self):
+        course = Course.query.first()
+        initial_num_students = course_student_number(course)
+        cwd = os.getcwd()
+        excel_filepath = os.path.join(cwd,'new_class.xlsx')
+        wb = opxl.Workbook()
+        sheet = wb.active
+        data = {'A1': 'ID', 'B1': 'Family Name', 'C1': 'Given Name', 'D1':'email', 'A2': 4321, 'B2': 'Trench', 'C2': 'Mariana', 'D2': 'mariana.trench@schoolofrock.com'}
+        for cell in data:
+            sheet[cell] = data[cell]
+        wb.save(excel_filepath)
 
+        excel_content = opxl.writer.excel.save_virtual_workbook(wb)
+        data = dict(clazz_code = 'newclasscode')
+        data['file'] = (io.BytesIO(excel_content), excel_filepath)
+        response = self.client.post('/course/{}/cohort/upload_excel'.format(course.id), data = data,
+        follow_redirects = True)
+        os.remove(excel_filepath)
 
-
+        self.assertEqual(len(course.clazzes), 2)
+        new_num_students = course_student_number(course)
+        self.assertEqual(new_num_students, initial_num_students+1)
+        new_clazz = Clazz.query.filter_by(code = 'newclasscode').first()
+        self.assertTrue(len(new_clazz.students), 1)
+        new_student = Student.query.filter_by(id = 4321).first()
+        self.assertEqual(new_student.aws_user.family_name, 'Trench')
+        self.assertEqual(new_student.aws_user.given_name, 'Mariana')
+        self.assertEqual(new_student.aws_user.email, 'mariana.trench@schoolofrock.com')
 
 if __name__ == '__main__':
     unittest.main()
