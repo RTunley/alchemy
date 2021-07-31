@@ -28,12 +28,12 @@ def url_defaults(endpoint, values):
 def index():
     return flask.render_template('account/student/index.html')
 
-@bp_student.route('/view_course/<int:course_id>')
+@bp_student.route('/course-view/<int:course_id>')
 @auth_manager.require_group
 def course_view(course_id):
-    course = Course.query.filter_by(id = course_id).first()
+    g.course = models.Course.query.filter_by(id = course_id).first()
     for clazz in g.student.clazzes:
-        if clazz.course.id == course.id:
-            student_clazz = clazz
-    course_profile = summary_profiles.make_student_course_profile(g.student, course)
-    return flask.render_template('account/student/{}/course_view.html'.format(g.student.id), profile = course_profile, clazz = clazz)
+        if clazz.course.id == g.course.id:
+            g.clazz = clazz
+    course_profile = summary_profiles.make_student_course_profile(g.student, g.course)
+    return flask.render_template('account/student/course_view.html', profile = course_profile)
