@@ -17,6 +17,10 @@ def redirect_to_user_home():
     # TODO instead of just returning the first available account, should find
     # the right account depending on the user.
     first_account = models.Account.query.first()
+    g.current_user = flask_jwt_extended.get_current_user()
+    print('---------------------')
+    print(g.current_user.group)
+    print('---------------------')
     response = flask.redirect(flask.url_for('account.index', account_id = first_account.id))
     return response
 
