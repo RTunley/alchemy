@@ -38,7 +38,7 @@
         <tr>
           <td>{{ scoreset.paper.title }}</td>
           {% if scoreset.has_all_scores %}
-            <td>{{ scoreset.grade }} | {{ scoreset.percentage }}% } | {{ scoreset.total }}/{{ scoreset.paper.profile.total_points }}</td>
+            <td>{{ scoreset.grade }} | {{ scoreset.percentage }}% | {{ scoreset.total }}/{{ scoreset.paper.profile.total_points }}</td>
             <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = g.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned</td>
