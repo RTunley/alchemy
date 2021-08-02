@@ -101,13 +101,16 @@ def add_clazz(course, code):
     return(clazz)
 
 def add_admin():
-    admin = m.AwsUser(id=3000, username = 'robin.tunley', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
+    admin = m.AwsUser(id=3000, username = 'robin.tunley.admin', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
     db.session.add(admin)
     db.session.commit()
 
+def add_robin_as_student():
+
+
 def add_students_and_aws_users(clazzes):
     index = 1000
-    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead'), ('Robin', 'Tunley')]
+    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead')]
     student_list = []
 
     for i in range(len(user_tuples)):
@@ -115,7 +118,7 @@ def add_students_and_aws_users(clazzes):
         email = f'{given}.{family}@example.com'
         username = f'{given}.{family}'.lower()
         aws_user = m.AwsUser(id = index+i, given_name = given, family_name = family, email = email, group = 'student', username = username)
-        student = m.Student(id = aws_user.id, aws_user = aws_user, clazzes = [clazz])
+        student = m.Student(id = aws_user.id, aws_user = aws_user, clazzes = clazzes)
         student_list.append(student)
         db.session.add(student)
 
@@ -124,7 +127,7 @@ def add_students_and_aws_users(clazzes):
 
 def add_scores(paper, student_list):
     #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4,3,3).
-    score_tuples = [(0,0,0,0), (1,1,1,0), (2,1,1,1), (2,1,2,2), (4,0,3,2), (2,4,2,3), (4,4,3,3), (3,3,2,3)]
+    score_tuples = [(0,0,0,0), (1,1,1,0), (2,1,1,1), (2,1,2,2), (4,0,3,2), (2,4,2,3), (4,4,3,3)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id

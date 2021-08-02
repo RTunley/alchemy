@@ -135,6 +135,7 @@ class CognitoUser:
         user_attrs = user_dict['Attributes']
         cognito_user = CognitoUser()
         cognito_user.username = user_dict['Username']
+        cognito_user.id = ''
         for user_attr in user_attrs:
             key = user_attr['Name']
             value = user_attr['Value']
