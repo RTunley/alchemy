@@ -61,7 +61,7 @@
               {% for tuple in profile_tuples %}
                 {% for profile in tuple[1] %}
                   <tr>
-                    <td class="align-middle">{{ profile.student.id }}</td>
+                    <td class="align-middle"><a href="{{ url_for('account.student.index', student_id = profile.student.id) }}">{{ profile.student.id }}</a></td>
                     <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
                     <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
                     <td class="align-middle">{{ tuple[0].code }}</td>

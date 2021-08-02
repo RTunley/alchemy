@@ -8,8 +8,8 @@ def add_account():
     return(account)
 
 
-def add_course(account):
-    course = m.Course(name = "IGCSE Physics", account = account)
+def add_course(account, name):
+    course = m.Course(name = name, account = account)
     db.session.add(course)
     db.session.commit()
     return(course)
@@ -94,8 +94,8 @@ def add_questions_to_paper(paper, questions):
 
     db.session.commit()
 
-def add_clazz(course):
-    clazz = m.Clazz(code = 'IGPHY01', course_id = course.id)
+def add_clazz(course, code):
+    clazz = m.Clazz(code = code, course_id = course.id)
     db.session.add(clazz)
     db.session.commit()
     return(clazz)
@@ -105,14 +105,9 @@ def add_admin():
     db.session.add(admin)
     db.session.commit()
 
-def make_email(sub):
-    email = sub + '@example.com'
-    return email
-
-def add_students_and_aws_users(course):
+def add_students_and_aws_users(clazzes):
     index = 1000
-    clazz = m.Clazz.query.filter_by(course_id = course.id).first()
-    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead')]
+    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead'), ('Robin', 'Tunley')]
     student_list = []
 
     for i in range(len(user_tuples)):
@@ -128,8 +123,8 @@ def add_students_and_aws_users(course):
     return(student_list)
 
 def add_scores(paper, student_list):
-    #total points on mechanics quiz is 14 so need a selection of 7 score_tuples than cover several grades. Total avilable points are (4,4,3,3).
-    score_tuples = [(0,0,0,0), (1,1,1,0), (2,1,1,1), (2,1,2,2), (4,0,3,2), (2,4,2,3), (4,4,3,3)]
+    #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4,3,3).
+    score_tuples = [(0,0,0,0), (1,1,1,0), (2,1,1,1), (2,1,2,2), (4,0,3,2), (2,4,2,3), (4,4,3,3), (3,3,2,3)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id

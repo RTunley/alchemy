@@ -1,0 +1,53 @@
+{% include "account/student/student_layout_start.html" %}
+
+<div class='container'>
+  <h2>Your Profile: {{ g.clazz.course.name }} - {{ g.clazz.code }}</h2>
+</div>
+
+<div class='container'>
+  <div class="accordion" id="daily-header">
+    <div class="card">
+      <div class="card-header" id="header-title">
+        <h3 class="mb-0">
+          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#header-content" aria-expanded="true" aria-controls="header-content">
+            <h4>Teacher Notices</h4>
+          </button>
+        </h3>
+      </div>
+      <div id="header-content" class="collapse show" aria-labelledby="header-content" data-parent="#daily-header">
+        <div class="card-body">
+          <p>A spot for teachers to post any important updates</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+
+<div class='container'>
+  <h4>Assessment Profile</h4>
+  <br>
+  <table style="text-align:center" class="table table-hover">
+    <tr>
+      <th>Assessment</th>
+      <th>Achievement</th>
+      <th>Report</th>
+    </tr>
+    <tbody>
+      {% for scoreset in profile.scoreset_list %}
+        <tr>
+          <td>{{ scoreset.paper.title }}</td>
+          {% if scoreset.has_all_scores %}
+            <td>{{ scoreset.grade }} | {{ scoreset.percentage }}% | {{ scoreset.total }}/{{ scoreset.paper.profile.total_points }}</td>
+            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = g.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
+          {% else %}
+            <td>No Grade Assigned</td>
+            <td><a class="btn btn-success btn-sm disabled">View Report</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include "account/student/student_layout_end.html" %}
