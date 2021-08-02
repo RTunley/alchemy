@@ -62,10 +62,10 @@ class FlaskTestCase(BaseTestCase):
         initial_num_students = course_student_number(course)
         cwd = os.getcwd()
         csv_filepath = os.path.join(cwd,'new_class.csv')
-        with open(csv_filepath, 'w+') as class_csv:
+        with open(csv_filepath, 'w') as class_csv:
             filewriter = csv.writer(class_csv, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-            filewriter.writerow(['ID', 'family name', 'given name', 'e-mail'])
-            filewriter.writerow(['4321', 'Trench', 'Mariana', 'mariana.trench@schoolofrock.com'])
+            filewriter.writerow(['ID', 'e-mail', 'family name', 'given name'])
+            filewriter.writerow(['4321','mariana.trench@schoolofrock.com', 'Trench', 'Mariana'])
 
         csv_content = open(csv_filepath)
         file_content = csv_content.read().encode('UTF-8')
@@ -94,7 +94,7 @@ class FlaskTestCase(BaseTestCase):
         excel_filepath = os.path.join(cwd,'new_class.xlsx')
         wb = opxl.Workbook()
         sheet = wb.active
-        data = {'A1': 'ID', 'B1': 'Family Name', 'C1': 'Given Name', 'D1':'email', 'A2': 4321, 'B2': 'Trench', 'C2': 'Mariana', 'D2': 'mariana.trench@schoolofrock.com'}
+        data = {'A1': 'ID', 'B1': 'email', 'C1': 'Family Name', 'D1': 'Given Name', 'A2': 4321, 'B2': 'mariana.trench@schoolofrock.com', 'C2':'Trench', 'D2':'Mariana'}
         for cell in data:
             sheet[cell] = data[cell]
         wb.save(excel_filepath)
