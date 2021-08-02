@@ -21,8 +21,14 @@ def redirect_to_user_home():
     print('---------------------')
     print(g.current_user.group)
     print('---------------------')
-    response = flask.redirect(flask.url_for('account.index', account_id = first_account.id))
-    return response
+    if g.current_user.group == 'admin':
+        response = flask.redirect(flask.url_for('account.index', account_id = first_account.id))
+        return response
+
+    else:
+        student = models.Student.query.filter_by(aws_id = g.current_user.id).first()
+        response = flask.redirect(flask.url_for('account.student.index', account_id = first_account.id, student_id = student.id))
+        return response
 
 @bp_auth.route('/aws_cognito_callback')
 def aws_cognito_callback():
