@@ -1,7 +1,7 @@
 import flask
 from flask import g
 import random
-from alchemy import application, db, models, auth_manager, summary_profiles
+from alchemy import application, db, models, auth_manager, summary_profiles, reports
 
 bp_student = flask.Blueprint('student', __name__)
 
@@ -38,12 +38,12 @@ def course_view(course_id):
     course_profile = summary_profiles.make_student_course_profile(g.student, g.course)
     return flask.render_template('account/student/course_view.html', profile = course_profile)
 
-@bp_student.route('/student_paper_report/paper-<int:paper_id>')
+@bp_student.route('/student_paper_report/clazz/<int:clazz_id>/paper/<int:paper_id>')
 @auth_manager.require_group
-def student_paper_report(paper_id):
-    g.student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
-    g.paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
-    print(f"Student ID: {student.id} -- Clazz ID: {clazz.id} -- Paper ID: {paper.id}")
+def student_paper_report(clazz_id=0, paper_id=0):
+    paper = models.Paper.query.get_or_404(paper_id)
+    clazz = models.Clazz.query.get_or_404(clazz_id)
+    print(f"Student ID: {g.student.id} -- Clazz ID: {clazz.id} -- Paper ID: {paper.id}")
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    student_report = reports.make_student_paper_report(g.student, g.clazz, g.paper)
+    student_report = reports.make_student_paper_report(g.student, clazz, paper)
     return flask.render_template(f'account/student/paper_report.html', student_report = student_report)
