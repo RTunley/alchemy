@@ -49,7 +49,7 @@
         <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
         {% for scoreset in profile.scoreset_list %}
           {% if scoreset.has_all_scores %}
-            <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
+            <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.student_paper_report', student_id = profile.student.id, clazz_id = g.clazz.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
             </td>

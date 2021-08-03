@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% include "course/reports/layout_start.html" %}
+
+<body>
+  <h1 style="text-align:center">{{ student_report.title }}</h1>
+  <h1 style="text-align:center">{{ student_report.subtitle }}</h1>
+
+  <div class='section'>
+    {% import "account/student/report_section_macros/overview_section.html" as overview %}
+    {{ overview.render_overview_section(student_report.sections[0]) }}
+  </div>
+
+
+
+</body>
+{% include "layout_end.html" %}
+
+</html>

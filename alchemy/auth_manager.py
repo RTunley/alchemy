@@ -8,8 +8,8 @@ import functools, datetime
 from alchemy import application, models, db
 
 def auth_enabled():
-    # return application.config['ALCHEMY_CONFIG'] != 'TestConfig'
-    return False
+    return application.config['ALCHEMY_CONFIG'] != 'TestConfig'
+    #return False
 
 jwt_manager = None
 aws_auth = None

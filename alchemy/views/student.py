@@ -37,3 +37,13 @@ def course_view(course_id):
             g.clazz = clazz
     course_profile = summary_profiles.make_student_course_profile(g.student, g.course)
     return flask.render_template('account/student/course_view.html', profile = course_profile)
+
+@bp_student.route('/student_paper_report/paper-<int:paper_id>')
+@auth_manager.require_group
+def student_paper_report(paper_id):
+    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
+    clazz = models.Clazz.query.get_or_404(flask.request.args.get('clazz_id'))
+    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
+    student_report = reports.make_student_paper_report(student, clazz, paper)
+    return flask.render_template(f'account/student/paper_report.html', student_report = student_report)
