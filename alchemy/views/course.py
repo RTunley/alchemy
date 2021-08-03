@@ -26,24 +26,26 @@ def index():
     g.course.order_grade_levels()
     return flask.render_template('course/index.html')
 
-@bp_course.route('/edit_grade_levels')
+@bp_course.route('/edit_grade_levels', methods=['POST'])
 @auth_manager.require_group
 def edit_grade_levels():
-    course_id = int(flask.request.args.get('course_id'))
+    post_data = flask.request.get_json()
+    course_id = post_data['course_id']
+    grade_level_list = post_data['grade_levels']
     course = models.Course.query.get_or_404(course_id)
     if course.grade_levels:
         for g in course.grade_levels:
             db.session.delete(g)
 
-    grade_level_string = str(flask.request.args.get('grade_levels'))
-    grade_level_list = grade_level_string.split(',')
     for i in range(len(grade_level_list)):
         if i == 0:
-            new_grade = models.GradeLevel(grade = grade_level_list[i], lower_bound = grade_level_list[i+1], upper_bound = 100, course_id = course.id)
-            db.session.add(new_grade)
+            upper_bound = 100
         elif i % 2 == 0:
-            new_grade = models.GradeLevel(grade = grade_level_list[i], lower_bound = grade_level_list[i+1], upper_bound = grade_level_list[i-1], course_id = course.id)
-            db.session.add(new_grade)
+            upper_bound = grade_level_list[i-1]
+        else:
+            continue
+        new_grade = models.GradeLevel(grade = grade_level_list[i], lower_bound = grade_level_list[i+1], upper_bound = upper_bound, course_id = course.id)
+        db.session.add(new_grade)
 
     db.session.commit()
     course.order_grade_levels()
