@@ -41,10 +41,9 @@ def course_view(course_id):
 @bp_student.route('/student_paper_report/paper-<int:paper_id>')
 @auth_manager.require_group
 def student_paper_report(paper_id):
-    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
-    clazz = models.Clazz.query.get_or_404(flask.request.args.get('clazz_id'))
-    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+    g.student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
+    g.paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     print(f"Student ID: {student.id} -- Clazz ID: {clazz.id} -- Paper ID: {paper.id}")
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    student_report = reports.make_student_paper_report(student, clazz, paper)
+    student_report = reports.make_student_paper_report(g.student, g.clazz, g.paper)
     return flask.render_template(f'account/student/paper_report.html', student_report = student_report)
