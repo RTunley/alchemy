@@ -1,5 +1,8 @@
-class StudentPaperReport(Report):
-    def __init__(title, subtitle, student, clazz, paper, sections):
+from alchemy import student_report_sections
+
+
+class StudentPaperReport(object):
+    def __init__(self, title, subtitle, student, clazz, paper, sections):
         self.title = title
         self.subtitle = subtitle
         self.student = student
