@@ -2,8 +2,6 @@ def total_score(score_list):
     total = 0
     for score in score_list:
         total += score.value
-        print(total)
-
     return total
 
 def calc_percentage(value, total):
