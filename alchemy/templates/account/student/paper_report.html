@@ -6,12 +6,19 @@
   <h1 style="text-align:center">{{ student_report.title }}</h1>
   <h1 style="text-align:center">{{ student_report.subtitle }}</h1>
 
-  <div class='section'>
-    {% import "account/student/report_section_macros/overview_section.html" as overview %}
-    {{ overview.render_overview_section(student_report.sections[0]) }}
+  <div class='container'>
+
+    <div class='section'>
+      {% import "account/student/report_section_macros/overview_section.html" as overview %}
+      {{ overview.render_overview_section(student_report.sections[0]) }}
+    </div>
+
+    <div class='section'>
+      {% import "account/student/report_section_macros/adjacent_grades_section.html" as adjacent_grades %}
+      {{ adjacent_grades.render_section(student_report.sections[1]) }}
+    </div>
+
   </div>
-
-
 
 </body>
 {% include "layout_end.html" %}

@@ -18,4 +18,6 @@ def make_student_paper_report(student, clazz, paper):
     ## TODO can we loop through the desired sections and add them as a list?
     overview_section = student_report_sections.build_overview_section(student, clazz, paper)
     student_report.sections.append(overview_section)
+    adjacent_grades_section = student_report_sections.build_adjacent_grades_section(student, clazz, paper)
+    student_report.sections.append(adjacent_grades_section)
     return student_report

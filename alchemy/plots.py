@@ -1,6 +1,5 @@
 import matplotlib
 matplotlib.use('Agg') # run matploblib on main threads
-
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 import urllib.parse
