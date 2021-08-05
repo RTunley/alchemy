@@ -37,9 +37,15 @@ def build_adjacent_grades_section(student, clazz, paper):
     print('Adjacent Grades Object: ', adjacent_grades_obj)
     data.next_highest_grade = adjacent_grades_obj.next_highest_grade
     data.diff_higher_grade = adjacent_grades_obj.diff_higher_grade
-    data.raw_diff_higher_grade = round(data.diff_higher_grade*paper.profile.total_points/100, 1)
+    if data.next_highest_grade:
+        data.raw_diff_higher_grade = round(data.diff_higher_grade*paper.profile.total_points/100, 1)
+    else:
+        data.raw_diff_higher_grade = None
     data.next_lowest_grade = adjacent_grades_obj.next_lowest_grade
     data.diff_lower_grade = adjacent_grades_obj.diff_lower_grade
-    data.raw_diff_lower_grade = round(data.diff_lower_grade*paper.profile.total_points/100, 1)
-
+    if data.next_lowest_grade:
+        data.raw_diff_lower_grade = round(data.diff_lower_grade*paper.profile.total_points/100, 1)
+    else:
+        data.raw_diff_lower_grade = None
+        
     return StudentReportSection(None, data)
