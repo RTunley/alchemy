@@ -1,0 +1,14 @@
+{% macro render_section(adjacent_grades_section) -%}
+
+  {% if adjacent_grades_section.adjacent_grades.higher_grade %}
+    <h3>Next Highest Grade Level</h3>
+    <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_higher_grade }}%</b> (or <b>{{ adjacent_grades_section.adjacent_grades.raw_diff_higher_grade }}</b> marks) from <b>{{ adjacent_grades_section.adjacent_grades.higher_grade.grade }}</b> level.</p>
+    <br>
+  {% endif %}
+  {% if adjacent_grades_section.adjacent_grades.lower_grade %}
+    <h3>Next Lowest Grade Level</h3>
+    <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_lower_grade }}%</b> (or <b>{{ adjacent_grades_section.adjacent_grades.raw_diff_lower_grade }}</b> marks) from <b>{{ adjacent_grades_section.adjacent_grades.lower_grade.grade }}</b> level.</p>
+    <br>
+  {% endif %}
+
+{%- endmacro %}
