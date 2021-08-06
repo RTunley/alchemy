@@ -81,7 +81,7 @@ class LibraryTestCase(TestCase):
         course = Course.query.first()
         q = cto.create_question1(course)
         response = self.client.post('/course/{}/library/edit_question_submit'.format(course.id),
-        data = dict(question_id = q.id, content = 'Edited Question', solution = 'Edited Solution', points = 10), follow_redirects = True)
+        data = dict(question_id = q.id, content = 'Edited Question', solution = 'Edited Solution', points = 10))
         # number of question in db should be 1
         num_questions = len(course.questions)
         self.assertEqual(num_questions, 1)
@@ -98,7 +98,7 @@ class LibraryTestCase(TestCase):
         q = cto.create_question1(course)
         self.assertEqual(len(course.questions), 1)
         data = {'question_id':q.id}
-        response = self.client.get('/course/{}/library/delete_question'.format(course.id), query_string = data, follow_redirects = True)
+        response = self.client.get('/course/{}/library/delete_question'.format(course.id), query_string = data)
         # number of questions in db should be 0
         self.assertEqual(len(course.questions), 0)
 
@@ -109,7 +109,7 @@ class LibraryTestCase(TestCase):
         p = cto.create_paper(course)
         pq = cto.add_question_to_paper(p, q)
         data = {'question_id':q.id}
-        response = self.client.get('/course/{}/library/delete_question'.format(course.id), query_string = data, follow_redirects = True)
+        response = self.client.get('/course/{}/library/delete_question'.format(course.id), query_string = data)
         # number of question in db should be 1
         # delete_question is disabled when q is attached to paper
         num_questions = len(course.questions)

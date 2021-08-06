@@ -37,7 +37,7 @@ class FlaskTestCase(BaseTestCase):
 
     def test_index(self):
         course = Course.query.first()
-        response = self.client.get('/course/{}/cohort/index'.format(course.id), follow_redirects = True)
+        response = self.client.get('/course/{}/cohort/index'.format(course.id))
         self.assertEqual(response.status_code, 200)
 
     def test_add_student(self):
