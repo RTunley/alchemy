@@ -105,9 +105,6 @@ def add_admin():
     db.session.add(admin)
     db.session.commit()
 
-def add_robin_as_student():
-
-
 def add_students_and_aws_users(clazzes):
     index = 1000
     user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead')]
