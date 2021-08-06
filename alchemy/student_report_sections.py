@@ -1,28 +1,27 @@
 from alchemy import models, db, report_calc
 
 class StudentReportSection:
-    def __init__(self, title, data):
-        self.title = title
-        self.data = data
+    def __init__(self, html_macro):
+        self.html_macro = html_macro
 
-## Each ReportSection will have a data attribute, but exactly what it contains depends on what that section needs to show. Currently each section will do it's own retrieval from the db for whatever information it needs.
+class OverviewSection(StudentReportSection):
+    def __init__(self, html_macro, student, clazz, paper):
+        self.html_macro = html_macro
+        self.student = student
+        self.clazz = clazz
+        self.paper = paper
+        self.paper_total = self.paper.profile.total_points
+        self.raw_total = 0
+        self.percent_total = 0
+        self.grade = None
+        self.build_self()
 
-class Data:
-    raw_total = 0
+    def build_self(self):
+        scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
+        self.raw_total = report_calc.total_score(scores)
+        self.percent_total = report_calc.calc_percentage(self.raw_total, self.paper_total)
+        self.grade = report_calc.determine_grade(self.percent_total, self.clazz.course)
 
-def build_overview_section(student, clazz, paper):
-    scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-    raw_total = report_calc.total_score(scores)
-    paper_total = paper.profile.total_points
-    percentage_total = report_calc.calc_percentage(raw_total, paper_total)
-    grade = report_calc.determine_grade(percentage_total, clazz.course)
-    data = Data()
-    data.paper_total = paper_total
-    data.raw_total = raw_total
-    data.percentage_total = percentage_total
-    data.grade = grade
-
-    return StudentReportSection('Overview', data)
 
 def build_adjacent_grades_section(student, clazz, paper):
     overview_data = build_overview_section(student, clazz, paper).data
@@ -47,5 +46,5 @@ def build_adjacent_grades_section(student, clazz, paper):
         data.raw_diff_lower_grade = round(data.diff_lower_grade*paper.profile.total_points/100, 1)
     else:
         data.raw_diff_lower_grade = None
-        
+
     return StudentReportSection(None, data)
