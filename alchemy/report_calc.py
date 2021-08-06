@@ -28,6 +28,7 @@ class AdjacentGrades(object):
         for i in range(len(grade_list)):
             if grade_list[i].grade == grade:
                 index = i
+                break
         if index == 0:
             self.lower_grade = grade_list[index+1]
             self.diff_lower_grade = round(percentage - self.lower_grade.upper_bound, 1)
@@ -56,10 +57,7 @@ class AdjacentGrades(object):
 ## A selection of functions that will required for multuple report sections, and probably used to profiles as well.
 
 def total_score(score_list):
-    total = 0
-    for score in score_list:
-        total += score.value
-    return total
+    return sum(score.value for score in score_list)
 
 def calc_percentage(numerator, denominator):
     percentage = round(numerator/denominator*100, 2)
@@ -68,9 +66,7 @@ def calc_percentage(numerator, denominator):
 def determine_grade(percentage, course):
     grade_levels = course.grade_levels
     for i in range(len(grade_levels)):
-        if i == 0:
-            if percentage >= grade_levels[i].lower_bound:
-                new_grade = grade_levels[i].grade
-        elif percentage >= grade_levels[i].lower_bound and percentage < grade_levels[i].upper_bound:
+        if percentage >= grade_levels[i].lower_bound:
             new_grade = grade_levels[i].grade
+            break
     return new_grade
