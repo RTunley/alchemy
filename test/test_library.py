@@ -8,7 +8,7 @@ import unittest
 from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
 import test.create_test_objects as cto
 
-class BaseTestCase(TestCase):
+class LibraryTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -22,8 +22,6 @@ class BaseTestCase(TestCase):
         db.session.remove()
         db.drop_all()
 
-class FlaskTestCase(BaseTestCase):
-
     def test_library_home(self):
         course = Course.query.first()
         response = self.client.get("/course/{}/library".format(course.id), content_type='html/text', follow_redirects = True)
@@ -32,18 +30,32 @@ class FlaskTestCase(BaseTestCase):
     # testing the add question endpoint
     def test_new_question(self):
         course = Course.query.first()
-        response = self.client.post('/course/{}/library/add_question'.format(course.id),
-        data = dict(content = 'New Question', solution = 'New Solution', points = 12),
-        follow_redirects = True)
-        # number of question in db should be 1
-        question = Question.query.filter_by(course_id = course.id).first()
-        num_questions = len(course.questions)
-        self.assertEqual(num_questions, 1)
+        question_data = [
+            ('A question', 'A solution', 10, True),
+            ('', 'A solution', 10, False), # invalid question
+            ('A question', '', 10, False), # invalid solution
+            ('A question', 'A solution', '', False), # invalid points
+            # TODO the question should be invalid if points is negative.
+        ]
+        for i in range(len(question_data)):
+            with self.subTest(question=question_data[i]):
+                content, solution, points, question_valid = question_data[i]
+                prev_question_count = len(course.questions)
+                response = self.client.post('/course/{}/library/add_question'.format(course.id),
+                data = dict(content=content, solution=solution, points=points),
+                follow_redirects = True)
 
-        # question has correct attributes
-        self.assertEqual(question.content, 'New Question')
-        self.assertEqual(question.solution, 'New Solution')
-        self.assertEqual(question.points, 12)
+                if question_valid:
+                    # check number of question in db
+                    self.assertEqual(len(course.questions), prev_question_count+1)
+
+                    # question has correct attributes
+                    question = Question.query.filter_by(course_id=course.id).all()[-1]
+                    self.assertEqual(question.content, content)
+                    self.assertEqual(question.solution, solution)
+                    self.assertEqual(question.points, points)
+                else:
+                    self.assertEqual(len(course.questions), prev_question_count)
 
     #Test whether question info appears on library homepage
     def test_question_added(self):
