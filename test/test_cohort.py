@@ -17,7 +17,7 @@ def course_student_number(course):
 
     return num_students
 
-class BaseTestCase(TestCase):
+class CohortTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -32,8 +32,6 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-class FlaskTestCase(BaseTestCase):
 
     def test_index(self):
         course = Course.query.first()
