@@ -55,3 +55,4 @@ class HighlightsSection(StudentReportSection):
     def build_self(self):
         raw_scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
         self.question_highlights = report_calc.QuestionHighlights(self.student, self.paper, raw_scores)
+        self.tag_highlights = report_calc.TagHighlights(self.student, self.paper, raw_scores)

@@ -78,11 +78,22 @@ class QuestionHighlight(object):
         self.percentage = percentage
         self.grade = grade
 
-class TagHighlight(object):
-    def __init__(self, tag, percentage, grade):
-        self.tag = tag
-        self.percentage = percentage
-        self.grade = grade
+class StudentTagAchievement(object):
+    "Contains info on the tag and the student achievement on that tag in a given paper."
+    def __init__(self, student, paper, tag_profile, total):
+        self.student = student
+        self.paper = paper
+        self.tag = tag_profile.tag
+        self.tag_total = tag_profile.allocated_points
+        self.raw_score = total
+        self.percent_score = 0
+        self.grade = None
+        self.build_self(tag_profile, total)
+
+    def build_self(self, tag_profile, total):
+        self.percent_score = calc_percentage(self.raw_score, self.tag_total)
+        self.grade = determine_grade(self.percent_score, self.paper.course)
+
 
 class QuestionHighlights(object):
     def __init__(self, student, paper, scores):
@@ -110,8 +121,28 @@ class QuestionHighlights(object):
         for j in weakness_indexes:
             self.weaknesses.append(QuestionHighlight(paper.paper_questions[j].order_number, percent_scores[j], determine_grade(percent_scores[j], paper.course)))
 
+class TagHighlights(object):
+    def __init__(self, student, paper, scores):
+        self.strengths = []
+        self.weaknesses = []
+        self.build_self(student, paper, scores)
 
-## A selection of functions that will required for multuple report sections, and probably used to profiles as well.
+    def build_self(self, student, paper, scores):
+        all_student_tag_achievements = []
+        for profile in paper.profile.tag_profile_list:
+            student_tag_total = get_tag_total(student, profile.tag.name, paper, scores)
+            student_tag_achievement = StudentTagAchievement(student, paper, profile, student_tag_total)
+            all_student_tag_achievements.append(student_tag_achievement)
+
+        all_student_tag_achievements.sort(key=lambda x: x.percent_score, reverse=True)
+        for s_t_a in all_student_tag_achievements:
+            if s_t_a.percent_score == all_student_tag_achievements[0].percent_score:
+                self.strengths.append(s_t_a)
+
+            elif s_t_a.percent_score == all_student_tag_achievements[-1].percent_score:
+                self.weaknesses.append(s_t_a)
+
+## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
 def total_score(score_list):
     return sum(score.value for score in score_list)
@@ -159,3 +190,21 @@ def calc_percent_scores(scores):
         percent_scores.append(round(score.value/score.question.points*100, 2))
 
     return percent_scores
+
+def filter_questions_by_tag(question_assoc_list, tag_string):
+    question_id_list = []
+    for question_assoc in question_assoc_list:
+        for tag in question_assoc.question.tags:
+            if tag.name == tag_string:
+                question_id_list.append(question_assoc.question.id)
+
+    return(question_id_list)
+
+def get_tag_total(student, tag_string, paper, scores):
+    tag_total = 0
+    question_id_list = filter_questions_by_tag(paper.paper_questions, tag_string)
+    for score in scores:
+        if score.question_id in question_id_list:
+            tag_total += score.value
+
+    return tag_total
