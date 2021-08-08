@@ -26,7 +26,7 @@ def url_defaults(endpoint, values):
 @bp_student.route('/index')
 @auth_manager.require_group
 def index():
-    return flask.render_template('account/student/index.html')
+    return flask.render_template('student/index.html')
 
 @bp_student.route('/course-view/<int:course_id>')
 @auth_manager.require_group
@@ -36,7 +36,7 @@ def course_view(course_id):
         if clazz.course.id == g.course.id:
             g.clazz = clazz
     course_profile = summary_profiles.make_student_course_profile(g.student, g.course)
-    return flask.render_template('account/student/course_view.html', profile = course_profile)
+    return flask.render_template('student/course_view.html', profile = course_profile)
 
 @bp_student.route('/student_paper_report/clazz/<int:clazz_id>/paper/<int:paper_id>')
 @auth_manager.require_group
@@ -45,4 +45,4 @@ def student_paper_report(clazz_id=0, paper_id=0):
     clazz = models.Clazz.query.get_or_404(clazz_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     student_report = reports.StudentPaperReport(g.student, clazz, paper)
-    return flask.render_template(f'account/student/paper_report.html', student_report = student_report)
+    return flask.render_template('student/paper_report.html', student_report = student_report)
