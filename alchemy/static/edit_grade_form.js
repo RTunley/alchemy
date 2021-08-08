@@ -1,17 +1,15 @@
 function validate_grade_levels(course_id){
-  var boundary_container = $('#grade-form-table')
   var lower_bounds = []
   var grades = []
-  var all_input_values = []
-  var i=0
-  boundary_container.find('input').each(function(){
-    all_input_values.push(this.value)
-    if (i % 2 != 0){
+  var grade_levels = []
+  var i = 0
+  $('#grade-form-table').find('input').each(function(){
+    if (i % 2 == 0) {
+      grades.push(this.value)
+    } else {
       lower_bounds.push(parseInt(this.value))
     }
-    if(i % 2 == 0){
-      grades.push(this.value)
-    }
+    grade_levels.push(this.value)
     i++
   })
   for (i=0; i<grades.length; i++){
@@ -20,29 +18,29 @@ function validate_grade_levels(course_id){
     grade_element.classList.remove('is-invalid')
     lower_bound_element.classList.remove('is-invalid')
   }
-  var is_valid = validate_form(lower_bounds, grades)
-  if (!is_valid){
+  if (!validate_form(lower_bounds, grades)) {
     return false
   }
-  $.getJSON('/course/' + course_id + '/edit_grade_levels', {
-    course_id: course_id,
-    grade_levels: all_input_values.toString()
+  $.ajax({
+    type: 'POST',
+    url: '/course/' + course_id + '/edit_grade_levels',
+    data: JSON.stringify({
+      course_id: course_id,
+      grade_levels: grade_levels,
+    }),
+    contentType: 'application/json',
   })
-  return is_valid
+  return true
 }
 
 function validate_form(lower_bounds, grades){
-  var is_valid = check_lower_bounds(lower_bounds)
-  if (is_valid){
-    is_valid = check_highest_bound(lower_bounds)
+  if (!check_lower_bounds(lower_bounds)
+      || !check_highest_bound(lower_bounds)
+      || !check_lowest_bound(lower_bounds)
+      || !no_double_grades(grades)) {
+    return false
   }
-  if (is_valid){
-     is_valid = check_lowest_bound(lower_bounds)
-  }
-  if (is_valid){
-     is_valid = no_double_grades(grades)
-  }
-  return is_valid
+  return true
 }
 
 function no_double_grades(grades_list){
@@ -53,7 +51,6 @@ function no_double_grades(grades_list){
       var feedback = document.getElementById('grade-error-'+i)
       feedback.innerHTML = 'Grade levels must have distinct Grades.'
       input.classList.add('is-invalid')
-      console.log(feedback)
       return false
     }
     map[grades_list[i]] = true

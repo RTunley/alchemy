@@ -8,7 +8,7 @@
   <div class="accordion-grid">
     <div class="content area">
       <p class="card-text">{{ question.content }}</p>
-      {% if question.q_image %}
+      {% if question.image %}
         <p class="aligncenter">
           <image class="center" src="data:image/png;base64,{{ question.decode_image() }}">
         </p>
