@@ -95,15 +95,11 @@ class QuestionHighlights(object):
     def build_self(self, student, paper, scores):
         percent_scores = calc_percent_scores([score for score in scores])
         highest_percent = max(percent_scores)
-        print('Highest Percent: ', highest_percent)
         lowest_percent = min(percent_scores)
-        print('Lowest percent: ', lowest_percent)
         if lowest_percent == 100:
-            self.has_weaknesses = False
             self.has_strengths = True
         elif highest_percent == 0:
             self.has_weaknesses = True
-            self.has_strengths = False
         else:
             self.has_weaknesses = True
             self.has_strengths = True

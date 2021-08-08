@@ -22,5 +22,3 @@ class StudentPaperReport(object):
         self.sections.append(cohort_summary_section)
         highlights_section = student_paper_sections.HighlightsSection('student/report_section_macros/highlights_section.html', self.student, self.paper)
         self.sections.append(highlights_section)
-        print("Strengths: ", highlights_section.question_highlights.has_strengths)
-        print("Weaknesses: ", highlights_section.question_highlights.has_weaknesses)
