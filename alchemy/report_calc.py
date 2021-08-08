@@ -70,6 +70,50 @@ class CohortPaperSummary(object):
         self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
         self.mean_grade = determine_grade(self.percent_mean, paper.course)
 
+## Strengths and Weaknesses = Highlights ##
+
+class QuestionHighlight(object):
+    def __init__(self, order_id, percentage, grade):
+        self.order_id = order_id
+        self.percentage = percentage
+        self.grade = grade
+
+class TagHighlight(object):
+    def __init__(self, tag, percentage, grade):
+        self.tag = tag
+        self.percentage = percentage
+        self.grade = grade
+
+class QuestionHighlights(object):
+    def __init__(self, student, paper, scores):
+        self.strengths = []
+        self.has_strengths = False
+        self.weaknesses = []
+        self.has_weaknesses = False
+        self.build_self(student, paper, scores)
+
+    def build_self(self, student, paper, scores):
+        percent_scores = calc_percent_scores([score for score in scores])
+        highest_percent = max(percent_scores)
+        print('Highest Percent: ', highest_percent)
+        lowest_percent = min(percent_scores)
+        print('Lowest percent: ', lowest_percent)
+        if lowest_percent == 100:
+            self.has_weaknesses = False
+            self.has_strengths = True
+        elif highest_percent == 0:
+            self.has_weaknesses = True
+            self.has_strengths = False
+        else:
+            self.has_weaknesses = True
+            self.has_strengths = True
+        strength_indexes = [x for x in range(len(percent_scores)) if percent_scores[x] == highest_percent]
+        weakness_indexes = [x for x in range(len(percent_scores)) if percent_scores[x] == lowest_percent]
+        for i in strength_indexes:
+            self.strengths.append(QuestionHighlight(paper.paper_questions[i].order_number, percent_scores[i], determine_grade(percent_scores[i], paper.course)))
+        for j in weakness_indexes:
+            self.weaknesses.append(QuestionHighlight(paper.paper_questions[j].order_number, percent_scores[j], determine_grade(percent_scores[j], paper.course)))
+
 
 ## A selection of functions that will required for multuple report sections, and probably used to profiles as well.
 
@@ -112,3 +156,10 @@ def build_student_summaries(paper, scores):
         student_summaries.append(student_summary)
 
     return student_summaries
+
+def calc_percent_scores(scores):
+    percent_scores = []
+    for score in scores:
+        percent_scores.append(round(score.value/score.question.points*100, 2))
+
+    return percent_scores
