@@ -8,7 +8,7 @@ import unittest
 from alchemy.models import Account
 import test.create_test_objects as cto
 
-class BaseTestCase(TestCase):
+class AccountTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -20,8 +20,6 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-class FlaskTestCase(BaseTestCase):
 
     #Ensure that flask was set up correctly
     def test_index(self):

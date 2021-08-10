@@ -8,7 +8,7 @@ import unittest
 from alchemy.models import Account, Course, Clazz, AwsUser, Student, Paper
 import test.create_test_objects as cto
 
-class BaseTestCase(TestCase):
+class ClazzTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -31,8 +31,6 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-class FlaskTestCase(BaseTestCase):
 
     def test_index(self):
         course = Course.query.first()

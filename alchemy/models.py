@@ -130,8 +130,7 @@ class Question(db.Model):
     image = db.relationship("Image", back_populates='questions')
 
     def decode_image(self):
-            img_str = self.q_image.content.decode('ascii')
-            return img_str
+        return self.image.content.decode('ascii')
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
