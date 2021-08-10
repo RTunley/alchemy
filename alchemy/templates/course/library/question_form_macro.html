@@ -35,6 +35,11 @@ question_id: the id of the question if editing a question, otherwise an empty st
     <div class="col-md-3 mb-3">
       {{ form.points.label(class="form-control-label") }}
       {{ form.points(class="form-control") }}
+      {% if form.points.errors %}
+        {% for error in form.points.errors %}
+          <span class='test-danger'>{{ error }}</span><br>
+        {% endfor %}
+      {% endif %}
     </div>
     <div class="col-md-9 mb-3" id="{{ form_prefix }}question-tags">
       <label>Tagged:</label><br />
