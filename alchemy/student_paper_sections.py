@@ -30,6 +30,19 @@ class AdjacentGradesSection(StudentReportSection):
         self.student_paper_summary = report_calc.StudentPaperSummary(self.student, self.paper, scores)
         self.adjacent_grades = report_calc.AdjacentGrades(self.paper.course.grade_levels, self.student_paper_summary.percent_total, self.student_paper_summary.grade, self.student_paper_summary.paper_total)
 
+class ClazzSummarySection(StudentReportSection):
+    def __init__(self, html_macro, paper, clazz):
+        self.html_macro = html_macro
+        self.paper = paper
+        self.clazz = clazz
+        self.clazz_summary = None
+        self.build_self()
+
+    def build_self(self):
+        cohort_scores = models.Score.query.filter_by(paper_id = self.paper.id).all()
+        clazz_scores = report_calc.filter_scores_by_clazz(cohort_scores, self.clazz)
+        self.clazz_summary = report_calc.ClazzPaperSummary(self.paper, clazz_scores)
+
 class CohortSummarySection(StudentReportSection):
     def __init__(self, html_macro, paper):
         self.html_macro = html_macro

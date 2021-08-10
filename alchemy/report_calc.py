@@ -56,6 +56,20 @@ class AdjacentGrades(object):
         else:
             self.raw_diff_lower_grade = None
 
+class ClazzPaperSummary(object):
+    def __init__(self, paper, clazz_scores):
+        self.paper_total = paper.profile.total_points
+        self.raw_mean = 0
+        self.percent_mean = 0
+        self.mean_grade = None
+        self.build_self(paper, clazz_scores)
+
+    def build_self(self, paper, clazz_scores):
+        student_summaries = build_student_summaries(paper, clazz_scores)
+        self.raw_mean = calc_mean([summary.raw_total for summary in student_summaries])
+        self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
+        self.mean_grade = determine_grade(self.percent_mean, paper.course)
+
 class CohortPaperSummary(object):
     def __init__(self, paper, cohort_scores):
         self.paper_total = paper.profile.total_points
@@ -208,3 +222,12 @@ def get_tag_total(student, tag_string, paper, scores):
             tag_total += score.value
 
     return tag_total
+
+def filter_scores_by_clazz(scores, clazz):
+    student_ids = [student.id for student in clazz.students]
+    clazz_scores = []
+    for score in scores:
+        if score.student_id in student_ids:
+            clazz_scores.append(score)
+
+    return clazz_scores
