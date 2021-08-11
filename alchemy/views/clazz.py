@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output, reports
 import os
 
 bp_clazz = flask.Blueprint('clazz', __name__)
@@ -94,18 +94,27 @@ def paper_results():
     score_set_list = score_manager.make_student_scoreset_list(g.clazz, paper)
     return flask.render_template('course/clazz/paper_results.html', paper = paper, score_sets = score_set_list)
 
-@bp_clazz.route('/paper_report')
+@bp_clazz.route('/paper_report/<int:paper_id>')
 @auth_manager.require_group
-def clazz_paper_report():
-    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+def paper_report(paper_id=0):
+    paper = models.Paper.query.get_or_404(paper_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    course = paper.course
-    account = course.account
-    student_scoreset_list = score_manager.make_student_scoreset_list(g.clazz, paper)
-    tag_totalset_list = score_manager.make_tag_totalset_list(g.clazz, paper)
-    question_scoreset_list = score_manager.make_question_scoreset_list(g.clazz, paper)
-    clazz_paper_report = score_manager.ClassReport(paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
-    return flask.render_template('course/clazz/clazz_paper.html', paper = paper, clazz_paper_report = clazz_paper_report)
+    clazz_report = reports.ClazzPaperReport(g.clazz, paper)
+    return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
+
+
+# @bp_clazz.route('/paper_report')
+# @auth_manager.require_group
+# def clazz_paper_report():
+#     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+#     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
+#     course = paper.course
+#     account = course.account
+#     student_scoreset_list = score_manager.make_student_scoreset_list(g.clazz, paper)
+#     tag_totalset_list = score_manager.make_tag_totalset_list(g.clazz, paper)
+#     question_scoreset_list = score_manager.make_question_scoreset_list(g.clazz, paper)
+#     clazz_paper_report = score_manager.ClassReport(paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
+#     return flask.render_template('course/clazz/clazz_paper.html', paper = paper, clazz_paper_report = clazz_paper_report)
 
 def get_clazz_student_profiles(clazz):
     student_course_profile_list = []

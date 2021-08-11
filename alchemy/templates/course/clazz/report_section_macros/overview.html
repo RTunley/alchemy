@@ -1,0 +1,20 @@
+{% macro render_section(overview_section) -%}
+
+<h2><b>Overview</b></h2>
+<br>
+<p>Overall achievment on this assessment for {{ overview_section.clazz.code }} is:</p>
+<table style="text-align:center" class="table table-hover">
+  <thead>
+    <th>Achievement</th>
+    <th>As %</th>
+    <th>Grade Level</th>
+  </thead>
+  <tr>
+    <td style="text-align: center">{{ overview_section.clazz_paper_summary.raw_mean }} / {{ overview_section.clazz_paper_summary.paper_total }}</td>
+    <td style="text-align: center">{{ overview_section.clazz_paper_summary.percent_mean }}% </td>
+    <td style="text-align: center">{{ overview_section.clazz_paper_summary.mean_grade }}</td>
+  </tr>
+</table>
+<br>
+
+{%- endmacro %}

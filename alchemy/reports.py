@@ -1,4 +1,4 @@
-from alchemy import student_paper_sections
+from alchemy import student_paper_sections, clazz_paper_sections
 
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper):
@@ -28,3 +28,19 @@ class StudentPaperReport(object):
 
         highlights_section = student_paper_sections.HighlightsSection('student/report_section_macros/highlights_section.html', self.student, self.paper)
         self.sections.append(highlights_section)
+
+class ClazzPaperReport(object):
+    def __init__(self, clazz, paper):
+        self.title = None
+        self.subtitle = None
+        self.clazz = clazz
+        self.paper = paper
+        self.sections = []
+        self.build_self()
+
+    # TODO a list of selected sections should be an input to this class -> worry about this later. For now we will add them manually below:
+    def build_self(self):
+        self.title = f"{self.clazz.code} - Achievment Report"
+        self.subtitle = f"{self.clazz.course.name}: {self.paper.title}"
+        overview_section = clazz_paper_sections.OverviewSection('course/clazz/report_section_macros/overview.html', self.clazz, self.paper)
+        self.sections.append(overview_section)
