@@ -12,15 +12,17 @@ def redirect_to_user_home():
     if auth_manager.auth_enabled():
         if not flask_jwt_extended.verify_jwt_in_request():
             flask.abort(401)
-    else:
-        first_account = models.Account.query.first()
-        student = models.Student.query.first()
-        response = flask.redirect(flask.url_for('account.student.index', account_id = first_account.id, student_id = student.id))
-        return response
+    # else:
+    #     first_account = models.Account.query.first()
+    #     student = models.Student.query.first()
+    #     response = flask.redirect(flask.url_for('account.student.index', account_id = first_account.id, student_id = student.id))
+    #     return response
+
     # TODO when student users are added, can check here whether group is staff
     # or student, then redirect to the right page.
     # TODO instead of just returning the first available account, should find
     # the right account depending on the user.
+
     first_account = models.Account.query.first()
     g.current_user = flask_jwt_extended.get_current_user()
     if g.current_user.group == 'admin':

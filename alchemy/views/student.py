@@ -40,7 +40,7 @@ def course_view(course_id):
 
 @bp_student.route('/student_paper_report/clazz/<int:clazz_id>/paper/<int:paper_id>')
 @auth_manager.require_group
-def student_paper_report(clazz_id=0, paper_id=0):
+def paper_report(clazz_id=0, paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     clazz = models.Clazz.query.get_or_404(clazz_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)

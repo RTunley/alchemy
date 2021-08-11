@@ -107,18 +107,6 @@ def clazz_paper_report():
     clazz_paper_report = score_manager.ClassReport(paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
     return flask.render_template('course/clazz/clazz_paper.html', paper = paper, clazz_paper_report = clazz_paper_report)
 
-@bp_clazz.route('/student_paper_report')
-@auth_manager.require_group
-def student_paper_report():
-    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
-    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
-    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    student_scoreset_list = score_manager.make_student_scoreset_list(g.clazz, paper)
-    tag_totalset_list = score_manager.make_tag_totalset_list(g.clazz, paper)
-    question_scoreset_list = score_manager.make_question_scoreset_list(g.clazz, paper)
-    student_report = score_manager.StudentReport(student, paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
-    return flask.render_template('course/clazz/student_paper.html', paper = paper, student_report = student_report)
-
 def get_clazz_student_profiles(clazz):
     student_course_profile_list = []
     for student in clazz.students:

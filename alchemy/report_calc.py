@@ -108,7 +108,6 @@ class StudentTagAchievement(object):
         self.percent_score = calc_percentage(self.raw_score, self.tag_total)
         self.grade = determine_grade(self.percent_score, self.paper.course)
 
-
 class QuestionHighlights(object):
     def __init__(self, student, paper, scores):
         self.strengths = []
