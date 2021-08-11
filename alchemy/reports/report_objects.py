@@ -1,4 +1,4 @@
-from alchemy import student_paper_sections, clazz_paper_sections
+from alchemy.reports import student_paper_sections, clazz_paper_sections
 
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper):

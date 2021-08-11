@@ -1,4 +1,5 @@
-from alchemy import models, db, report_calc
+from alchemy import models
+from alchemy.reports import data_manager
 
 class ClazzReportSection:
     def __init__(self, html_macro):
@@ -14,5 +15,5 @@ class OverviewSection(ClazzReportSection):
 
     def build_self(self):
         all_scores = models.Score.query.filter_by(paper_id = self.paper.id).all()
-        clazz_scores = report_calc.filter_scores_by_clazz(all_scores, self.clazz)
-        self.clazz_paper_summary = report_calc.ClazzPaperSummary(self.paper, clazz_scores)
+        clazz_scores = data_manager.filter_scores_by_clazz(all_scores, self.clazz)
+        self.clazz_paper_summary = data_manager.ClazzPaperSummary(self.paper, clazz_scores)
