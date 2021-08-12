@@ -175,7 +175,7 @@ class StatSummary(object):
 
 class NormStatSumm(StatSummary):
     def __init__(self, statsumm, total):
-        self.statsumm = statsumm
+        self.statsumm = statsumm ## TODO possibly don't need this....
         self.value_list = []
         self.total = total
         self.mean = round(statsumm.mean/total*100, 2)
