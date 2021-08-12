@@ -1,4 +1,5 @@
 import numpy as np
+from alchemy.reports import plots
 
 ## Data organisation classes
 
@@ -155,6 +156,41 @@ class TagHighlights(object):
             elif s_t_a.percent_score == all_student_tag_achievements[-1].percent_score:
                 self.weaknesses.append(s_t_a)
 
+class StatSummary(object):
+    def __init__(self, values_list):
+        self.value_list = values_list
+        self.mean = 0
+        self.sd = 0
+        self.fivenumsumm = []
+        self.build_self()
+
+    def build_self(self):
+        array = np.array(self.value_list)
+        self.mean = round(np.mean(array), 2)
+        self.sd = round(np.std(array), 2)
+        min = array.min()
+        max = array.max()
+        quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
+        self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
+
+class NormStatSumm(StatSummary):
+    def __init__(self, statsumm, total):
+        self.statsumm = statsumm
+        self.value_list = []
+        self.total = total
+        self.mean = round(statsumm.mean/total*100, 2)
+        self.sd = round(statsumm.sd/total*100, 2)
+        self.fivenumsumm = []
+        self.normalize_fivenumsumm()
+        self.normalize_value_list()
+
+    def normalize_fivenumsumm(self):
+        for value in self.statsumm.fivenumsumm:
+            self.fivenumsumm.append(round(value/self.total*100, 2))
+
+    def normalize_value_list(self):
+        self.value_list = [calc_percentage(value, self.total) for value in self.statsumm.value_list]
+
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
 def total_score(score_list):
@@ -230,3 +266,13 @@ def filter_scores_by_clazz(scores, clazz):
             clazz_scores.append(score)
 
     return clazz_scores
+
+## Functions for interacting with reports.plots ##
+
+def create_distribution_plot(clazz, paper, scores):
+    student_summaries = build_student_summaries(paper, scores)
+    clazz_statsumm = StatSummary([summary.raw_total for summary in student_summaries])
+    clazz_norm_statsumm = NormStatSumm(clazz_statsumm, paper.profile.total_points)
+    print('Norm Statsumm value_list: ', clazz_norm_statsumm.value_list)
+    plot_data = plots.create_distribution_plot(clazz_norm_statsumm.value_list, clazz_norm_statsumm.sd, clazz_norm_statsumm.mean, 'Distribution of Overall Achievement', False, None)
+    return plot_data

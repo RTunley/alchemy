@@ -1,0 +1,39 @@
+{% macro render_section(overview_details_section) -%}
+
+<p>5 Number Summary (Raw | %):</p>
+<table style="text-align:center" class="table table-hover">
+    <tr>
+      <th>Minimum</th>
+      <th>First Quartile (Q1)</th>
+      <th>Median</th>
+      <th>Third Quartile (Q3)</th>
+      <th>Maximum</th>
+    </tr>
+    <tr>
+      <td style="text-align: center">{{ overview_details_section.raw_statsumm.fivenumsumm[0] }} |
+        {{ overview_details_section.norm_statsumm.fivenumsumm[0] }} %</td>
+      <td style="text-align: center">{{ overview_details_section.raw_statsumm.fivenumsumm[1] }} |
+        {{ overview_details_section.norm_statsumm.fivenumsumm[1] }} %</td>
+      <td style="text-align: center">{{ overview_details_section.raw_statsumm.fivenumsumm[2] }} |
+        {{ overview_details_section.norm_statsumm.fivenumsumm[2] }} %</td>
+      <td style="text-align: center">{{ overview_details_section.raw_statsumm.fivenumsumm[3] }} |
+        {{ overview_details_section.norm_statsumm.fivenumsumm[3] }} %</td>
+      <td style="text-align: center">{{ overview_details_section.raw_statsumm.fivenumsumm[4] }} |
+        {{ overview_details_section.norm_statsumm.fivenumsumm[4] }} %</td>
+    </tr>
+</table>
+
+<p>Mean and Standard Deviation:</p>
+<table style="text-align:center" class="table table-hover">
+  <tr>
+    <th>Raw ( / {{ overview_details_section.paper.profile.total_points }})</th>
+    <th>As %</th>
+  </tr>
+  <tr>
+    <td>{{ overview_details_section.raw_statsumm.mean }} +/- {{ overview_details_section.raw_statsumm.sd }}</td>
+    <td>{{ overview_details_section.norm_statsumm.mean }} +/- {{ overview_details_section.norm_statsumm.sd }} %</td>
+  </tr>
+</table>
+<br>
+
+{%- endmacro %}

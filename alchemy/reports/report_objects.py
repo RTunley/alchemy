@@ -44,3 +44,9 @@ class ClazzPaperReport(object):
         self.subtitle = f"{self.clazz.course.name}: {self.paper.title}"
         overview_section = clazz_paper_sections.OverviewSection('course/clazz/report_section_macros/overview.html', self.clazz, self.paper)
         self.sections.append(overview_section)
+
+        overview_plot_section = clazz_paper_sections.OverviewPlotSection('course/clazz/report_section_macros/overview_plot.html', self.clazz, self.paper)
+        self.sections.append(overview_plot_section)
+
+        overview_details_section = clazz_paper_sections.OverviewDetailsSection('course/clazz/report_section_macros/overview_details.html', self.clazz, self.paper)
+        self.sections.append(overview_details_section)
