@@ -60,5 +60,5 @@ class GradeOverviewSection(ClazzReportSection):
         all_scores = models.Score.query.filter_by(paper_id = self.paper.id).all()
         clazz_scores = data_manager.filter_scores_by_clazz(all_scores, self.clazz)
         student_summaries = data_manager.build_student_summaries(self.paper, clazz_scores)
-        self.student_grade_dict = data_manager.make_student_grade_dict(student_summaries)
+        self.student_grade_dict = data_manager.make_student_grade_dict(student_summaries, self.paper.course)
         self.grade_pie_data = data_manager.make_grade_pie_data(self.student_grade_dict)

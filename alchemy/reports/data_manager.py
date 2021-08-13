@@ -267,15 +267,19 @@ def filter_scores_by_clazz(scores, clazz):
 
     return clazz_scores
 
-def make_student_grade_dict(student_summaries):
+def make_student_grade_dict(student_summaries, course):
     student_grade_dict = {}
-    for summary in student_summaries:
-        if summary.grade in student_grade_dict:
-            student_grade_dict[summary.grade].append(summary)
-        else:
-            student_grade_dict[summary.grade] = [summary]
-    return student_grade_dict
+    for grade_level in course.grade_levels:
+        grade_batch = []
+        for summary in student_summaries:
+            if summary.grade == grade_level.grade:
+                grade_batch.append(summary)
+        student_grade_dict[grade_level.grade] = grade_batch
 
+    for level in student_grade_dict:
+        student_grade_dict[level].sort(key=lambda x: x.percent_total, reverse=True)
+
+    return student_grade_dict
 
 ## Functions for interacting with reports.plots ##
 
