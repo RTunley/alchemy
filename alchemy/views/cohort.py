@@ -47,9 +47,7 @@ def add_student():
     elif models.Student.query.get(student_id) is not None:
         flask.flash(f'Student {student_id} already exists!')
     else:
-        aws_user = models.AwsUser(id=student_id, username=username, group='student', given_name=new_given_name, family_name=new_family_name, email = email)
-        new_student = models.Student(id=student_id, aws_user=aws_user, clazzes=[clazz])
-        db.session.add(aws_user)
+        new_student = models.Student.create(id=student_id, given_name=new_given_name, family_name=new_family_name, email=email, clazzes=[clazz])
         db.session.add(new_student)
         db.session.commit()
     return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))

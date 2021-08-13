@@ -35,7 +35,7 @@ file specifying the aws_access_key_id and aws_secret_access_key values:
     aws_secret_access_key = <your_AWS_secret_access_key>
 '''
 
-import argparse, collections, csv, os, sys, io
+import argparse, base64, collections, csv, io, os, sys
 import sqlalchemy
 import boto3
 from alchemy import application, models, db
@@ -155,6 +155,9 @@ class CognitoUser:
         return None
 
 class CognitoOperator:
+    # TODO if using in production, generate new password per-user
+    temp_pwd = 'Alchemy.0'
+
     def __init__(self, group):
         self.group = group
         self.aws_client = boto3.client('cognito-idp', region_name = application.config['AWS_DEFAULT_REGION'])
@@ -164,16 +167,19 @@ class CognitoOperator:
     def sync_users_to_cognito(self, user_infos):
         # Upload a new user if it is not in the user pool. If it is already in the pool, update
         # attributes if needed.
+        changes = { 'added': 0, 'updated': 0, 'removed': 0 }
         for user_info in user_infos:
             cognito_user = CognitoUser.find_username_in_list(self.existing_cognito_users, user_info.username)
             if cognito_user is None:
                 # Upload this user to the user pool
                 print(f'Add to user pool: {user_info}')
                 self.add_user_to_pool(user_info)
+                changes['added'] += 1
             elif not cognito_user.matches_user_attributes(user_info):
                 # Update the user pool entry for this user.
                 print(f'Update details in user pool: {user_info}')
                 self.update_user_in_pool(user_info)
+                changes['updated'] += 1
             else:
                 print(f'No change, already in user pool: {user_info}')
 
@@ -183,7 +189,12 @@ class CognitoOperator:
             if UserInfo.find_username_in_list(user_infos, cognito_user.username) is None:
                 print(f'Remove from user pool: {cognito_user}')
                 self.remove_user_from_pool(cognito_user)
+                changes['removed'] += 1
         db.session.commit()
+
+        print(f'User changes: added {changes["added"]}, updated {changes["updated"]}, removed {changes["removed"]}')
+        if changes['added'] > 0:
+            print('Temporary password is', CognitoOperator.temp_pwd)
 
     def find_users_in_pool(self):
          # TODO use NextToken to paginate requests (otherwise limited to fetching 60 users?)
@@ -200,6 +211,7 @@ class CognitoOperator:
                 UserPoolId=application.config['AWS_COGNITO_USER_POOL_ID'],
                 Username=user_info.username,
                 UserAttributes=CognitoOperator.cognito_user_attributes(user_info),
+                TemporaryPassword=CognitoOperator.temp_pwd,
                 MessageAction='SUPPRESS',    # TODO add arg option to send the welcome email to real users
                 DesiredDeliveryMediums=['EMAIL'])
         # Set AwsUser.sub to the one assigned by Cognito

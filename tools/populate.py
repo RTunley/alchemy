@@ -4,10 +4,18 @@ Populates the Alchemy database with a set of dummy data for testing/development.
 Run this from the root alchemy directory:
     python -m tools.populate
 '''
-from alchemy import application
+import os
+from alchemy import db
 from tools import db_data
 
 def populate_db():
+    db_path = os.path.join(os.getcwd(), 'alchemy/master.db')
+    if os.path.exists(db_path):
+        print('Removing existing db:', db_path)
+        os.remove(os.path.join(os.getcwd(), 'alchemy/master.db'))
+        db.create_all()
+    print('Populating test data...')
+
     account = db_data.add_account()
     course = db_data.add_course(account, 'Physics')
     course_grades = db_data.add_grade_levels(course)
@@ -34,9 +42,12 @@ def populate_db():
     clazz_pe = db_data.add_clazz(course_pe, 'IGPHED01')
 
     clazzes = [clazz, clazz_eng, clazz_mus, clazz_math, clazz_pe]
-    db_data.add_admin()
     student_list = db_data.add_students_and_aws_users(clazzes)
     db_data.add_scores(paper, student_list)
+
+    db_data.add_admin_and_aws_users()
+
+    print('Done!')
 
 if __name__ == '__main__':
     populate_db()
