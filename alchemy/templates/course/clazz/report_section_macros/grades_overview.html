@@ -1,0 +1,8 @@
+{% macro render_section(grade_overview_section) -%}
+
+<h2>Student Grades</h2>
+<div>
+  <img src="data:image/png;base64, {{ grade_overview_section.grade_pie_data }}" alt="graph">
+</div>
+
+{%- endmacro %}

@@ -267,6 +267,16 @@ def filter_scores_by_clazz(scores, clazz):
 
     return clazz_scores
 
+def make_student_grade_dict(student_summaries):
+    student_grade_dict = {}
+    for summary in student_summaries:
+        if summary.grade in student_grade_dict:
+            student_grade_dict[summary.grade].append(summary)
+        else:
+            student_grade_dict[summary.grade] = [summary]
+    return student_grade_dict
+
+
 ## Functions for interacting with reports.plots ##
 
 def create_distribution_plot(clazz, paper, scores):
@@ -276,3 +286,23 @@ def create_distribution_plot(clazz, paper, scores):
     print('Norm Statsumm value_list: ', clazz_norm_statsumm.value_list)
     plot_data = plots.create_distribution_plot(clazz_norm_statsumm.value_list, clazz_norm_statsumm.sd, clazz_norm_statsumm.mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
+
+def make_grade_pie_data(student_grade_dict):
+    slices = []
+    labels = []
+    for k,v in student_grade_dict.items():
+        label = ''
+        if len(v) == 1:
+            label = k + ' (1 Student)'
+        elif len(v) == 0:
+            label = k + ' (None)'
+        else:
+            label = k + ' ({} Students)'.format(len(v))
+
+        labels.append(label)
+        slices.append(len(v))
+
+    slices.reverse()
+    labels.reverse()
+    grade_pie_data = plots.create_pie_chart('Grade Level Distribution', slices, labels)
+    return grade_pie_data

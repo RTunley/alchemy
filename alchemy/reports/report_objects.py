@@ -50,3 +50,6 @@ class ClazzPaperReport(object):
 
         overview_details_section = clazz_paper_sections.OverviewDetailsSection('course/clazz/report_section_macros/overview_details.html', self.clazz, self.paper)
         self.sections.append(overview_details_section)
+
+        grade_overview_section = clazz_paper_sections.GradeOverviewSection('course/clazz/report_section_macros/grades_overview.html', self.clazz, self.paper)
+        self.sections.append(grade_overview_section)
