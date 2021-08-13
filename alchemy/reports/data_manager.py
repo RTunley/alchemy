@@ -1,22 +1,38 @@
 import numpy as np
+import sqlalchemy
+from alchemy import models, db
 from alchemy.reports import plots
 
 ## Data organisation classes
 
-class StudentPaperSummary(object):
-    def __init__(self, student, paper, scores):
-        self.scores = scores
-        self.paper_total = 0
-        self.raw_total = 0
-        self.percent_total = 0
-        self.grade = None
-        self.build_self(student, paper, scores)
-
-    def build_self(self, student, paper, scores):
+class PaperScoreTally(object):
+    def __init__(self, paper, score):
         self.paper_total = paper.profile.total_points
-        self.raw_total = total_score(scores)
+        self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
         self.grade = determine_grade(self.percent_total, paper.course)
+
+    @staticmethod
+    def from_student(student, paper):
+        scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+        return PaperScoreTally(paper, total_score(scores))
+
+class MultiPaperScoreTally(object):
+    def __init__(self, paper, score_list):
+        self.paper_total = paper.profile.total_points
+        self.raw_mean = calc_mean(score_list)
+        self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
+        self.mean_grade = determine_grade(self.percent_mean, paper.course)
+
+    @staticmethod
+    def from_clazz(clazz, paper):
+        clazz_student_totals = total_student_scores_for_clazz(clazz, paper)
+        return MultiPaperScoreTally(paper, clazz_student_totals)
+
+    @staticmethod
+    def from_cohort(paper):
+        cohort_student_totals = total_student_scores_for_cohort(paper)
+        return MultiPaperScoreTally(paper, cohort_student_totals)
 
 class AdjacentGrades(object):
     def __init__(self, grade_list, percentage, grade, paper_total):
@@ -56,34 +72,6 @@ class AdjacentGrades(object):
             self.raw_diff_lower_grade = round(self.diff_lower_grade*paper_total/100, 1)
         else:
             self.raw_diff_lower_grade = None
-
-class ClazzPaperSummary(object):
-    def __init__(self, paper, clazz_scores):
-        self.paper_total = paper.profile.total_points
-        self.raw_mean = 0
-        self.percent_mean = 0
-        self.mean_grade = None
-        self.build_self(paper, clazz_scores)
-
-    def build_self(self, paper, clazz_scores):
-        student_summaries = build_student_summaries(paper, clazz_scores)
-        self.raw_mean = calc_mean([summary.raw_total for summary in student_summaries])
-        self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
-        self.mean_grade = determine_grade(self.percent_mean, paper.course)
-
-class CohortPaperSummary(object):
-    def __init__(self, paper, cohort_scores):
-        self.paper_total = paper.profile.total_points
-        self.raw_mean = 0
-        self.percent_mean = 0
-        self.mean_grade = None
-        self.build_self(paper, cohort_scores)
-
-    def build_self(self, paper, cohort_scores):
-        student_summaries = build_student_summaries(paper, cohort_scores)
-        self.raw_mean = calc_mean([summary.raw_total for summary in student_summaries])
-        self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
-        self.mean_grade = determine_grade(self.percent_mean, paper.course)
 
 ## Strengths and Weaknesses = Highlights ##
 
@@ -212,27 +200,6 @@ def calc_mean(values_list):
     array = np.array(values_list)
     return round(np.mean(array), 2)
 
-def all_students_in_course(course):
-    students_in_course = []
-    for clazz in course.clazzes:
-        for student in clazz.students:
-            students_in_course.append(student)
-    return students_in_course
-
-def build_student_summaries(paper, scores):
-    student_list = all_students_in_course(paper.course)
-    student_summaries = []
-    for student in student_list:
-        student_scores = []
-        for score in scores:
-            if score.student_id == student.id:
-                student_scores.append(score)
-
-        student_summary = StudentPaperSummary(student, paper, student_scores)
-        student_summaries.append(student_summary)
-
-    return student_summaries
-
 def calc_percent_scores(scores):
     percent_scores = []
     for score in scores:
@@ -258,20 +225,39 @@ def get_tag_total(student, tag_string, paper, scores):
 
     return tag_total
 
-def filter_scores_by_clazz(scores, clazz):
-    student_ids = [student.id for student in clazz.students]
-    clazz_scores = []
-    for score in scores:
-        if score.student_id in student_ids:
-            clazz_scores.append(score)
+def total_student_scores_for_clazz(clazz, paper):
+    clazz_student_ids = [student.id for student in clazz.students]
+    clazz_student_totals = []
+    # Query for the summed value of all scores for each students from this class for this paper
+    total_student_scores = db.session.query(
+            models.Score.student_id,
+            sqlalchemy.func.sum(models.Score.value).label('total_student_score')
+        ).filter_by(paper_id = paper.id
+        ).filter(models.Score.student_id.in_(clazz_student_ids)
+        ).group_by(models.Score.student_id
+        ).all()
+    clazz_student_totals = []
+    for student_total in total_student_scores:
+        clazz_student_totals.append(student_total.total_student_score)
+    return clazz_student_totals
 
-    return clazz_scores
+def total_student_scores_for_cohort(paper):
+    # Query for the summed value of all scores for each student for this paper
+    total_student_scores = db.session.query(
+            models.Score.student_id,
+            sqlalchemy.func.sum(models.Score.value).label('total_student_score')
+        ).filter_by(paper_id = paper.id
+        ).group_by(models.Score.student_id
+        ).all()
+    cohort_student_totals = []
+    for student_total in total_student_scores:
+        cohort_student_totals.append(student_total.total_student_score)
+    return cohort_student_totals
 
 ## Functions for interacting with reports.plots ##
 
-def create_distribution_plot(clazz, paper, scores):
-    student_summaries = build_student_summaries(paper, scores)
-    clazz_statsumm = StatSummary([summary.raw_total for summary in student_summaries])
+def create_distribution_plot(clazz, paper):
+    clazz_statsumm = StatSummary(total_student_scores_for_clazz(clazz, paper))
     clazz_norm_statsumm = NormStatSumm(clazz_statsumm, paper.profile.total_points)
     print('Norm Statsumm value_list: ', clazz_norm_statsumm.value_list)
     plot_data = plots.create_distribution_plot(clazz_norm_statsumm.value_list, clazz_norm_statsumm.sd, clazz_norm_statsumm.mean, 'Distribution of Overall Achievement', False, None)
