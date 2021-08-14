@@ -52,3 +52,27 @@ class GradeOverviewSection(ClazzReportSection):
         student_tallies = [data_manager.PaperScoreTally.from_student(student, self.paper) for student in self.clazz.students]
         self.student_grade_dict = data_manager.make_student_grade_dict(student_tallies, self.paper.course)
         self.grade_pie_data = data_manager.make_grade_pie_data(self.student_grade_dict)
+
+class TagOverviewSection(ClazzReportSection):
+    def __init__(self, html_macro, clazz, paper):
+        self.html_macro = html_macro
+        self.clazz = clazz
+        self.paper = paper
+        self.tag_center_bar_plot = None
+        self.tag_spread_bar_plot = None
+        self.build_self()
+
+    def build_self(self):
+        self.tag_center_bar_plot, self.tag_spread_bar_plot = data_manager.make_tag_comparison_charts(self.clazz, self.paper)
+
+# class QuestionOverviewSection(ClazzReportSection):
+#     def __init__(self, html_macro, clazz, paper):
+#         self.html_macro = html_macro
+#         self.clazz = clazz
+#         self.paper = paper
+#         self.question_center_bar_plot = None
+#         self.question_spread_bar_plot = None
+#         self.build_self()
+#
+#     def build_self(self):
+#         pass

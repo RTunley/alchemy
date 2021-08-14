@@ -1,0 +1,14 @@
+{% macro render_section(tag_overview_section) -%}
+
+<div>
+  <h2><b>Tag Overview</b></h2>
+  <table>
+    <tr>
+      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.tag_center_bar_plot }}" alt="graph"></td>
+      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.tag_spread_bar_plot }}" alt="graph"></td>
+    </tr>
+  </table>
+  <br>
+</div>
+
+{%- endmacro %}

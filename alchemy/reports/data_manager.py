@@ -151,6 +151,7 @@ class StatSummary(object):
         self.mean = 0
         self.sd = 0
         self.fivenumsumm = []
+        self.iqr = 0
         self.build_self()
 
     def build_self(self):
@@ -161,6 +162,7 @@ class StatSummary(object):
         max = array.max()
         quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
         self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
+        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
 
 class NormStatSumm(StatSummary):
     def __init__(self, statsumm, total):
@@ -172,6 +174,7 @@ class NormStatSumm(StatSummary):
         self.fivenumsumm = []
         self.normalize_fivenumsumm()
         self.normalize_value_list()
+        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
 
     def normalize_fivenumsumm(self):
         for value in self.statsumm.fivenumsumm:
@@ -297,3 +300,46 @@ def make_grade_pie_data(student_grade_dict):
     labels.reverse()
     grade_pie_data = plots.create_pie_chart('Grade Level Distribution', slices, labels)
     return grade_pie_data
+
+def make_tag_comparison_charts(clazz, paper):
+    means = []
+    medians = []
+    sd_list = []
+    iqr_list = []
+    labels = []
+
+    for profile in paper.profile.tag_profile_list:
+        raw_totals = []
+        for student in clazz.students:
+            scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+            tag_total = get_tag_total(student, profile.name, paper, scores)
+            raw_totals.append(tag_total)
+        tag_statsumm = StatSummary(raw_totals)
+        norm_tag_statsumm = NormStatSumm(tag_statsumm, profile.allocated_points)
+        means.append(norm_tag_statsumm.mean)
+        medians.append(norm_tag_statsumm.fivenumsumm[2])
+        sd_list.append(norm_tag_statsumm.sd)
+        iqr_list.append(norm_tag_statsumm.iqr)
+        labels.append(profile.name)
+
+    tag_center_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
+    tag_spread_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, 'Tag')
+    return (tag_center_bar_plot, tag_spread_bar_plot)
+
+
+# def make_tag_comparison_charts(self):
+#     means = []
+#     medians = []
+#     sd_list = []
+#     iq_range_list = []
+#     labels = []
+#     for totalset in self.tag_totalsets:
+#         means.append(totalset.norm_statsumm.mean)
+#         medians.append(totalset.norm_statsumm.fivenumsumm[2])
+#         sd_list.append(totalset.norm_statsumm.sd)
+#         iq_range = totalset.norm_statsumm.fivenumsumm[3] - totalset.norm_statsumm.fivenumsumm[1]
+#         iq_range_list.append(iq_range)
+#         labels.append(totalset.tag.name)
+#
+#         self.tag_center_bar = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
+#         self.tag_spread_bar = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iq_range_list, 'Interquartile Range', labels, 'Tag')
