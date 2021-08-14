@@ -54,6 +54,26 @@ class Student(db.Model):
     clazzes = db.relationship('Clazz', secondary=clazzes_students, back_populates='students')
     scores = db.relationship('Score', backref='student')
 
+    @staticmethod
+    def create(**properties):
+        'Creates a Student and its accompanying AwsUser from the specified properties.'
+        clazzes = properties.pop('clazzes', [])
+        scores = properties.pop('scores', [])
+        aws_user = AwsUser.create('student', **properties)
+        return Student(aws_user=aws_user, clazzes=clazzes, scores=scores)
+
+class Admin(db.Model):
+    __tablename__ = 'admin'
+    id = db.Column(db.Integer, primary_key=True)
+    aws_id = db.Column(db.Integer, db.ForeignKey('aws_user.id'))
+    aws_user = db.relationship('AwsUser')
+
+    @staticmethod
+    def create(**properties):
+        'Creates a Admin and its accompanying AwsUser from the specified properties.'
+        aws_user = AwsUser.create('admin', **properties)
+        return Admin(aws_user=aws_user)
+
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
     id = db.Column(db.Integer, primary_key=True)
@@ -71,7 +91,10 @@ class AwsUser(db.Model):
     def update_user_attributes(self, user_attrs):
         updated = False
         for field_key in AwsUser.USER_ATTRIBUTES:
-            field_value = getattr(user_attrs, field_key, '')
+            if type(user_attrs) == dict:
+                field_value = user_attrs.get(field_key, '')
+            else:
+                field_value = getattr(user_attrs, field_key, '')
             if field_value != getattr(self, field_key, ''):
                 setattr(self, field_key, field_value)
                 updated = True
@@ -83,6 +106,21 @@ class AwsUser(db.Model):
             if field_value != getattr(self, field_key, ''):
                 return False
         return True
+
+    @staticmethod
+    def create(group, **properties):
+        if not group:
+            raise ValueError('No AwsUser group specified')
+        if not properties.get('email'):
+            raise ValueError('No AwsUser email specified')
+        email = properties['email'].lower() # avoid casing issues with email and username, AWS will auto-lowercase the username
+        user_id = properties.pop('id', None)    # optional, will auto-generate if not specified
+        unexpected_keys = [key for key in properties.keys() if key not in AwsUser.USER_ATTRIBUTES]
+        if unexpected_keys:
+            raise ValueError('Unexpected AwsUser properties specified:', unexpected_keys)
+        aws_user = AwsUser(id=user_id, group=group, username=email)
+        aws_user.update_user_attributes(properties)
+        return aws_user
 
     @staticmethod
     def from_jwt(jwt_payload):

@@ -37,10 +37,7 @@ def add_new_clazz(db, filename, clazz):
             elif models.Student.query.get(student_id) is not None:
                 flask.flash(f'Not adding student {student_id}, already exists')
             else:
-                username = email.split('@')[0].lower()
-                aws_user = models.AwsUser(id=student_id, username=username, group='student', family_name=family_name, given_name=given_name, email = email)
-                new_student = models.Student(id=student_id, aws_user=aws_user, clazzes=[clazz])
-                db.session.add(aws_user)
+                new_student = models.Student.create(family_name=family_name, given_name=given_name, email=email, clazzes=[clazz])
                 db.session.add(new_student)
     db.session.commit()
 

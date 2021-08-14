@@ -100,27 +100,31 @@ def add_clazz(course, code):
     db.session.commit()
     return(clazz)
 
-def add_admin():
-    admin = m.AwsUser(id=3000, username = 'robin.tunley.admin', group = 'admin', given_name = 'Robin', family_name = 'Tunley', email = 'robin.tunley@gmail.com')
-    db.session.add(admin)
+def add_admin_and_aws_users():
+    admin_list = []
+    user_tuples = [('Robin', 'Admin'), ('Bea', 'Admin')]
+    for user_tuple in user_tuples:
+        given, family = user_tuple
+        email = f'{given}.{family}@example.com'
+        admin = m.Admin.create(given_name=given, family_name=family, email=email)
+        admin_list.append(admin)
+        db.session.add(admin)
+
     db.session.commit()
+    return admin_list
 
 def add_students_and_aws_users(clazzes):
-    index = 1000
-    user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack'), ('Ranger', 'Gilespie'), ('Django', 'Meathead')]
     student_list = []
-
-    for i in range(len(user_tuples)):
-        given, family = user_tuples[i]
+    user_tuples = [('Robin', 'Student'), ('Bea', 'Student'), ('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack')]
+    for user_tuple in user_tuples:
+        given, family = user_tuple
         email = f'{given}.{family}@example.com'
-        username = f'{given}.{family}'.lower()
-        aws_user = m.AwsUser(id = index+i, given_name = given, family_name = family, email = email, group = 'student', username = username)
-        student = m.Student(id = aws_user.id, aws_user = aws_user, clazzes = clazzes)
+        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes)
         student_list.append(student)
         db.session.add(student)
 
     db.session.commit()
-    return(student_list)
+    return student_list
 
 def add_scores(paper, student_list):
     #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4,3,3).
