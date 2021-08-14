@@ -4,5 +4,28 @@
 <div>
   <img src="data:image/png;base64, {{ grade_overview_section.grade_pie_data }}" alt="graph">
 </div>
+<br>
+
+<table style="text-align:center" class="table table-hover">
+    <tr>
+      {% for grade in grade_overview_section.student_grade_dict %}
+      <th>{{ grade }}</th>
+      {% endfor %}
+    </tr>
+    <tr>
+      {% for grade in grade_overview_section.student_grade_dict %}
+        <td>
+          <table style="text-align:center" class="table table-hover">
+            {% for tally in grade_overview_section.student_grade_dict[grade] %}
+              <tr>
+                <td>{{tally.student.aws_user.family_name}}, {{ tally.student.aws_user.given_name }}</td>
+                <td>{{ tally.percent_total }}%</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+      {% endfor %}
+    </tr>
+</table>
 
 {%- endmacro %}
