@@ -6,7 +6,8 @@ from alchemy.reports import plots
 ## Data organisation classes
 
 class PaperScoreTally(object):
-    def __init__(self, paper, score):
+    def __init__(self, student, paper, score):
+        self.student = student
         self.paper_total = paper.profile.total_points
         self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
@@ -15,9 +16,9 @@ class PaperScoreTally(object):
     @staticmethod
     def from_student(student, paper):
         scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-        return PaperScoreTally(paper, total_score(scores))
+        return PaperScoreTally(student, paper, total_score(scores))
 
-class MultiPaperScoreTally(object):
+class PaperMultiScoreTally(object):
     def __init__(self, paper, score_list):
         self.paper_total = paper.profile.total_points
         self.raw_mean = calc_mean(score_list)
@@ -27,12 +28,12 @@ class MultiPaperScoreTally(object):
     @staticmethod
     def from_clazz(clazz, paper):
         clazz_student_totals = total_student_scores_for_clazz(clazz, paper)
-        return MultiPaperScoreTally(paper, clazz_student_totals)
+        return PaperMultiScoreTally(paper, clazz_student_totals)
 
     @staticmethod
     def from_cohort(paper):
         cohort_student_totals = total_student_scores_for_cohort(paper)
-        return MultiPaperScoreTally(paper, cohort_student_totals)
+        return PaperMultiScoreTally(paper, cohort_student_totals)
 
 class AdjacentGrades(object):
     def __init__(self, grade_list, percentage, grade, paper_total):
@@ -254,13 +255,13 @@ def total_student_scores_for_cohort(paper):
         cohort_student_totals.append(student_total.total_student_score)
     return cohort_student_totals
 
-def make_student_grade_dict(student_summaries, course):
+def make_student_grade_dict(student_tallies, course):
     student_grade_dict = {}
     for grade_level in course.grade_levels:
         grade_batch = []
-        for summary in student_summaries:
-            if summary.grade == grade_level.grade:
-                grade_batch.append(summary)
+        for tally in student_tallies:
+            if tally.grade == grade_level.grade:
+                grade_batch.append(tally)
         student_grade_dict[grade_level.grade] = grade_batch
 
     for level in student_grade_dict:

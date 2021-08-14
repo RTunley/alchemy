@@ -35,7 +35,7 @@ class ClazzSummarySection(StudentReportSection):
         self.build_self()
 
     def build_self(self):
-        self.tally = data_manager.MultiPaperScoreTally.from_clazz(self.clazz, self.paper)
+        self.tally = data_manager.PaperMultiScoreTally.from_clazz(self.clazz, self.paper)
 
 class CohortSummarySection(StudentReportSection):
     def __init__(self, html_macro, paper):
@@ -44,7 +44,7 @@ class CohortSummarySection(StudentReportSection):
         self.build_self()
 
     def build_self(self):
-        self.tally = data_manager.MultiPaperScoreTally.from_cohort(self.paper)
+        self.tally = data_manager.PaperMultiScoreTally.from_cohort(self.paper)
 
 ## Strengths and Weaknesses = Highlights
 

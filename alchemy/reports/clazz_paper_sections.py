@@ -13,7 +13,7 @@ class OverviewSection(ClazzReportSection):
         self.build_self()
 
     def build_self(self):
-        self.tally = data_manager.MultiPaperScoreTally.from_clazz(self.clazz, self.paper)
+        self.tally = data_manager.PaperMultiScoreTally.from_clazz(self.clazz, self.paper)
 
 class OverviewPlotSection(ClazzReportSection):
     def __init__(self, html_macro, clazz, paper):
@@ -49,8 +49,6 @@ class GradeOverviewSection(ClazzReportSection):
         self.build_self()
 
     def build_self(self):
-        all_scores = models.Score.query.filter_by(paper_id = self.paper.id).all()
-        clazz_scores = data_manager.filter_scores_by_clazz(all_scores, self.clazz)
-        student_summaries = data_manager.build_student_summaries(self.paper, clazz_scores)
-        self.student_grade_dict = data_manager.make_student_grade_dict(student_summaries, self.paper.course)
+        student_tallies = [data_manager.PaperScoreTally.from_student(student, self.paper) for student in self.clazz.students]
+        self.student_grade_dict = data_manager.make_student_grade_dict(student_tallies, self.paper.course)
         self.grade_pie_data = data_manager.make_grade_pie_data(self.student_grade_dict)
