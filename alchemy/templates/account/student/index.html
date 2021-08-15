@@ -54,7 +54,7 @@
       <div class="MultiCarousel-inner">
         {% for clazz in g.student.clazzes %}
           <div class="item">
-            <div class="card-body">
+            <div class="card-body d-flex align-items-center justify-content-center">
               <a href="{{ url_for('account.student.course_view', course_id = clazz.course.id) }}" >
                 <h5 class="card-title">{{ clazz.course.name }}</h5>
                 <p class="card-text">{{ clazz.code }}</p>
