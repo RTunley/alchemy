@@ -23,14 +23,6 @@
   function init_page() {
     // Show Bootstrap feather icons
     feather.replace();
-
-    {% if show_editing_controls %}
-    // Set up draggable table rows
-    $('#sortable_table_body').sortable({
-      opacity: 0.5,
-      update: paper_reorder_questions,
-    });
-    {% endif %}
   }
 </script>
 
