@@ -146,42 +146,44 @@ class TagHighlights(object):
                 self.weaknesses.append(s_t_a)
 
 class StatSummary(object):
-    def __init__(self, values_list):
-        self.value_list = values_list
-        self.mean = 0
-        self.sd = 0
-        self.fivenumsumm = []
-        self.iqr = 0
+    def __init__(self, values_list, total):
+        self.raw_values_list = values_list
+        self.total = total
+        self.object = None
+        self.norm_values_list = []
+        self.raw_mean = 0
+        self.norm_mean = 0
+        self.raw_sd = 0
+        self.norm_sd = 0
+        self.raw_fivenumsumm = []
+        self.norm_fivenumsumm = []
+        self.raw_iqr = 0
+        self.norm_iqr = 0
         self.build_self()
 
     def build_self(self):
-        array = np.array(self.value_list)
-        self.mean = round(np.mean(array), 2)
-        self.sd = round(np.std(array), 2)
-        min = array.min()
-        max = array.max()
-        quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
-        self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
-        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
+        self.norm_values_list = [calc_percentage(value, self.total) for value in self.raw_values_list]
+        raw_array = np.array(self.raw_values_list)
+        self.raw_mean = round(np.mean(raw_array), 2)
+        self.raw_sd = round(np.std(raw_array), 2)
+        raw_min = raw_array.min()
+        raw_max = raw_array.max()
+        raw_quartiles = np.percentile(raw_array, [25, 50, 75], interpolation = 'midpoint')
+        self.raw_fivenumsumm = [round(raw_min,2), round(raw_quartiles[0],2), round(raw_quartiles[1],2), round(raw_quartiles[2],2), round(raw_max,2)]
+        self.raw_iqr = self.raw_fivenumsumm[3] - self.raw_fivenumsumm[1]
 
-class NormStatSumm(StatSummary):
-    def __init__(self, statsumm, total):
-        self.statsumm = statsumm ## TODO possibly don't need this....
-        self.value_list = []
-        self.total = total
-        self.mean = round(statsumm.mean/total*100, 2)
-        self.sd = round(statsumm.sd/total*100, 2)
-        self.fivenumsumm = []
-        self.normalize_fivenumsumm()
-        self.normalize_value_list()
-        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
+        norm_array = np.array(self.norm_values_list)
+        self.norm_mean = round(self.raw_mean/self.total*100, 2)
+        self.norm_sd = round(self.raw_sd/self.total*100, 2)
+        self.norm_fivenumsumm = [round(value/self.total*100, 2) for value in self.raw_fivenumsumm]
+        self.norm_iqr = self.norm_fivenumsumm[3] - self.norm_fivenumsumm[1]
 
-    def normalize_fivenumsumm(self):
-        for value in self.statsumm.fivenumsumm:
-            self.fivenumsumm.append(round(value/self.total*100, 2))
+    @staticmethod
+    def from_tag(values_list, total, tag):
+        statsumm = StatSummary(values_list, total)
+        statsumm.object = tag
+        return statsumm
 
-    def normalize_value_list(self):
-        self.value_list = [calc_percentage(value, self.total) for value in self.statsumm.value_list]
 
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
@@ -275,10 +277,8 @@ def make_student_grade_dict(student_tallies, course):
 ## Functions for interacting with reports.plots ##
 
 def create_distribution_plot(clazz, paper):
-    clazz_statsumm = StatSummary(total_student_scores_for_clazz(clazz, paper))
-    clazz_norm_statsumm = NormStatSumm(clazz_statsumm, paper.profile.total_points)
-    print('Norm Statsumm value_list: ', clazz_norm_statsumm.value_list)
-    plot_data = plots.create_distribution_plot(clazz_norm_statsumm.value_list, clazz_norm_statsumm.sd, clazz_norm_statsumm.mean, 'Distribution of Overall Achievement', False, None)
+    clazz_statsumm = StatSummary(total_student_scores_for_clazz(clazz, paper), paper.profile.total_points)
+    plot_data = plots.create_distribution_plot(clazz_statsumm.norm_values_list, clazz_statsumm.norm_sd, clazz_statsumm.norm_mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
 
 def make_grade_pie_data(student_grade_dict):
@@ -314,32 +314,13 @@ def make_tag_comparison_charts(clazz, paper):
             scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
             tag_total = get_tag_total(student, profile.name, paper, scores)
             raw_totals.append(tag_total)
-        tag_statsumm = StatSummary(raw_totals)
-        norm_tag_statsumm = NormStatSumm(tag_statsumm, profile.allocated_points)
-        means.append(norm_tag_statsumm.mean)
-        medians.append(norm_tag_statsumm.fivenumsumm[2])
-        sd_list.append(norm_tag_statsumm.sd)
-        iqr_list.append(norm_tag_statsumm.iqr)
+        tag_statsumm = StatSummary.from_tag(raw_totals, profile.allocated_points, profile.tag)
+        means.append(tag_statsumm.norm_mean)
+        medians.append(tag_statsumm.norm_fivenumsumm[2])
+        sd_list.append(tag_statsumm.norm_sd)
+        iqr_list.append(tag_statsumm.norm_iqr)
         labels.append(profile.name)
 
     tag_center_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
     tag_spread_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, 'Tag')
     return (tag_center_bar_plot, tag_spread_bar_plot)
-
-
-# def make_tag_comparison_charts(self):
-#     means = []
-#     medians = []
-#     sd_list = []
-#     iq_range_list = []
-#     labels = []
-#     for totalset in self.tag_totalsets:
-#         means.append(totalset.norm_statsumm.mean)
-#         medians.append(totalset.norm_statsumm.fivenumsumm[2])
-#         sd_list.append(totalset.norm_statsumm.sd)
-#         iq_range = totalset.norm_statsumm.fivenumsumm[3] - totalset.norm_statsumm.fivenumsumm[1]
-#         iq_range_list.append(iq_range)
-#         labels.append(totalset.tag.name)
-#
-#         self.tag_center_bar = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
-#         self.tag_spread_bar = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iq_range_list, 'Interquartile Range', labels, 'Tag')

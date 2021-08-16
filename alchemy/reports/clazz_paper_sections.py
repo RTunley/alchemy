@@ -31,13 +31,11 @@ class OverviewDetailsSection(ClazzReportSection):
         self.html_macro = html_macro
         self.clazz = clazz
         self.paper = paper
-        self.raw_statsumm = None
-        self.norm_statsumm = None
+        self.statsumm = None
         self.build_self()
 
     def build_self(self):
-        self.raw_statsumm = data_manager.StatSummary(data_manager.total_student_scores_for_clazz(self.clazz, self.paper))
-        self.norm_statsumm = data_manager.NormStatSumm(self.raw_statsumm, self.paper.profile.total_points)
+        self.statsumm = data_manager.StatSummary(data_manager.total_student_scores_for_clazz(self.clazz, self.paper), self.paper.profile.total_points)
 
 class GradeOverviewSection(ClazzReportSection):
     def __init__(self, html_macro, clazz, paper):
