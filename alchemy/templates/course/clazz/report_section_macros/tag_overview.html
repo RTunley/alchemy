@@ -2,13 +2,60 @@
 
 <div>
   <h2><b>Tag Overview</b></h2>
+  <br>
+  <h4>Central Tendency of Tag Achievement</h4>
+  <br>
   <table>
     <tr>
+      <td style="vertical-align:top;">
+        <table style="text-align:center" class="table table-hover">
+          <tr>
+            <th>Tag</th>
+            <th>Mean</th>
+            <th>Median</th>
+          </tr>
+          {% for statsumm in tag_overview_section.tag_statsumms|sort(attribute='norm_mean', reverse=True) %}
+            <tr>
+              <td>{{ statsumm.object.name }}</td>
+              <td>{{ statsumm.norm_mean }} %</td>
+              <td>{{ statsumm.norm_fivenumsumm[2] }} %</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td>
+      <td>&nbsp &nbsp &nbsp &nbsp</td>
       <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.tag_center_bar_plot }}" alt="graph"></td>
+    </tr>
+  </table>
+  <br>
+  <h4>Spread of Tag Achievement</h4>
+  <br>
+  <table>
+    <tr>
+      <td style="vertical-align:top;">
+        <table style="text-align:center" class="table table-hover">
+          <tr>
+            <th>Tag</th>
+            <th>Standard Deviation</th>
+            <th>Interquartile Range</th>
+          </tr>
+          {% for statsumm in tag_overview_section.tag_statsumms|sort(attribute='norm_sd', reverse=True) %}
+            <tr>
+              <td>{{ statsumm.object.name }}</td>
+              <td>{{ statsumm.norm_sd }} %</td>
+              <td>{{ statsumm.norm_iqr }} %</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td>
+      <td>&nbsp &nbsp &nbsp &nbsp</td>
       <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.tag_spread_bar_plot }}" alt="graph"></td>
     </tr>
   </table>
   <br>
 </div>
+
+
+
 
 {%- endmacro %}

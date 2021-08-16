@@ -274,6 +274,18 @@ def make_student_grade_dict(student_tallies, course):
 
     return student_grade_dict
 
+def make_tag_statsumm_list(clazz, paper):
+    tag_statsumm_list = []
+    for profile in paper.profile.tag_profile_list:
+        raw_totals = []
+        for student in clazz.students:
+            scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+            tag_total = get_tag_total(student, profile.name, paper, scores)
+            raw_totals.append(tag_total)
+        tag_statsumm = StatSummary.from_tag(raw_totals, profile.allocated_points, profile.tag)
+        tag_statsumm_list.append(tag_statsumm)
+    return tag_statsumm_list
+
 ## Functions for interacting with reports.plots ##
 
 def create_distribution_plot(clazz, paper):
@@ -301,25 +313,18 @@ def make_grade_pie_data(student_grade_dict):
     grade_pie_data = plots.create_pie_chart('Grade Level Distribution', slices, labels)
     return grade_pie_data
 
-def make_tag_comparison_charts(clazz, paper):
+def make_tag_comparison_charts(statsumm_list):
     means = []
     medians = []
     sd_list = []
     iqr_list = []
     labels = []
-
-    for profile in paper.profile.tag_profile_list:
-        raw_totals = []
-        for student in clazz.students:
-            scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-            tag_total = get_tag_total(student, profile.name, paper, scores)
-            raw_totals.append(tag_total)
-        tag_statsumm = StatSummary.from_tag(raw_totals, profile.allocated_points, profile.tag)
+    for tag_statsumm in statsumm_list:
         means.append(tag_statsumm.norm_mean)
         medians.append(tag_statsumm.norm_fivenumsumm[2])
         sd_list.append(tag_statsumm.norm_sd)
         iqr_list.append(tag_statsumm.norm_iqr)
-        labels.append(profile.name)
+        labels.append(tag_statsumm.object.name)
 
     tag_center_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
     tag_spread_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, 'Tag')
