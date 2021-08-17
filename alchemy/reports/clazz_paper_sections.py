@@ -56,23 +56,25 @@ class TagOverviewSection(ClazzReportSection):
         self.html_macro = html_macro
         self.clazz = clazz
         self.paper = paper
-        self.tag_statsumms = []
-        self.tag_center_bar_plot = None
-        self.tag_spread_bar_plot = None
+        self.statsumms = []
+        self.center_bar_plot = None
+        self.spread_bar_plot = None
         self.build_self()
 
     def build_self(self):
-        self.tag_statsumms = data_manager.make_tag_statsumm_list(self.clazz, self.paper)
-        self.tag_center_bar_plot, self.tag_spread_bar_plot = data_manager.make_tag_comparison_charts(self.tag_statsumms)
+        self.statsumms = data_manager.make_tag_statsumm_list(self.clazz, self.paper)
+        self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statsumms)
 
-# class QuestionOverviewSection(ClazzReportSection):
-#     def __init__(self, html_macro, clazz, paper):
-#         self.html_macro = html_macro
-#         self.clazz = clazz
-#         self.paper = paper
-#         self.question_center_bar_plot = None
-#         self.question_spread_bar_plot = None
-#         self.build_self()
-#
-#     def build_self(self):
-#         pass
+class QuestionOverviewSection(ClazzReportSection):
+    def __init__(self, html_macro, clazz, paper):
+        self.html_macro = html_macro
+        self.clazz = clazz
+        self.paper = paper
+        self.statsumms = []
+        self.center_bar_plot = None
+        self.spread_bar_plot = None
+        self.build_self()
+
+    def build_self(self):
+        self.statsumms = data_manager.make_question_statsumm_list(self.clazz, self.paper)
+        self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statsumms)

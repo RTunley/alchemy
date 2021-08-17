@@ -184,6 +184,11 @@ class StatSummary(object):
         statsumm.object = tag
         return statsumm
 
+    @staticmethod
+    def from_question(values_list, total, paper_question):
+        statsumm = StatSummary(values_list, total)
+        statsumm.object = paper_question
+        return statsumm
 
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
@@ -286,6 +291,17 @@ def make_tag_statsumm_list(clazz, paper):
         tag_statsumm_list.append(tag_statsumm)
     return tag_statsumm_list
 
+def make_question_statsumm_list(clazz, paper):
+    question_statsumm_list = []
+    for pq in paper.paper_questions:
+        scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
+        raw_totals = [score.value for score in scores]
+        question_statsumm = StatSummary.from_question(raw_totals, pq.question.points, pq)
+        question_statsumm_list.append(question_statsumm)
+
+    print('Statsumm_list in make_question_ssl: ', question_statsumm_list)
+    return question_statsumm_list
+
 ## Functions for interacting with reports.plots ##
 
 def create_distribution_plot(clazz, paper):
@@ -313,19 +329,32 @@ def make_grade_pie_data(student_grade_dict):
     grade_pie_data = plots.create_pie_chart('Grade Level Distribution', slices, labels)
     return grade_pie_data
 
-def make_tag_comparison_charts(statsumm_list):
+def make_comparison_charts(statsumm_list):
+    print('Statsumm_list in make_comparison_charts = ', statsumm_list)
     means = []
     medians = []
     sd_list = []
     iqr_list = []
     labels = []
-    for tag_statsumm in statsumm_list:
-        means.append(tag_statsumm.norm_mean)
-        medians.append(tag_statsumm.norm_fivenumsumm[2])
-        sd_list.append(tag_statsumm.norm_sd)
-        iqr_list.append(tag_statsumm.norm_iqr)
-        labels.append(tag_statsumm.object.name)
+    for statsumm in statsumm_list:
+        means.append(statsumm.norm_mean)
+        medians.append(statsumm.norm_fivenumsumm[2])
+        sd_list.append(statsumm.norm_sd)
+        iqr_list.append(statsumm.norm_iqr)
+        if isinstance(statsumm.object, models.Tag):
+            labels.append(statsumm.object.name)
+        elif isinstance(statsumm_list[0].object, models.PaperQuestion):
+            labels.append(statsumm.object.order_number)
 
-    tag_center_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Central Tendency', means, 'Mean', medians, 'Median', labels, 'Tag')
-    tag_spread_bar_plot = plots.create_comparative_bar_chart('Tag Comparison: Spread', sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, 'Tag')
-    return (tag_center_bar_plot, tag_spread_bar_plot)
+    if isinstance(statsumm.object, models.Tag):
+        center_title = 'Tag Comparison: Central Tendency'
+        spread_title = 'Tag Comparison: Spread'
+        x_axis = None
+    elif isinstance(statsumm_list[0].object, models.PaperQuestion):
+        center_title = 'Question Comparison: Central Tendency'
+        spread_title = 'Question Comparison: Spread'
+        x_axis = 'Question Number'
+
+    center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
+    spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+    return (center_bar_plot, spread_bar_plot)
