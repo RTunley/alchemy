@@ -298,8 +298,6 @@ def make_question_statsumm_list(clazz, paper):
         raw_totals = [score.value for score in scores]
         question_statsumm = StatSummary.from_question(raw_totals, pq.question.points, pq)
         question_statsumm_list.append(question_statsumm)
-
-    print('Statsumm_list in make_question_ssl: ', question_statsumm_list)
     return question_statsumm_list
 
 ## Functions for interacting with reports.plots ##
@@ -330,7 +328,6 @@ def make_grade_pie_data(student_grade_dict):
     return grade_pie_data
 
 def make_comparison_charts(statsumm_list):
-    print('Statsumm_list in make_comparison_charts = ', statsumm_list)
     means = []
     medians = []
     sd_list = []
