@@ -356,10 +356,13 @@ def make_comparison_charts(statsumm_list):
     spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
     return (center_bar_plot, spread_bar_plot)
 
-def make_tag_achievement_plots(statsumm_list):
+def make_achievement_plots(statsumm_list):
     tag_plot_list = []
     for statsumm in statsumm_list:
-        title = f"{statsumm.object.name} - Achievement Distribution"
+        if isinstance(statsumm.object, models.Tag):
+            title = f"{statsumm.object.name} - Achievement Distribution"
+        elif isinstance(statsumm.object, models.PaperQuestion):
+            title = f"Question {statsumm.object.order_number} - Achievement Distribution"
         plot_data = plots.create_distribution_plot(statsumm.norm_values_list, statsumm.norm_sd, statsumm.norm_mean, title, False, None)
         tag_plot_list.append(plot_data)
 

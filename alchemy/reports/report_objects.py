@@ -62,3 +62,6 @@ class ClazzPaperReport(object):
 
         tag_details_section = clazz_paper_sections.TagDetailsSection('course/clazz/report_section_macros/tag_details.html', self.clazz, self.paper)
         self.sections.append(tag_details_section)
+
+        question_details_section = clazz_paper_sections.QuestionDetailsSection('course/clazz/report_section_macros/question_details.html', self.clazz, self.paper)
+        self.sections.append(question_details_section)

@@ -90,4 +90,17 @@ class TagDetailsSection(ClazzReportSection):
 
     def build_self(self):
         self.statsumms = data_manager.make_tag_statsumm_list(self.clazz, self.paper)
-        self.plots = data_manager.make_tag_achievement_plots(self.statsumms)
+        self.plots = data_manager.make_achievement_plots(self.statsumms)
+
+class QuestionDetailsSection(ClazzReportSection):
+    def __init__(self, html_macro, clazz, paper):
+        self.html_macro = html_macro
+        self.clazz = clazz
+        self.paper = paper
+        self.statsumms = []
+        self.plots = []
+        self.build_self()
+
+    def build_self(self):
+        self.statsumms = data_manager.make_question_statsumm_list(self.clazz, self.paper)
+        self.plots = data_manager.make_achievement_plots(self.statsumms)

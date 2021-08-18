@@ -1,20 +1,26 @@
-{% macro render_section(tag_details_section) -%}
+{% macro render_section(question_details_section) -%}
 
-<h2>Tag Details</h2>
-<p>Click on a tag below to access more detail about its achievement.</p>
-{% for statsumm in tag_details_section.statsumms %}
-  <div class="accordion" id="{{ statsumm.object.name }}-header">
+<h2>Question Details</h2>
+<p>Click on a question below to access more detail about its achievement.</p>
+{% for statsumm in question_details_section.statsumms %}
+  <div class="accordion" id="question-{{ statsumm.object.order_number }}-header">
     <div class="card">
-      <div class="card-header" id="{{ statsumm.object.name }}-header">
+      <div class="card-header" id="question-{{ statsumm.object.order_number }}-header">
         <h2 class="mb-0">
-          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#{{ statsumm.object.name }}-details" aria-expanded="false" aria-controls="collapseTwo">
-            <h4><b>{{ statsumm.object.name }}</b>: {{ statsumm.total }} Marks Available</h4>
+          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#question-{{ statsumm.object.order_number }}-details" aria-expanded="false" aria-controls="collapseTwo">
+            <h4><b>Question {{ statsumm.object.order_number }}</b>: {{ statsumm.total }} Marks Available</h4>
           </button>
         </h2>
       </div>
-      <div id="{{ statsumm.object.name }}-details" class="collapse" aria-labelledby="{{ statsumm.object.name }}-header" data-parent="#{{ statsumm.object.name }}-header">
+      <div id="question-{{ statsumm.object.order_number }}-details" class="collapse" aria-labelledby="{{ statsumm.object.name }}-header" data-parent="#question-{{ statsumm.object.order_number }}-header">
         <div class="card-body">
-          <p>Mean achievment on this assessment for {{ statsumm.object.name }} is:</p>
+          <h4>Question content:</h4>
+          <p>{{ statsumm.object.question.content }}</p>
+          <br>
+          <h4>Question Solution</h4>
+          <p>{{ statsumm.object.question.solution }}</p>
+          <br>
+          <p>Mean achievment on this assessment for Question {{ statsumm.object.order_number }} is:</p>
           <table style="text-align:center" class="table table-hover">
             <tr>
               <th>Raw</th>
@@ -48,10 +54,9 @@
                   {{ statsumm.norm_fivenumsumm[4] }} %</td>
               </tr>
           </table>
-          <img src="data:image/png;base64, {{ tag_details_section.plots[loop.index0] }}" alt="graph">
+          <img src="data:image/png;base64, {{ question_details_section.plots[loop.index0] }}" alt="graph">
           <br>
           <br>
-
         </div>
       </div>
     </div>
