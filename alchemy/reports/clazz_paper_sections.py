@@ -24,7 +24,7 @@ class OverviewPlotSection(ClazzReportSection):
         self.build_self()
 
     def build_self(self):
-        self.plot = data_manager.create_distribution_plot(self.clazz, self.paper)
+        self.plot = data_manager.create_clazz_distribution_plot(self.clazz, self.paper)
 
 class OverviewDetailsSection(ClazzReportSection):
     def __init__(self, html_macro, clazz, paper):
@@ -78,3 +78,16 @@ class QuestionOverviewSection(ClazzReportSection):
     def build_self(self):
         self.statsumms = data_manager.make_question_statsumm_list(self.clazz, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statsumms)
+
+class TagDetailsSection(ClazzReportSection):
+    def __init__(self, html_macro, clazz, paper):
+        self.html_macro = html_macro
+        self.clazz = clazz
+        self.paper = paper
+        self.statsumms = []
+        self.plots = []
+        self.build_self()
+
+    def build_self(self):
+        self.statsumms = data_manager.make_tag_statsumm_list(self.clazz, self.paper)
+        self.plots = data_manager.make_tag_achievement_plots(self.statsumms)

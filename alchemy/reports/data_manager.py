@@ -302,7 +302,7 @@ def make_question_statsumm_list(clazz, paper):
 
 ## Functions for interacting with reports.plots ##
 
-def create_distribution_plot(clazz, paper):
+def create_clazz_distribution_plot(clazz, paper):
     clazz_statsumm = StatSummary(total_student_scores_for_clazz(clazz, paper), paper.profile.total_points)
     plot_data = plots.create_distribution_plot(clazz_statsumm.norm_values_list, clazz_statsumm.norm_sd, clazz_statsumm.norm_mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
@@ -355,3 +355,12 @@ def make_comparison_charts(statsumm_list):
     center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
     spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
     return (center_bar_plot, spread_bar_plot)
+
+def make_tag_achievement_plots(statsumm_list):
+    tag_plot_list = []
+    for statsumm in statsumm_list:
+        title = f"{statsumm.object.name} - Achievement Distribution"
+        plot_data = plots.create_distribution_plot(statsumm.norm_values_list, statsumm.norm_sd, statsumm.norm_mean, title, False, None)
+        tag_plot_list.append(plot_data)
+
+    return tag_plot_list

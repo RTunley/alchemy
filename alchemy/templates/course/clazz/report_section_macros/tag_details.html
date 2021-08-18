@@ -1,0 +1,61 @@
+{% macro render_section(tag_details_section) -%}
+
+<h2>Tag Details</h2>
+<p>Click on a tag below to access more detail about it's achievement</p>
+{% for statsumm in tag_details_section.statsumms %}
+  <div class="accordion" id="{{ statsumm.object.name }}-header">
+    <div class="card">
+      <div class="card-header" id="{{ statsumm.object.name }}-header">
+        <h2 class="mb-0">
+          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#{{ statsumm.object.name }}-details" aria-expanded="false" aria-controls="collapseTwo">
+            <h4>{{ statsumm.object.name }} - {{ statsumm.total }} Marks Available</h4>
+          </button>
+        </h2>
+      </div>
+      <div id="{{ statsumm.object.name }}-details" class="collapse" aria-labelledby="{{ statsumm.object.name }}-header" data-parent="#{{ statsumm.object.name }}-header">
+        <div class="card-body">
+          <p>Mean achievment on this assessment for {{ statsumm.object.name }} is:</p>
+          <table style="text-align:center" class="table table-hover">
+            <tr>
+              <th>Raw</th>
+              <th>As %</th>
+            </tr>
+            <tr>
+              <td>{{ statsumm.raw_mean }} +/- {{ statsumm.raw_sd }}</td>
+              <td>{{ statsumm.norm_mean }} +/- {{ statsumm.norm_sd }} %</td>
+            </tr>
+          </table>
+          <br>
+          <p>The median achievement was {{ statsumm.norm_fivenumsumm[2] }} %, with the following five number summary (Raw | Percentage):</p>
+          <table style="text-align:center" class="table table-hover">
+              <tr>
+                <th>Minimum</th>
+                <th>First Quartile (Q1)</th>
+                <th>Median</th>
+                <th>Third Quartile (Q3)</th>
+                <th>Maximum</th>
+              </tr>
+              <tr>
+                <td style="text-align: center">{{ statsumm.raw_fivenumsumm[0] }} |
+                  {{ statsumm.norm_fivenumsumm[0] }} %</td>
+                <td style="text-align: center">{{ statsumm.raw_fivenumsumm[1] }} |
+                  {{ statsumm.norm_fivenumsumm[1] }} %</td>
+                <td style="text-align: center">{{ statsumm.raw_fivenumsumm[2] }} |
+                  {{ statsumm.norm_fivenumsumm[2] }} %</td>
+                <td style="text-align: center">{{ statsumm.raw_fivenumsumm[3] }} |
+                  {{ statsumm.norm_fivenumsumm[3] }} %</td>
+                <td style="text-align: center">{{ statsumm.raw_fivenumsumm[4] }} |
+                  {{ statsumm.norm_fivenumsumm[4] }} %</td>
+              </tr>
+          </table>
+          <img src="data:image/png;base64, {{ tag_details_section.plots[loop.index0] }}" alt="graph">
+          <br>
+          <br>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+<br>
+{%- endmacro %}
