@@ -1,7 +1,7 @@
 import flask
 from flask import g
 from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
-from alchemy.reports import report_objects
+from alchemy.reports import report_types
 import os
 
 bp_clazz = flask.Blueprint('clazz', __name__)
@@ -100,7 +100,7 @@ def paper_results():
 def paper_report(paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    clazz_report = report_objects.ClazzPaperReport(g.clazz, paper)
+    clazz_report = report_types.ClazzPaperReport(g.clazz, paper)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
 
 

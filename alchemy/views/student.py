@@ -44,5 +44,5 @@ def paper_report(clazz_id=0, paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     clazz = models.Clazz.query.get_or_404(clazz_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    student_report = reports.report_objects.StudentPaperReport(g.student, clazz, paper)
+    student_report = reports.report_types.StudentPaperReport(g.student, clazz, paper)
     return flask.render_template('student/paper_report.html', student_report = student_report)

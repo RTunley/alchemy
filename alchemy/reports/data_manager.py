@@ -98,7 +98,7 @@ class StudentTagAchievement(object):
         self.percent_score = calc_percentage(self.raw_score, self.tag_total)
         self.grade = determine_grade(self.percent_score, self.paper.course)
 
-class QuestionHighlights(object):
+class QuestionHighlightSets(object):
     def __init__(self, student, paper, scores):
         self.strengths = []
         self.has_strengths = False
@@ -124,7 +124,7 @@ class QuestionHighlights(object):
         for j in weakness_indexes:
             self.weaknesses.append(QuestionHighlight(paper.paper_questions[j].order_number, percent_scores[j], determine_grade(percent_scores[j], paper.course)))
 
-class TagHighlights(object):
+class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
         self.strengths = []
         self.weaknesses = []
