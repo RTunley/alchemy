@@ -76,27 +76,42 @@ class AdjacentGrades(object):
 
 ## Strengths and Weaknesses = Highlights ##
 
+class StatSummary(object):
+    def __init__(self, paper, score, total):
+        self.object = None
+        self.total = total
+        self.raw_score = score
+        self.percent_score = calc_percentage(self.raw_score, self.total)
+        self.grade = determine_grade(self.percent_score, paper.course)
+
+    @staticmethod
+    def from_tag(paper, tag_profile, score):
+        tag_statsumm = StatSummary(paper, score, tag_profile.allocated_points)
+        tag_statsumm.object = tag_profile
+        return tag_statsumm
+
+
 class QuestionHighlight(object):
     def __init__(self, order_id, percentage, grade):
         self.order_id = order_id
         self.percentage = percentage
         self.grade = grade
 
-class StudentTagAchievement(object):
-    "Contains info on the tag and the student achievement on that tag in a given paper."
-    def __init__(self, student, paper, tag_profile, total):
-        self.student = student
-        self.paper = paper
-        self.tag = tag_profile.tag
-        self.tag_total = tag_profile.allocated_points
-        self.raw_score = total
-        self.percent_score = 0
-        self.grade = None
-        self.build_self(tag_profile, total)
-
-    def build_self(self, tag_profile, total):
-        self.percent_score = calc_percentage(self.raw_score, self.tag_total)
-        self.grade = determine_grade(self.percent_score, self.paper.course)
+# class StudentTagAchievement(object):
+#     "Contains info on the tag and the student achievement on that tag in a given paper."
+#     def __init__(self, student, paper, tag_profile, total):
+#         self.student = student
+#         self.paper = paper
+#         self.tag = tag_profile.tag
+#         self.tag_total = tag_profile.allocated_points
+#         self.raw_score = total
+#         self.percent_score = 0
+#         self.grade = None
+#         self.build_self(tag_profile, total)
+#
+#     def build_self(self, tag_profile, total):
+#         self.percent_score = calc_percentage(self.raw_score, self.tag_total)
+#         self.grade = determine_grade(self.percent_score, self.paper.course)
 
 class QuestionHighlightSets(object):
     def __init__(self, student, paper, scores):
@@ -131,19 +146,19 @@ class TagHighlightSets(object):
         self.build_self(student, paper, scores)
 
     def build_self(self, student, paper, scores):
-        all_student_tag_achievements = []
+        student_tag_statsumms = []
         for profile in paper.profile.tag_profile_list:
-            student_tag_total = get_tag_total(student, profile.tag.name, paper, scores)
-            student_tag_achievement = StudentTagAchievement(student, paper, profile, student_tag_total)
-            all_student_tag_achievements.append(student_tag_achievement)
+            student_tag_score = get_tag_score(student, profile.tag.name, paper, scores)
+            tag_statsumm = StatSummary.from_tag(paper, profile, student_tag_score)
+            student_tag_statsumms.append(tag_statsumm)
 
-        all_student_tag_achievements.sort(key=lambda x: x.percent_score, reverse=True)
-        for s_t_a in all_student_tag_achievements:
-            if s_t_a.percent_score == all_student_tag_achievements[0].percent_score:
-                self.strengths.append(s_t_a)
+        student_tag_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
+        for statsumm in student_tag_statsumms:
+            if statsumm.percent_score == student_tag_statsumms[0].percent_score:
+                self.strengths.append(statsumm)
 
-            elif s_t_a.percent_score == all_student_tag_achievements[-1].percent_score:
-                self.weaknesses.append(s_t_a)
+            elif statsumm.percent_score == student_tag_statsumms[-1].percent_score:
+                self.weaknesses.append(statsumm)
 
 class StatProfile(object):
     def __init__(self, values_list, total):
@@ -227,7 +242,7 @@ def filter_questions_by_tag(question_assoc_list, tag_string):
 
     return(question_id_list)
 
-def get_tag_total(student, tag_string, paper, scores):
+def get_tag_score(student, tag_string, paper, scores):
     tag_total = 0
     question_id_list = filter_questions_by_tag(paper.paper_questions, tag_string)
     for score in scores:

@@ -17,8 +17,8 @@
       {% endfor %}
       <br>
       <p>The areas where you experienced the most success were:</p>
-      {% for student_tag_achievement in highlights_section.tag_highlights.strengths %}
-        <p><b>{{ student_tag_achievement.tag.name }}</b>, with {{ student_tag_achievement.percent_score }}% of marks available (Grade Level: {{ student_tag_achievement.grade }})</p>
+      {% for statsumm in highlights_section.tag_highlights.strengths %}
+        <p><b>{{ statsumm.object.tag.name }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }}).</p>
       {% endfor %}
     </td>
     <td>
@@ -28,8 +28,8 @@
       {% endfor %}
       <br>
       <p>The areas which may require more attention are:</p>
-      {% for student_tag_achievement in highlights_section.tag_highlights.weaknesses %}
-        <p><b>{{ student_tag_achievement.tag.name }}</b>, with {{ student_tag_achievement.percent_score }}% of marks available (Grade Level: {{ student_tag_achievement.grade }})</p>
+      {% for statsumm in highlights_section.tag_highlights.weaknesses %}
+        <p><b>{{ statsumm.object.tag.name }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }}).</p>
       {% endfor %}
     </td>
   </tr>
