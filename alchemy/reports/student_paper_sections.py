@@ -2,26 +2,22 @@ from alchemy import models
 from alchemy.reports import data_manager
 
 class StudentReportSection:
-    def __init__(self, html_macro):
-        self.html_macro = html_macro
-
-class OverviewSection(StudentReportSection):
     def __init__(self, html_macro, student, paper):
         self.html_macro = html_macro
         self.student = student
         self.paper = paper
         self.build_self()
+
+class OverviewSection(StudentReportSection):
+    def __init__(self, html_macro, student, paper):
+        super().__init__(html_macro, student, paper)
 
     def build_self(self):
         self.tally = data_manager.PaperScoreTally.from_student(self.student, self.paper)
 
 class AdjacentGradesSection(StudentReportSection):
     def __init__(self, html_macro, student, paper):
-        self.html_macro = html_macro
-        self.student = student
-        self.paper = paper
-        self.adjacent_grades = None
-        self.build_self()
+        super().__init__(html_macro, student, paper)
 
     def build_self(self):
         tally = data_manager.PaperScoreTally.from_student(self.student, self.paper)
@@ -50,12 +46,7 @@ class CohortSummarySection(StudentReportSection):
 
 class HighlightsSection(StudentReportSection):
     def __init__(self, html_macro, student, paper):
-        self.html_macro = html_macro
-        self.student = student
-        self.paper = paper
-        self.question_highlights = None
-        self.tag_highlights = None
-        self.build_self()
+        super().__init__(html_macro, student, paper)
 
     def build_self(self):
         raw_scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
