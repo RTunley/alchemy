@@ -145,7 +145,7 @@ class TagHighlights(object):
             elif s_t_a.percent_score == all_student_tag_achievements[-1].percent_score:
                 self.weaknesses.append(s_t_a)
 
-class StatSummary(object):
+class StatProfile(object):
     def __init__(self, values_list, total):
         self.raw_values_list = values_list
         self.total = total
@@ -180,15 +180,15 @@ class StatSummary(object):
 
     @staticmethod
     def from_tag(values_list, total, tag):
-        statsumm = StatSummary(values_list, total)
-        statsumm.object = tag
-        return statsumm
+        statprofile = StatProfile(values_list, total)
+        statprofile.object = tag
+        return statprofile
 
     @staticmethod
     def from_question(values_list, total, paper_question):
-        statsumm = StatSummary(values_list, total)
-        statsumm.object = paper_question
-        return statsumm
+        statprofile = StatProfile(values_list, total)
+        statprofile.object = paper_question
+        return statprofile
 
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
@@ -279,32 +279,32 @@ def make_student_grade_dict(student_tallies, course):
 
     return student_grade_dict
 
-def make_tag_statsumm_list(clazz, paper):
-    tag_statsumm_list = []
-    for profile in paper.profile.tag_profile_list:
+def make_tag_statprofile_list(clazz, paper):
+    tag_statprofile_list = []
+    for tag_profile in paper.profile.tag_profile_list:
         raw_totals = []
         for student in clazz.students:
             scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-            tag_total = get_tag_total(student, profile.name, paper, scores)
+            tag_total = get_tag_total(student, tag_profile.name, paper, scores)
             raw_totals.append(tag_total)
-        tag_statsumm = StatSummary.from_tag(raw_totals, profile.allocated_points, profile.tag)
-        tag_statsumm_list.append(tag_statsumm)
-    return tag_statsumm_list
+        tag_statprofile = StatProfile.from_tag(raw_totals, tag_profile.allocated_points, tag_profile.tag)
+        tag_statprofile_list.append(tag_statprofile)
+    return tag_statprofile_list
 
-def make_question_statsumm_list(clazz, paper):
-    question_statsumm_list = []
+def make_question_statprofile_list(clazz, paper):
+    question_statprofile_list = []
     for pq in paper.paper_questions:
         scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
         raw_totals = [score.value for score in scores]
-        question_statsumm = StatSummary.from_question(raw_totals, pq.question.points, pq)
-        question_statsumm_list.append(question_statsumm)
-    return question_statsumm_list
+        question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
+        question_statprofile_list.append(question_statprofile)
+    return question_statprofile_list
 
 ## Functions for interacting with reports.plots ##
 
 def create_clazz_distribution_plot(clazz, paper):
-    clazz_statsumm = StatSummary(total_student_scores_for_clazz(clazz, paper), paper.profile.total_points)
-    plot_data = plots.create_distribution_plot(clazz_statsumm.norm_values_list, clazz_statsumm.norm_sd, clazz_statsumm.norm_mean, 'Distribution of Overall Achievement', False, None)
+    clazz_statprofile = StatProfile(total_student_scores_for_clazz(clazz, paper), paper.profile.total_points)
+    plot_data = plots.create_distribution_plot(clazz_statprofile.norm_values_list, clazz_statprofile.norm_sd, clazz_statprofile.norm_mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
 
 def make_grade_pie_data(student_grade_dict):
@@ -327,27 +327,27 @@ def make_grade_pie_data(student_grade_dict):
     grade_pie_data = plots.create_pie_chart('Grade Level Distribution', slices, labels)
     return grade_pie_data
 
-def make_comparison_charts(statsumm_list):
+def make_comparison_charts(statprofile_list):
     means = []
     medians = []
     sd_list = []
     iqr_list = []
     labels = []
-    for statsumm in statsumm_list:
-        means.append(statsumm.norm_mean)
-        medians.append(statsumm.norm_fivenumsumm[2])
-        sd_list.append(statsumm.norm_sd)
-        iqr_list.append(statsumm.norm_iqr)
-        if isinstance(statsumm.object, models.Tag):
-            labels.append(statsumm.object.name)
-        elif isinstance(statsumm_list[0].object, models.PaperQuestion):
-            labels.append(statsumm.object.order_number)
+    for statprofile in statprofile_list:
+        means.append(statprofile.norm_mean)
+        medians.append(statprofile.norm_fivenumsumm[2])
+        sd_list.append(statprofile.norm_sd)
+        iqr_list.append(statprofile.norm_iqr)
+        if isinstance(statprofile.object, models.Tag):
+            labels.append(statprofile.object.name)
+        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
+            labels.append(statprofile.object.order_number)
 
-    if isinstance(statsumm.object, models.Tag):
+    if isinstance(statprofile.object, models.Tag):
         center_title = 'Tag Comparison: Central Tendency'
         spread_title = 'Tag Comparison: Spread'
         x_axis = None
-    elif isinstance(statsumm_list[0].object, models.PaperQuestion):
+    elif isinstance(statprofile_list[0].object, models.PaperQuestion):
         center_title = 'Question Comparison: Central Tendency'
         spread_title = 'Question Comparison: Spread'
         x_axis = 'Question Number'
@@ -356,14 +356,14 @@ def make_comparison_charts(statsumm_list):
     spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
     return (center_bar_plot, spread_bar_plot)
 
-def make_achievement_plots(statsumm_list):
+def make_achievement_plots(statprofile_list):
     tag_plot_list = []
-    for statsumm in statsumm_list:
-        if isinstance(statsumm.object, models.Tag):
-            title = f"{statsumm.object.name} - Achievement Distribution"
-        elif isinstance(statsumm.object, models.PaperQuestion):
-            title = f"Question {statsumm.object.order_number} - Achievement Distribution"
-        plot_data = plots.create_distribution_plot(statsumm.norm_values_list, statsumm.norm_sd, statsumm.norm_mean, title, False, None)
+    for statprofile in statprofile_list:
+        if isinstance(statprofile.object, models.Tag):
+            title = f"{statprofile.object.name} - Achievement Distribution"
+        elif isinstance(statprofile.object, models.PaperQuestion):
+            title = f"Question {statprofile.object.order_number} - Achievement Distribution"
+        plot_data = plots.create_distribution_plot(statprofile.norm_values_list, statprofile.norm_sd, statprofile.norm_mean, title, False, None)
         tag_plot_list.append(plot_data)
 
     return tag_plot_list

@@ -14,11 +14,11 @@
             <th>Mean</th>
             <th>Median</th>
           </tr>
-          {% for statsumm in question_overview_section.statsumms|sort(attribute='norm_mean', reverse=True) %}
+          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
             <tr>
-              <td>{{ statsumm.object.order_number }}</td>
-              <td>{{ statsumm.norm_mean }} %</td>
-              <td>{{ statsumm.norm_fivenumsumm[2] }} %</td>
+              <td>{{ statprofile.object.order_number }}</td>
+              <td>{{ statprofile.norm_mean }} %</td>
+              <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
             </tr>
           {% endfor %}
         </table>
@@ -39,11 +39,11 @@
             <th>Standard Deviation</th>
             <th>Interquartile Range</th>
           </tr>
-          {% for statsumm in question_overview_section.statsumms|sort(attribute='norm_sd', reverse=True) %}
+          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_sd', reverse=True) %}
             <tr>
-              <td>{{ statsumm.object.order_number }}</td>
-              <td>{{ statsumm.norm_sd }} %</td>
-              <td>{{ statsumm.norm_iqr }} %</td>
+              <td>{{ statprofile.object.order_number }}</td>
+              <td>{{ statprofile.norm_sd }} %</td>
+              <td>{{ statprofile.norm_iqr }} %</td>
             </tr>
           {% endfor %}
         </table>
