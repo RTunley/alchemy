@@ -40,37 +40,39 @@
     </head>
     <body>
 
-      <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+      <div class="p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <div class="row justify-content-md-center">
+          <div class="col d-flex align-items-baseline">
+            <h6 class="mt-2 mr-3">
+              Alchemy{% if 'account' in g %}: {{ g.account.name }}{% endif %}
+            </h6>
 
-        <h5 class="my-1 ml-3 mr-md-auto">
-          Alchemy{% if 'account' in g %}: {{ g.account.name }}{% endif %}
-        </h5>
+            {% if 'account' in g %}
+              <ul class="nav nav-pills">
+                <li class="nav-item dropdown mr-2">
+                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
+                  <div class="dropdown-menu">
+                    {% for course in g.account.courses %}
+                    <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
+                    {% endfor %}
+                  </div>
+                </li>
+              </ul>
+            {% endif %}
+          </div>
 
-        {% if 'account' in g %}
-          <ul class="nav nav-pills">
-            <li class="nav-item dropdown mr-2">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
-              <div class="dropdown-menu">
-                {% for course in g.account.courses %}
-                <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
-                {% endfor %}
-              </div>
-            </li>
-            <li class="nav-item mr-2">
-              <a class="nav-link {{ 'active' if request.endpoint == 'account.index' }} {{ 'disabled' if request.endpoint == 'account.index' }}" href="{{ url_for('account.index') }}">Account</a>
-            </li>
-          </ul>
-        {% endif %}
-
-        {% if 'current_user' in g %}
-          <ul class="nav nav-pills">
-            <li class="nav-item">
-              <span class="nav-link">Hello, {{ g.current_user.given_name or g.current_user.username }}!</span>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-info" href="{{ url_for('auth.sign_out') }}">Sign out</a>
-            </li>
-          </ul>
-        {% endif %}
-
+          <div class="col-md-auto d-flex align-items-baseline">
+            {% if 'current_user' in g %}
+            <ul class="nav nav-pills">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ g.current_user.username }}</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ url_for('account.index') }}">Account home</a>
+                  <a class="dropdown-item" href="{{ url_for('auth.sign_out') }}">Sign out</a>
+                </div>
+              </li>
+            </ul>
+            {% endif %}
+          </div>
+        </div>
       </div>

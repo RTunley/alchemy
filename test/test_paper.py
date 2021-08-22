@@ -8,7 +8,7 @@ import unittest
 from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
 import test.create_test_objects as cto
 
-class BaseTestCase(TestCase):
+class PaperTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -22,8 +22,6 @@ class BaseTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-class FlaskTestCase(BaseTestCase):
 
     # Check that paper home is working properly
     def test_paper_index(self):
@@ -63,14 +61,14 @@ class FlaskTestCase(BaseTestCase):
         course = Course.query.first()
         paper = Paper.query.first()
         new_title = "Edited Title"
-        response = self.client.post("/course/{}/paper/{}/edit_title".format(course.id, paper.id), data = dict(paper_edit_modal_new_title = new_title), follow_redirects = True)
+        response = self.client.post("/course/{}/paper/{}/edit_title".format(course.id, paper.id), data = dict(paper_edit_modal_new_title = new_title))
         paper = Paper.query.first()
         self.assertEqual(paper.title, new_title)
 
     def test_delete_paper(self):
         course = Course.query.first()
         paper = Paper.query.first()
-        response = self.client.get('/course/{}/paper/{}/remove'.format(course.id, paper.id), follow_redirects = True)
+        response = self.client.get('/course/{}/paper/{}/remove'.format(course.id, paper.id))
 
         num_papers = len(Paper.query.all())
         self.assertEqual(num_papers, 0)
@@ -80,7 +78,7 @@ class FlaskTestCase(BaseTestCase):
         paper = Paper.query.first()
         q = cto.create_question1(course)
         cto.add_question_to_paper(paper, q)
-        response = self.client.get('/course/{}/paper/{}/printable'.format(course.id, paper.id), follow_redirects = True)
+        response = self.client.get('/course/{}/paper/{}/printable'.format(course.id, paper.id))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(paper.paper_questions), 1)
         self.assertTrue(bytes(q.content, "utf-8") in response.data)
@@ -90,7 +88,7 @@ class FlaskTestCase(BaseTestCase):
         paper = Paper.query.first()
         q = cto.create_question1(course)
         cto.add_question_to_paper(paper, q)
-        response = self.client.get('/course/{}/paper/{}/solutions_printable'.format(course.id, paper.id), follow_redirects = True)
+        response = self.client.get('/course/{}/paper/{}/solutions_printable'.format(course.id, paper.id))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(bytes(q.content, "UTF-8") in response.data)
         self.assertTrue(bytes(q.solution, "UTF-8") in response.data)

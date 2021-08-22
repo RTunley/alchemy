@@ -17,7 +17,7 @@ def course_student_number(course):
 
     return num_students
 
-class BaseTestCase(TestCase):
+class CohortTestCase(TestCase):
 
     def create_app(self):
         return app
@@ -33,11 +33,9 @@ class BaseTestCase(TestCase):
         db.session.remove()
         db.drop_all()
 
-class FlaskTestCase(BaseTestCase):
-
     def test_index(self):
         course = Course.query.first()
-        response = self.client.get('/course/{}/cohort/index'.format(course.id), follow_redirects = True)
+        response = self.client.get('/course/{}/cohort/index'.format(course.id))
         self.assertEqual(response.status_code, 200)
 
     def test_add_student(self):

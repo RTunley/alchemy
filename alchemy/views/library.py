@@ -22,13 +22,12 @@ def index():
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
     return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags)
 
-def save_image(image_data):
+def add_image(form_field):
+    form_field.data.stream.seek(0)
+    image_data = base64.b64encode(form_field.data.read())
     new_image = models.Image(content = image_data)
     db.session.add(new_image)
-    db.session.commit()
-
     return new_image
-
 
 @bp_library.route('/add_question', methods=['POST'])
 @auth_manager.require_group
@@ -42,9 +41,7 @@ def add_question():
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
         if new_question_form.image.data:
-            new_question_form.image.data.stream.seek(0)
-            image_string = base64.b64encode(new_question_form.image.data.read())
-            question.q_image = save_image(image_string)
+            question.image = add_image(new_question_form.image)
         db.session.add(question)
         db.session.commit()
         flask.flash('New question has been added to the library!', 'success')
@@ -54,7 +51,7 @@ def add_question():
 @bp_library.route('/edit_question_submit', methods=['POST'])
 @auth_manager.require_group
 def edit_question_submit():
-    edit_question_form = forms.EditQuestionForm(flask.request.form)
+    edit_question_form = forms.EditQuestionForm()
     if edit_question_form.validate_on_submit():
         question_id = int(flask.request.form.get('question_id'))
         question = models.Question.query.get_or_404(question_id)
@@ -62,7 +59,9 @@ def edit_question_submit():
         question.solution = edit_question_form.solution.data
         question.points = edit_question_form.points.data
         question.tags = build_question_tags(edit_question_form.hidden_question_tags.data, question.q_course, db)
-        question.image = edit_question_form.image.data
+        if edit_question_form.image.data:
+            db.session.delete(question.image)
+            question.image = add_image(edit_question_form.image)
         db.session.commit()
         return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id))
     return '<html><body>Invalid form data!</body></html>'
@@ -105,7 +104,8 @@ def build_question_tags(tag_string, course, db):
                 tag_obj_list.append(course_tag)
                 tag_list.remove(tag)
     for tag in tag_list:
-        new_tag = models.Tag(name = tag, tag_course = course)
-        tag_obj_list.append(new_tag)
-        db.session.add(new_tag)
+        if tag != '':
+            new_tag = models.Tag(name = tag, tag_course = course)
+            tag_obj_list.append(new_tag)
+            db.session.add(new_tag)
     return tag_obj_list

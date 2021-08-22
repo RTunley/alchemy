@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired
+from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, NumberRange
 
 def build_course_tag_string(course):
     return ','.join([tag.name for tag in course.tags if len(tag.name) > 0])
@@ -9,7 +9,7 @@ def build_course_tag_string(course):
 class NewQuestionForm(FlaskForm):
     content = TextAreaField('Question Content', validators = [DataRequired(),])
     solution = TextAreaField('Question Solution', validators = [DataRequired(),])
-    points = FloatField('Points',validators = [InputRequired(),])
+    points = FloatField('Points',validators = [InputRequired(), NumberRange(min = 1, max = 50)])
     hidden_course_tags = HiddenField(id='new_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='new_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='new_question_new_tag')
