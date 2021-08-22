@@ -90,54 +90,38 @@ class StatSummary(object):
         tag_statsumm.object = tag_profile
         return tag_statsumm
 
-
-class QuestionHighlight(object):
-    def __init__(self, order_id, percentage, grade):
-        self.order_id = order_id
-        self.percentage = percentage
-        self.grade = grade
-
-# class StudentTagAchievement(object):
-#     "Contains info on the tag and the student achievement on that tag in a given paper."
-#     def __init__(self, student, paper, tag_profile, total):
-#         self.student = student
-#         self.paper = paper
-#         self.tag = tag_profile.tag
-#         self.tag_total = tag_profile.allocated_points
-#         self.raw_score = total
-#         self.percent_score = 0
-#         self.grade = None
-#         self.build_self(tag_profile, total)
-#
-#     def build_self(self, tag_profile, total):
-#         self.percent_score = calc_percentage(self.raw_score, self.tag_total)
-#         self.grade = determine_grade(self.percent_score, self.paper.course)
+    @staticmethod
+    def from_paperquestion(paper, paper_question, score):
+        question_statsumm = StatSummary(paper, score, paper_question.question.points)
+        question_statsumm.object = paper_question
+        return question_statsumm
 
 class QuestionHighlightSets(object):
-    def __init__(self, student, paper, scores):
+    def __init__(self, student, paper):
         self.strengths = []
         self.has_strengths = False
         self.weaknesses = []
         self.has_weaknesses = False
-        self.build_self(student, paper, scores)
+        self.build_self(student, paper)
 
-    def build_self(self, student, paper, scores):
-        percent_scores = calc_percent_scores([score for score in scores])
-        highest_percent = max(percent_scores)
-        lowest_percent = min(percent_scores)
-        if lowest_percent == 100:
+    def build_self(self, student, paper):
+        student_statsumm_list = make_student_statsumm_list(student, paper)
+        student_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+        max_percentage = student_statsumm_list[0].percent_score
+        min_percentage = student_statsumm_list[-1].percent_score
+        if min_percentage == 100:
             self.has_strengths = True
-        elif highest_percent == 0:
+        elif max_percentage == 0:
             self.has_weaknesses = True
         else:
             self.has_weaknesses = True
             self.has_strengths = True
-        strength_indexes = [x for x in range(len(percent_scores)) if percent_scores[x] == highest_percent]
-        weakness_indexes = [x for x in range(len(percent_scores)) if percent_scores[x] == lowest_percent]
-        for i in strength_indexes:
-            self.strengths.append(QuestionHighlight(paper.paper_questions[i].order_number, percent_scores[i], determine_grade(percent_scores[i], paper.course)))
-        for j in weakness_indexes:
-            self.weaknesses.append(QuestionHighlight(paper.paper_questions[j].order_number, percent_scores[j], determine_grade(percent_scores[j], paper.course)))
+        for statsumm in student_statsumm_list:
+            if statsumm.percent_score == max_percentage:
+                self.strengths.append(statsumm)
+
+            elif statsumm.percent_score == min_percentage:
+                self.weaknesses.append(statsumm)
 
 class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
@@ -300,7 +284,7 @@ def make_tag_statprofile_list(clazz, paper):
         raw_totals = []
         for student in clazz.students:
             scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-            tag_total = get_tag_total(student, tag_profile.name, paper, scores)
+            tag_total = get_tag_score(student, tag_profile.name, paper, scores)
             raw_totals.append(tag_total)
         tag_statprofile = StatProfile.from_tag(raw_totals, tag_profile.allocated_points, tag_profile.tag)
         tag_statprofile_list.append(tag_statprofile)
@@ -314,6 +298,14 @@ def make_question_statprofile_list(clazz, paper):
         question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
         question_statprofile_list.append(question_statprofile)
     return question_statprofile_list
+
+def make_student_statsumm_list(student, paper):
+    question_statsumm_list = []
+    for paper_question in paper.paper_questions:
+        student_score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id, question_id = paper_question.question.id).first()
+        question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
+        question_statsumm_list.append(question_statsumm)
+    return question_statsumm_list
 
 ## Functions for interacting with reports.plots ##
 

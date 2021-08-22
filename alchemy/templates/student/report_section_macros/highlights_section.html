@@ -12,8 +12,8 @@
   <tr>
     <td>
       <p>The Question(s) where you achieved the highest were:</p>
-      {% for highlight in highlights_section.question_highlights.strengths %}
-        <p><b>Question {{ highlight.order_id }}</b>, with {{ highlight.percentage }}% of marks available (Grade Level: {{ highlight.grade }})</p>
+      {% for statsumm in highlights_section.question_highlights.strengths %}
+        <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
       {% endfor %}
       <br>
       <p>The areas where you experienced the most success were:</p>
@@ -23,8 +23,8 @@
     </td>
     <td>
       <p>The Question(s) where you may require further revision are:</p>
-      {% for highlight in highlights_section.question_highlights.weaknesses %}
-        <p><b>Question {{ highlight.order_id }}</b>, with {{ highlight.percentage }}% of marks available (Grade Level: {{ highlight.grade }})</p>
+      {% for statsumm in highlights_section.question_highlights.weaknesses %}
+        <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
       {% endfor %}
       <br>
       <p>The areas which may require more attention are:</p>
