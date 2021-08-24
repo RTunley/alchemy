@@ -22,10 +22,9 @@
         <td>
           {% if (paper.paper_questions | length) != 0 %}
             {% if paper.has_all_scores %}
-              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">New Class Report</a>
-              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">Old Class Report</a>
+              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
             {% else %}
-              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.clazz_paper_report', paper_id = paper.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
             {% endif %}
           {% endif %}
         </td>
