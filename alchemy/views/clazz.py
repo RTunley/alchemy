@@ -1,7 +1,7 @@
 import flask
 from flask import g
 from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
-from alchemy.reports import report_types
+from alchemy.reports import report_types, data_manager
 import os
 
 bp_clazz = flask.Blueprint('clazz', __name__)
@@ -19,12 +19,20 @@ def url_defaults(endpoint, values):
 def before_request():
     g.html_title = f'Class - {g.clazz.code}'
 
+# @bp_clazz.route('/')
+# @auth_manager.require_group
+# def index():
+#     for paper in g.course.papers:
+#         paper.check_clazz_scores(g.clazz)
+#     return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
+
 @bp_clazz.route('/')
 @auth_manager.require_group
 def index():
-    for p in g.course.papers:
-        p.check_clazz_scores(g.clazz)
-    return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
+    for paper in g.course.papers:
+        paper.check_clazz_scores(g.clazz)
+    student_course_profiles = data_manager.make_student_course_profiles(g.course, g.clazz.students)
+    return flask.render_template('course/clazz/index.html', profiles = student_course_profiles)
 
 @bp_clazz.route('/student_scores_update', methods=['POST'])
 @auth_manager.require_group
@@ -103,7 +111,6 @@ def paper_report(paper_id=0):
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
 
-
 @bp_clazz.route('/paper_report')
 @auth_manager.require_group
 def clazz_paper_report():
@@ -116,6 +123,7 @@ def clazz_paper_report():
     question_scoreset_list = score_manager.make_question_scoreset_list(g.clazz, paper)
     clazz_paper_report = score_manager.ClassReport(paper, student_scoreset_list, tag_totalset_list, question_scoreset_list)
     return flask.render_template('course/clazz/clazz_paper.html', paper = paper, clazz_paper_report = clazz_paper_report)
+
 
 def get_clazz_student_profiles(clazz):
     student_course_profile_list = []

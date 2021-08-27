@@ -5,17 +5,33 @@ from alchemy.reports import plots
 
 ## Data organisation classes
 
+class StudentCourseProfile(object):
+    def __init__(self, student, course):
+        self.student = student
+        self.paper_score_tallies = []
+        self.build_self(student, course)
+
+    def build_self(self, student, course):
+        for paper in course.papers:
+            paper_score_tally = PaperScoreTally.from_student(student, paper)
+            self.paper_score_tallies.append(paper_score_tally)
+
 class PaperScoreTally(object):
     def __init__(self, student, paper, score):
         self.student = student
+        self.paper_id = paper.id
         self.paper_total = paper.profile.total_points
         self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
         self.grade = determine_grade(self.percent_total, paper.course)
+        self.has_all_scores = True
 
     @staticmethod
     def from_student(student, paper):
         scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+        for score in scores:
+            if score == None or score.value == None:
+                self.has_all_Scores = False
         return PaperScoreTally(student, paper, total_score(scores))
 
 class PaperMultiScoreTally(object):
@@ -306,6 +322,13 @@ def make_student_statsumm_list(student, paper):
         question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
         question_statsumm_list.append(question_statsumm)
     return question_statsumm_list
+
+def make_student_course_profiles(course, student_list):
+    student_profiles = []
+    for student in student_list:
+        course_profile = StudentCourseProfile(student, course)
+        student_profiles.append(course_profile)
+    return student_profiles
 
 ## Functions for interacting with reports.plots ##
 
