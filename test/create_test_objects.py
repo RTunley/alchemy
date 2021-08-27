@@ -28,13 +28,13 @@ def create_grade_levels(course):
     return course_grades
 
 def create_question1(course):
-    test_question = m.Question(content = 'Not Very Challenging', solution = 'Simple Solution', points = 4, course_id = course.id)
+    test_question = m.Question(content = 'Not Very Challenging', solution = m.Solution(content='Simple Solution'), points = 4, course_id = course.id)
     db.session.add(test_question)
     db.session.commit()
     return test_question
 
 def create_question2(course):
-    test_question = m.Question(content = 'Very Challenging', solution = 'Difficult Solution', points = 2, course_id = course.id)
+    test_question = m.Question(content = 'Very Challenging', solution = m.Solution(content='Difficult Solution'), points = 2, course_id = course.id)
     db.session.add(test_question)
     db.session.commit()
     return test_question

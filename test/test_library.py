@@ -39,10 +39,10 @@ class LibraryTestCase(TestCase):
         ]
         for i in range(len(question_data)):
             with self.subTest(question=question_data[i]):
-                content, solution, points, question_valid = question_data[i]
+                content, solution_content, points, question_valid = question_data[i]
                 prev_question_count = len(course.questions)
                 response = self.client.post('/course/{}/library/add_question'.format(course.id),
-                data = dict(content=content, solution=solution, points=points),
+                data = dict(content=content, solution=solution_content, points=points),
                 follow_redirects = True)
 
                 if question_valid:
@@ -52,7 +52,7 @@ class LibraryTestCase(TestCase):
                     # question has correct attributes
                     question = Question.query.filter_by(course_id=course.id).all()[-1]
                     self.assertEqual(question.content, content)
-                    self.assertEqual(question.solution, solution)
+                    self.assertEqual(question.solution.content, solution_content)
                     self.assertEqual(question.points, points)
                 else:
                     self.assertEqual(len(course.questions), prev_question_count)
@@ -64,7 +64,7 @@ class LibraryTestCase(TestCase):
         tag = cto.create_attached_tag(course, q, "Familiar")
         response = self.client.get("/course/{}/library".format(course.id), follow_redirects = True)
         self.assertTrue(bytes(q.content, "UTF-8") in response.data)
-        self.assertTrue(bytes(q.solution, "UTF-8") in response.data)
+        self.assertTrue(bytes(q.solution.content, "UTF-8") in response.data)
         self.assertTrue(bytes(tag.name, "UTF-8") in response.data)
 
     # Testing added tags appear in html
@@ -89,7 +89,7 @@ class LibraryTestCase(TestCase):
         # question has correct attributes
         question = Question.query.filter_by(course_id = course.id).first()
         self.assertEqual(question.content, 'Edited Question')
-        self.assertEqual(question.solution, 'Edited Solution')
+        self.assertEqual(question.solution.content, 'Edited Solution')
         self.assertEqual(question.points, 10)
 
     # testing the delete question endpoint, no paper

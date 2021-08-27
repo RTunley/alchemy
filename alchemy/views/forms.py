@@ -1,5 +1,6 @@
+import string
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList, RadioField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, NumberRange
 
@@ -18,6 +19,9 @@ class NewQuestionForm(FlaskForm):
 
     def init_fields(self, course):
         self.hidden_course_tags.data = build_course_tag_string(course)
+        self.solution_choices = []
+        for i in range(4):  # show this many empty options by default
+            self.solution_choices.append((string.ascii_uppercase[i], ''))
 
 class EditQuestionForm(FlaskForm):
     content = TextAreaField('Question Content', validators = [DataRequired(),])
@@ -32,7 +36,16 @@ class EditQuestionForm(FlaskForm):
     def init_fields(self, course, question):
         self.hidden_course_tags.data = build_course_tag_string(course)
         self.content.data = question.content
-        self.solution.data = question.solution
+
+        self.solution_choices = []
+        if question.solution_choices:
+            for i in range(len(question.solution_choices)):
+                choice_label = string.ascii_uppercase[i]
+                choice_text = question.solution_choices[i].content
+                self.solution_choices.append((choice_label, choice_text))
+        else:
+            self.solution.data = question.solution.content
+
         self.points.data = question.points
         tag_name_list = []
         for tag in question.tags:

@@ -36,7 +36,7 @@ def add_question():
     if new_question_form.validate_on_submit():
         question = models.Question(
             content = new_question_form.content.data,
-            solution = new_question_form.solution.data,
+            solution = models.Solution(content=new_question_form.solution.data),
             points = new_question_form.points.data,
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
@@ -56,7 +56,7 @@ def edit_question_submit():
         question_id = int(flask.request.form.get('question_id'))
         question = models.Question.query.get_or_404(question_id)
         question.content = edit_question_form.content.data
-        question.solution = edit_question_form.solution.data
+        question.solution.content = edit_question_form.solution.data
         question.points = edit_question_form.points.data
         question.tags = build_question_tags(edit_question_form.hidden_question_tags.data, question.q_course, db)
         if edit_question_form.image.data:

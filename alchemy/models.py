@@ -1,8 +1,7 @@
 import sqlalchemy
 from alchemy import db
 import alchemy.views.profile as paper_profile
-import base64
-import io
+import base64, string
 
 ## Database Models ##
 
@@ -154,11 +153,20 @@ class PaperQuestion(db.Model):
     question = db.relationship('Question', back_populates='papers')
     paper = db.relationship('Paper', back_populates='paper_questions')
 
+question_solution_choices = db.Table('question_solution_choices', db.Model.metadata,
+    db.Column('question_id', db.ForeignKey('question.id'), primary_key=True),
+    db.Column('solution_id', db.ForeignKey('solution.id'), primary_key=True)
+)
+
 class Question(db.Model):
     __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(), nullable=False)
-    solution = db.Column(db.String(), nullable=False)
+
+    solution_id = db.Column(db.Integer, db.ForeignKey('solution.id'))
+    solution = db.relationship('Solution')
+    solution_choices = db.relationship('Solution', secondary=question_solution_choices)
+
     points = db.Column(db.Float(), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     tags = db.relationship('Tag', secondary=questions_tags, back_populates='questions')
@@ -170,8 +178,30 @@ class Question(db.Model):
     def decode_image(self):
         return self.image.content.decode('ascii')
 
+    def solution_choice_index(self):
+        'Returns the index of the correct solution choice.'
+        for i in range(len(self.solution_choices)):
+            if self.solution_choices[i] == self.solution:
+                return i
+        return -1
+
+    def describe_solution(self, solution):
+        '''Returns a text description of the solution.
+           E.g. "A) The answer" if this matches the first solution for a multiple
+           choice question, otherwise just returns "The answer".'''
+        for i in range(len(self.solution_choices)):
+            if self.solution_choices[i] == solution:
+                label = string.ascii_uppercase[i]
+                return f'{label}) {solution.content}'
+        return solution.content
+
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
+
+class Solution(db.Model):
+    __tablename__ = 'solution'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(), nullable=False)
 
 class Image(db.Model):
     __tablename__ = 'image'

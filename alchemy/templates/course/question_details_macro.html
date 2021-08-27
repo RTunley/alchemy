@@ -8,6 +8,15 @@
   <div class="accordion-grid">
     <div class="content area">
       <p class="card-text">{{ question.content }}</p>
+
+      {% if question.solution_choices %}
+      <ul style="list-style-type:none;">
+        {% for solution_choice in question.solution_choices %}
+        <li>{{ question.describe_solution(solution_choice) }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
       {% if question.image %}
         <p class="aligncenter">
           <image class="center" src="data:image/png;base64,{{ question.decode_image() }}">
@@ -16,7 +25,9 @@
     </div>
     <div class="solution-area">
       <h5>Solution</h5>
-      <p class="card-text">{{ question.solution }}</p>
+      <p class="card-text">
+        {{ question.describe_solution(question.solution) }}
+      </p>
     </div>
     <div class="tag-area">
       <h6 class="card-subtitle mt-2 mb-1 text-muted">Tags</h6>
