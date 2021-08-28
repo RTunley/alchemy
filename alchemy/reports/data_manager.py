@@ -29,7 +29,7 @@ class StudentCourseProfile(object):
 class PaperScoreTally(object):
     def __init__(self, student, paper, score):
         self.student = student
-        self.paper_id = paper.id
+        self.paper = paper
         self.paper_total = paper.profile.total_points
         self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
@@ -39,10 +39,12 @@ class PaperScoreTally(object):
     @staticmethod
     def from_student(student, paper):
         scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+        paper_score_tally = PaperScoreTally(student, paper, total_score(scores))
         for score in scores:
             if score == None or score.value == None:
-                self.has_all_Scores = False
-        return PaperScoreTally(student, paper, total_score(scores))
+                paper_score_tally.has_all_scores = False
+
+        return paper_score_tally
 
 class PaperMultiScoreTally(object):
     def __init__(self, paper, score_list):

@@ -34,12 +34,12 @@
       <th>Report</th>
     </tr>
     <tbody>
-      {% for scoreset in profile.scoreset_list %}
+      {% for tally in profile.paper_score_tallies %}
         <tr>
-          <td>{{ scoreset.paper.title }}</td>
-          {% if scoreset.has_all_scores %}
-            <td>{{ scoreset.grade }} | {{ scoreset.percentage }}% | {{ scoreset.total }}/{{ scoreset.paper.profile.total_points }}</td>
-            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.student_paper_report', student_id = g.student.id, paper_id = scoreset.paper.id) }}" >View Report</a></td>
+          <td>{{ tally.paper.title }}</td>
+          {% if tally.has_all_scores %}
+            <td>{{ tally.grade }} | {{ tally.percent_total }}% | {{ tally.total }}/{{ tally.paper.profile.total_points }}</td>
+            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned</td>
             <td><a class="btn btn-success btn-sm disabled">View Report</a></td>

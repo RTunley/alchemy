@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from alchemy import db, models, auth_manager, score_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, auth_manager, score_manager, file_input, file_output
 from alchemy.reports import report_types, data_manager
 import os
 
@@ -103,10 +103,3 @@ def paper_report(paper_id=0):
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
-
-def get_clazz_student_profiles(clazz):
-    student_course_profile_list = []
-    for student in clazz.students:
-        new_course_profile = summary_profiles.make_student_course_profile(student, clazz.course)
-        student_course_profile_list.append(new_course_profile)
-    return student_course_profile_list

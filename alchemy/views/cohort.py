@@ -1,7 +1,7 @@
 import flask
 from flask import g
 from werkzeug.utils import secure_filename
-from alchemy import db, models, auth_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, auth_manager, file_input, file_output
 from alchemy.reports import data_manager
 import os
 
