@@ -1,7 +1,7 @@
 import flask
 from flask import g
 import random
-from alchemy import application, db, models, auth_manager, summary_profiles, reports
+from alchemy import application, db, models, auth_manager
 from alchemy.reports import data_manager, report_types
 
 bp_student = flask.Blueprint('student', __name__)
@@ -28,16 +28,6 @@ def url_defaults(endpoint, values):
 @auth_manager.require_group
 def index():
     return flask.render_template('student/index.html')
-
-# @bp_student.route('/course-view/<int:course_id>')
-# @auth_manager.require_group
-# def course_view(course_id):
-#     g.course = models.Course.query.filter_by(id = course_id).first()
-#     for clazz in g.student.clazzes:
-#         if clazz.course.id == g.course.id:
-#             g.clazz = clazz
-#     course_profile = summary_profiles.make_student_course_profile(g.student, g.course)
-#     return flask.render_template('student/course_view.html', profile = course_profile)
 
 @bp_student.route('/course-view/<int:course_id>')
 @auth_manager.require_group
