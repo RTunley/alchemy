@@ -5,6 +5,16 @@ from alchemy.reports import plots
 
 ## Data organisation classes
 
+class ClazzCourseProfile(object):
+    def __init__(self, clazz, course):
+        self.clazz = clazz
+        self.student_course_profiles = []
+        self.build_self(clazz, course)
+
+    def build_self(self, clazz, course):
+        for student in clazz.students:
+            self.student_course_profiles.append(StudentCourseProfile(student, course))
+
 class StudentCourseProfile(object):
     def __init__(self, student, course):
         self.student = student

@@ -11,9 +11,16 @@
   <h2>Assessments ({{ g.course.papers | length }})</h2>
   <br>
   <table class="table table-hover">
+    <tr>
+      <th>Assessment</th>
+      <th>Total</th>
+      <th>Results</th>
+      <th>Achievement</th>
+    </tr>
     {% for paper in g.course.papers %}
       <tr>
         <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+        <td>{{ paper.profile.total_points }}</td>
         <td>
           {% if (paper.paper_questions | length) != 0 %}
             <a class="btn btn-info btn-sm" href="{{ url_for('course.clazz.paper_results', paper_id = paper.id) }}">Edit Results</a>
@@ -36,8 +43,7 @@
   <table class="table table-hover">
     <thead>
       <th>Student ID</th>
-      <th>Family Name</th>
-      <th>Given Name</th>
+      <th>Family Name, Given Name</th>
       {% for paper in g.course.papers %}
         <th>{{ paper.title }}</th>
       {% endfor %}
@@ -45,8 +51,7 @@
     {% for profile in profiles %}
       <tr>
         <td class="align-middle">{{ profile.student.id }}</td>
-        <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
-        <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
+        <td class="align-middle">{{ profile.student.aws_user.family_name }}, {{ profile.student.aws_user.given_name }}</td>
         {% for paper_score_tally in profile.paper_score_tallies %}
           {% if paper_score_tally.has_all_scores %}
             <td>{{ paper_score_tally.percent_total }}% | {{ paper_score_tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', paper_id = paper_score_tally.paper_id, student_id = profile.student.id, clazz_id = g.clazz.id) }}" >View Report</a></td>

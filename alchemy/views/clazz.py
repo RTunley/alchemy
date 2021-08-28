@@ -19,13 +19,6 @@ def url_defaults(endpoint, values):
 def before_request():
     g.html_title = f'Class - {g.clazz.code}'
 
-# @bp_clazz.route('/')
-# @auth_manager.require_group
-# def index():
-#     for paper in g.course.papers:
-#         paper.check_clazz_scores(g.clazz)
-#     return flask.render_template('course/clazz/index.html', profiles = get_clazz_student_profiles(g.clazz))
-
 @bp_clazz.route('/')
 @auth_manager.require_group
 def index():

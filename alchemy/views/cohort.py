@@ -2,6 +2,7 @@ import flask
 from flask import g
 from werkzeug.utils import secure_filename
 from alchemy import db, models, auth_manager, summary_profiles, file_input, file_output
+from alchemy.reports import data_manager
 import os
 
 bp_cohort = flask.Blueprint('cohort', __name__)
@@ -16,21 +17,16 @@ def get_cohort_size(course):
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
 
+def get_clazz_course_profiles(course):
+    clazz_course_profiles = []
+    for clazz in course.clazzes:
+        clazz_course_profiles.append(data_manager.ClazzCourseProfile(clazz, g.course))
+    return clazz_course_profiles
+
 @bp_cohort.route('/index')
 @auth_manager.require_group
 def index():
-    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course))
-
-def get_all_student_profiles(course):
-    clazz_profile_tuples = []
-    for clazz in course.clazzes:
-        student_course_profile_list = []
-        for student in clazz.students:
-            new_course_profile = summary_profiles.make_student_course_profile(student, course)
-            student_course_profile_list.append(new_course_profile)
-
-        clazz_profile_tuples.append((clazz,student_course_profile_list))
-    return clazz_profile_tuples
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
 @bp_cohort.route('/add_student', methods=['POST'])
 @auth_manager.require_group
@@ -50,7 +46,7 @@ def add_student():
         new_student = models.Student.create(id=student_id, given_name=new_given_name, family_name=new_family_name, email=email, clazzes=[clazz])
         db.session.add(new_student)
         db.session.commit()
-    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
 @bp_cohort.route('/upload_excel', methods=['POST'])
 @auth_manager.require_group
@@ -86,7 +82,7 @@ def upload_class_data():
         else:
             flask.flash('Allowed File Type Is .xlxs or .csv')
 
-    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
 @bp_cohort.route('/download_excel', methods = ['GET', 'POST'])
 @auth_manager.require_group

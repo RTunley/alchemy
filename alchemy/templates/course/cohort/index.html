@@ -4,29 +4,18 @@
   <main role="main">
     <h1 class="my-3">{{ g.course.name }} - Current Cohort</h1>
 
-    <h2>Classes ({{ g.course.clazzes | length }})</h2>
-    <br>
-    <table class="table table-hover">
-      <thead>
-        <th>Class</th>
-        <th>Teacher</th>
-        <th>Number of Students</th>
-      </thead>
-      {% for clazz in g.course.clazzes %}
-      <tr>
-        <td>{{ clazz.code }}</td>
-        <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
-        <td>{{ clazz.students | length }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-
     <h2>Assessments ({{ g.course.papers | length }})</h2>
     <br>
     <table class="table table-hover">
+      <tr>
+        <th>Assessment</th>
+        <th>Total</th>
+        <th>Achievement</th>
+      </tr>
       {% for paper in g.course.papers %}
         <tr>
           <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+          <td>{{ paper.profile.total_points }}</td>
           <td>
             {% if (paper.paper_questions | length) != 0 %}
                 <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Cohort Report</a>
@@ -36,7 +25,26 @@
       {% endfor %}
     </table>
     <br>
+
+    <h2>Classes ({{ g.course.clazzes | length }})</h2>
+    <br>
+    <table class="table table-hover">
+      <thead>
+        <th>Class</th>
+        <th>Teacher</th>
+        <th>Number of Students</th>
+      </thead>
+      {% for profile in clazz_profiles %}
+      <tr>
+        <td>{{ profile.clazz.code }}</td>
+        <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
+        <td>{{ profile.clazz.students | length }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
     <h2>Students ({{ num_students }})</h2>
+    <br>
     <div class="accordion" id="student-cohort-list">
       <div class="card">
         <div class="card-header" id="student-list-header">
@@ -51,23 +59,21 @@
             <table class="table table-hover">
               <thead>
                 <th>Student ID</th>
-                <th>Family Name</th>
-                <th>Given Name</th>
+                <th>Family Name, Given Name</th>
                 <th>Class</th>
                 {% for paper in g.course.papers %}
                   <th>{{ paper.title }}</th>
                 {% endfor %}
               </thead>
-              {% for tuple in profile_tuples %}
-                {% for profile in tuple[1] %}
+              {% for clazz_profile in clazz_profiles %}
+                {% for student_profile in clazz_profile.student_course_profiles %}
                   <tr>
-                    <td class="align-middle"><a href="{{ url_for('account.student.index', student_id = profile.student.id) }}">{{ profile.student.id }}</a></td>
-                    <td class="align-middle">{{ profile.student.aws_user.family_name }}</td>
-                    <td class="align-middle">{{ profile.student.aws_user.given_name }}</td>
-                    <td class="align-middle">{{ tuple[0].code }}</td>
-                    {% for scoreset in profile.scoreset_list %}
-                      {% if scoreset.has_all_scores %}
-                        <td>{{ scoreset.percentage }}% | {{ scoreset.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = profile.student.id, paper_id = scoreset.paper.id, clazz_id = tuple[0].id) }}" >View Report</a></td>
+                    <td class="align-middle"><a href="{{ url_for('account.student.index', student_id = student_profile.student.id) }}">{{ student_profile.student.id }}</a></td>
+                    <td class="align-middle">{{ student_profile.student.aws_user.family_name }}, {{ student_profile.student.aws_user.given_name }}</td>
+                    <td class="align-middle">{{ clazz_profile.clazz.code }}</td>
+                    {% for tally in student_profile.paper_score_tallies %}
+                      {% if tally.has_all_scores %}
+                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper_id, clazz_id = clazz_profile.clazz.id) }}">View Report</a></td>
                       {% else %}
                         <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
                         </td>
