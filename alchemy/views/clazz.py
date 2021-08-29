@@ -65,18 +65,18 @@ def student_scores_update():
                 except ValueError:
                     print('Bad score value:', question_cols[i])
                     continue
-            score = models.Score.query.filter_by(paper_id = paper_id, user_id = student_id, question_id = paper_question.question_id).first()
+            score = models.Score.query.filter_by(paper_id = paper_id, student_id = student_id, question_id = paper_question.question_id).first()
             if score:
                 score.value = new_value
             else:
-                score = models.Score(paper_id = paper_id, question_id = paper_question.question_id, user_id = student_id, value = new_value)
+                score = models.Score(paper_id = paper_id, question_id = paper_question.question_id, student_id = student_id, value = new_value)
                 db.session.add(score)
     db.session.commit()
     clazz_paper_profile = data_manager.ClazzPaperProfile(g.clazz, paper)
     # Make an array of the complete table data to be shown in the HTML table,
     # i.e. in the same format as the student_scores array that was received.
     tally_list_array = []
-    for tally in clazz_paper_profile.paper_score_tally:
+    for tally in clazz_paper_profile.paper_score_tallies:
         # add student id and name
         tally_list = [tally.student.id, tally.student.aws_user.given_name, tally.student.aws_user.family_name]
         # add values for all questions, or an empty string if there is no score
@@ -86,7 +86,6 @@ def student_scores_update():
         tally_list_array.append(tally_list)
     # Return the table data in JSON form
     return flask.jsonify(scores_table_json = tally_list_array)
-
 
     # score_set_list = score_manager.make_student_scoreset_list(g.clazz, paper)
     #
