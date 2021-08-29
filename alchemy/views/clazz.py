@@ -88,13 +88,21 @@ def student_scores_update():
     # Return the table data in JSON form
     return flask.jsonify(scores_table_json = all_score_set_lists)
 
+# @bp_clazz.route('/paper_results')
+# @auth_manager.require_group
+# def paper_results():
+#     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+#     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
+#     score_set_list = score_manager.make_student_scoreset_list(g.clazz, paper)
+#     return flask.render_template('course/clazz/paper_results.html', paper = paper, score_sets = score_set_list)
+
 @bp_clazz.route('/paper_results')
 @auth_manager.require_group
 def paper_results():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    score_set_list = score_manager.make_student_scoreset_list(g.clazz, paper)
-    return flask.render_template('course/clazz/paper_results.html', paper = paper, score_sets = score_set_list)
+    clazz_paper_profile = data_manager.ClazzPaperProfile(g.clazz, paper)
+    return flask.render_template('course/clazz/paper_results.html', clazz_paper_profile = clazz_paper_profile)
 
 @bp_clazz.route('/paper_report/<int:paper_id>')
 @auth_manager.require_group

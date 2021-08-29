@@ -5,6 +5,16 @@ from alchemy.reports import plots
 
 ## Data organisation classes
 
+class ClazzPaperProfile(object):
+    def __init__(self, clazz, paper):
+        self.paper = paper
+        self.paper_score_tallies = []
+        self.build_self(clazz)
+
+    def build_self(self, clazz):
+        for student in clazz.students:
+            self.paper_score_tallies.append(PaperScoreTally.from_student(student, self.paper))
+
 class ClazzCourseProfile(object):
     def __init__(self, clazz, course):
         self.clazz = clazz
@@ -30,6 +40,7 @@ class PaperScoreTally(object):
     def __init__(self, student, paper, score):
         self.student = student
         self.paper = paper
+        self.scores = []
         self.paper_total = paper.profile.total_points
         self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
@@ -39,7 +50,9 @@ class PaperScoreTally(object):
     @staticmethod
     def from_student(student, paper):
         scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+        ## TODO How to ensure the scores are in the same order as paper_question.order_number?
         paper_score_tally = PaperScoreTally(student, paper, total_score(scores))
+        paper_score_tally.scores = scores
         for score in scores:
             if score == None or score.value == None:
                 paper_score_tally.has_all_scores = False

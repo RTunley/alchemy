@@ -13,7 +13,7 @@
   </head>
   <body>
     <br>
-    <h3>Input Results from {{ paper.title }} for {{ g.clazz.code }}</h3>
+    <h3>Input Results from {{ clazz_paper_profile.paper.title }} for {{ g.clazz.code }}</h3>
     <h4>Option 1: HTML Grid</h4>
     <br>
 
@@ -23,13 +23,13 @@
         <td>Student ID</td>
         <td>Given Name</td>
         <td>Family Name</td>
-        {% for paper_question in paper.ordered_paper_questions() %}
+        {% for paper_question in clazz_paper_profile.paper.ordered_paper_questions() %}
           <td>Question {{ paper_question.order_number }}
             ( / {{ paper_question.question.points | prettify_number }} )
           </td>
         {% endfor %}
         <td>Total (Raw)
-          ( / {{ paper.profile.total_points | prettify_number }} )
+          ( / {{ clazz_paper_profile.paper.profile.total_points | prettify_number }} )
         </td>
         <td>Total (%)</td>
         <td>Grade</td>
@@ -37,19 +37,17 @@
       </thead>
 
       <tbody>
-        {% for score_set in score_sets %}
+        {% for tally in clazz_paper_profile.paper_score_tallies %}
         <tr>
-        <td>{{ score_set.student.id }}</td>
-        <td>{{ score_set.student.aws_user.given_name }}</td>
-        <td>{{ score_set.student.aws_user.family_name }}</td>
-
-        {% for score in score_set.score_list %}
+        <td>{{ tally.student.id }}</td>
+        <td>{{ tally.student.aws_user.given_name }}</td>
+        <td>{{ tally.student.aws_user.family_name }}</td>
+        {% for score in tally.scores %}
           <td>{{ score.value | prettify_number }}</td>
         {% endfor %}
-
-        <td>{{ score_set.total | prettify_number }}</td>
-        <td>{{ score_set.percentage | prettify_number }}</td>
-        <td>{{ score_set.grade }}</td>
+        <td>{{ tally.raw_total | prettify_number }}</td>
+        <td>{{ tally.percent_total | prettify_number }}</td>
+        <td>{{ tally.grade }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -94,12 +92,12 @@
   }
 
   let max_scores = []
-  {% for paper_question in paper.paper_questions %}
+  {% for paper_question in clazz_paper_profile.paper.paper_questions %}
     max_scores.push( {{ paper_question.question.points }} )
   {% endfor %}
 
   function get_results_table_column_count() {
-    return {{ paper.paper_questions | count }} + 6
+    return {{ clazz_paper_profile.paper.paper_questions | count }} + 6
   }
 
   function find_max_score_for_column(column) {
@@ -112,7 +110,7 @@
   }
 
   function update_student_data() {
-    scores_update({{ paper.id }}, results_table.getData(), modified_students )
+    scores_update({{ clazz_paper_profile.paper.id }}, results_table.getData(), modified_students )
     modified_students = {}
     $('#save_scores_button').prop('disabled', true)
   }
