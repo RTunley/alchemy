@@ -68,7 +68,7 @@ class ClazzTestCase(TestCase):
         clazz = Clazz.query.first()
         paper = Paper.query.first()
         data = {'paper_id': paper.id}
-        response = self.client.get('/course/{}/clazz/{}/paper_report'.format(course.id, clazz.id), query_string = data)
+        response = self.client.get(f'/course/{course.id}/clazz/{clazz.id}/paper_report', query_string = data)
         self.assertEqual(response.status_code, 200)
 
     # Don't write a test for student_paper_report because that will eventually be moved to the student view
