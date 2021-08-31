@@ -41,7 +41,6 @@ def add_student():
     student_id = int(flask.request.form['student_id'])
     email = flask.request.form['student_email']
     clazz = models.Clazz.query.get_or_404(clazz_id)
-    username = email.split('@')[0].lower()
     if models.AwsUser.query.get(student_id) is not None:
         flask.flash(f'User {student_id} already exists!')
     elif models.Student.query.get(student_id) is not None:
