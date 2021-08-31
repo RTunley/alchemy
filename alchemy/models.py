@@ -60,7 +60,7 @@ class Student(db.Model):
         clazzes = properties.pop('clazzes', [])
         scores = properties.pop('scores', [])
         aws_user = AwsUser.create('student', **properties)
-        return Student(aws_user=aws_user, clazzes=clazzes, scores=scores)
+        return Student(id=aws_user.id, aws_user=aws_user, clazzes=clazzes, scores=scores)
 
 class Admin(db.Model):
     __tablename__ = 'admin'
@@ -72,7 +72,7 @@ class Admin(db.Model):
     def create(**properties):
         'Creates a Admin and its accompanying AwsUser from the specified properties.'
         aws_user = AwsUser.create('admin', **properties)
-        return Admin(aws_user=aws_user)
+        return Admin(id=aws_user.id, aws_user=aws_user)
 
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
