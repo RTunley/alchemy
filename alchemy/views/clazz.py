@@ -87,22 +87,6 @@ def student_scores_update():
     # Return the table data in JSON form
     return flask.jsonify(scores_table_json = tally_list_array)
 
-    # score_set_list = score_manager.make_student_scoreset_list(g.clazz, paper)
-    #
-    # # Make an array of the complete table data to be shown in the HTML table,
-    # # i.e. in the same format as the student_scores array that was received.
-    # all_score_set_lists = []
-    # for score_set in score_set_list:
-    #     # add student id and name
-    #     score_set_list = [score_set.student.id, score_set.student.aws_user.given_name, score_set.student.aws_user.family_name]
-    #     # add values for all questions, or an empty string if there is no score
-    #     score_set_list.extend([score.value if score else '' for score in score_set.score_list])
-    #     # add other score details
-    #     score_set_list.extend([score_set.total, score_set.percentage, score_set.grade])
-    #     all_score_set_lists.append(score_set_list)
-    # # Return the table data in JSON form
-    # return flask.jsonify(scores_table_json = all_score_set_lists)
-
 @bp_clazz.route('/paper_results')
 @auth_manager.require_group
 def paper_results():
