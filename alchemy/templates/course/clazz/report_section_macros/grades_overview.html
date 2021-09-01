@@ -5,26 +5,77 @@
   <img src="data:image/png;base64, {{ grade_overview_section.grade_pie_data }}" alt="graph">
 </div>
 <br>
-<table style="text-align:center" class="table table-hover">
-    <tr>
-      {% for batch in grade_overview_section.grade_batch_list %}
-      <th>{{ batch.grade_level.grade }}</th>
-      {% endfor %}
-    </tr>
-    <tr>
-      {% for batch in grade_overview_section.grade_batch_list %}
-        <td>
-          <table style="text-align:center" class="table table-hover">
-            {% for tally in batch.student_tallies %}
+<div class="accordion" id="student-ranks-table">
+  <div class="card">
+    <div class="card-header" id="student-ranks-table">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#student-ranks-contents" aria-expanded="false" aria-controls="collapseTwo">
+          <h4><b>Student Rankings By Grade</h4>
+        </button>
+      </h2>
+    </div>
+    <div id="student-ranks-contents" class="collapse" aria-labelledby="student-ranks-table" data-parent="#student-ranks-table">
+      <div class="card-body">
+        <table style="text-align:center" class="table table-hover table-bordered">
+            <tr>
+              {% for i in range(4) %}
+              {% if grade_overview_section.grade_batch_list[i].grade_level.lower_bound >= 70 %}
+                <th class="table-success">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
+              {% elif grade_overview_section.grade_batch_list[i].grade_level.upper_bound <= 40 %}
+                <th class="table-danger">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
+              {% else %}
+                <th class="table-info">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
+              {% endif %}
+              {% endfor %}
+            </tr>
+            <tr>
+              {% for i in range(4) %}
+                <td>
+                  <table style="text-align:center" class="table table-hover table-borderless">
+                    {% for tally in grade_overview_section.grade_batch_list[i].student_tallies %}
+                      <tr>
+                        <td>{{tally.student.aws_user.family_name}}, {{ tally.student.aws_user.given_name }}</td>
+                        <td>{{ tally.percent_total }}%</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                </td>
+              {% endfor %}
+            </tr>
+        </table>
+        <br>
+        {% if grade_overview_section.grade_batch_list|length > 5 %}
+          <table style="text-align:center" class="table table-hover table-bordered">
               <tr>
-                <td>{{tally.student.aws_user.family_name}}, {{ tally.student.aws_user.given_name }}</td>
-                <td>{{ tally.percent_total }}%</td>
+                {% for i in range(grade_overview_section.grade_batch_list|length-4) %}
+                {% if grade_overview_section.grade_batch_list[i+4].grade_level.lower_bound >= 70 %}
+                  <th class="table-success">{{ grade_overview_section.grade_batch_list[i+4].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i+4].grade_level.lower_bound }} %)</th>
+                {% elif grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound <= 40 %}
+                  <th class="table-danger">{{ grade_overview_section.grade_batch_list[i+4].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i+4].grade_level.lower_bound }} %)</th>
+                {% else %}
+                  <th class="table-info">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
+                {% endif %}
+                {% endfor %}
               </tr>
-            {% endfor %}
+              <tr>
+                {% for i in range(grade_overview_section.grade_batch_list|length-4) %}
+                  <td>
+                    <table style="text-align:center" class="table table-hover table-borderless">
+                      {% for tally in grade_overview_section.grade_batch_list[i+4].student_tallies %}
+                        <tr>
+                          <td>{{tally.student.aws_user.family_name}}, {{ tally.student.aws_user.given_name }}</td>
+                          <td>{{ tally.percent_total }}%</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                {% endfor %}
+              </tr>
           </table>
-        </td>
-      {% endfor %}
-    </tr>
-</table>
-
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<br>
 {%- endmacro %}
