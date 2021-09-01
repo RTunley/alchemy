@@ -7,10 +7,10 @@
   <br>
   <table>
     <tr>
-      <td style="vertical-align:top; width:50%; ">
+      <td style="vertical-align:top; width: 30%;">
         <table style="text-align:center" class="table table-hover">
           <tr>
-            <th>Tag</th>
+            <th>Question Number</th>
             <th>Mean</th>
             <th>Median</th>
           </tr>
@@ -23,32 +23,32 @@
           {% endfor %}
         </table>
       </td>
-      <td>&nbsp &nbsp &nbsp &nbsp</td>
+      <td>&nbsp &nbsp &nbsp</td>
       <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.center_bar_plot }}" alt="graph"></td>
     </tr>
   </table>
   <br>
-  <h4>Spread of Tag Achievement</h4>
+  <h4>Spread of Question Achievement</h4>
   <br>
   <table>
     <tr>
-      <td style="vertical-align:top;">
+      <td style="vertical-align:top; width: 30%;">
         <table style="text-align:center" class="table table-hover">
           <tr>
-            <th>Tag</th>
+            <th>Question Number</th>
             <th>Standard Deviation</th>
             <th>Interquartile Range</th>
           </tr>
-          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='norm_sd', reverse=True) %}
+          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
             <tr>
               <td>{{ statprofile.object.name }}</td>
-              <td>{{ statprofile.norm_sd }} %</td>
-              <td>{{ statprofile.norm_iqr }} %</td>
+              <td>{{ statprofile.norm_mean }} %</td>
+              <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
             </tr>
           {% endfor %}
         </table>
       </td>
-      <td>&nbsp &nbsp &nbsp &nbsp</td>
+      <td>&nbsp &nbsp</td>
       <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.spread_bar_plot }}" alt="graph"></td>
     </tr>
   </table>

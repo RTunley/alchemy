@@ -54,15 +54,6 @@ class ClazzTestCase(TestCase):
         response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id), query_string = data)
         self.assertEqual(response.status_code, 200)
 
-    # def_test_update_scores(self):
-        #Should look like:
-        # 1) Get student score data with
-        # response = self.client.get('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id)
-        # 2) make a change to one student scores using student_scores in response.data...?
-        # 3) send the new new changes
-        # response = self.client.post('/course/{}/clazz/{}/paper_results'.format(course.id, clazz.id), data = dict(student_scores = new_student_scores))
-        # check that new values are in the db for that student
-
     def test_clazz_paper_report(self):
         course = Course.query.first()
         clazz = Clazz.query.first()

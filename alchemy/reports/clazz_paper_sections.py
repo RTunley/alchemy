@@ -36,8 +36,8 @@ class GradeOverviewSection(ClazzReportSection):
 
     def build_self(self):
         student_tallies = [data_manager.PaperScoreTally.from_student(student, self.paper) for student in self.clazz.students]
-        self.student_grade_dict = data_manager.make_student_grade_dict(student_tallies, self.paper.course)
-        self.grade_pie_data = data_manager.make_grade_pie_data(self.student_grade_dict)
+        self.grade_batch_list = data_manager.make_grade_batch_list(student_tallies, self.paper.course)
+        self.grade_pie_data = data_manager.make_grade_pie_data(self.grade_batch_list)
 
 class TagOverviewSection(ClazzReportSection):
     def __init__(self, html_macro, clazz, paper):

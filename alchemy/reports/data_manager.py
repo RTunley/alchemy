@@ -76,6 +76,14 @@ class PaperMultiScoreTally(object):
         cohort_student_totals = total_student_scores_for_cohort(paper)
         return PaperMultiScoreTally(paper, cohort_student_totals)
 
+class GradeBatch(object):
+    def __init__(self, grade_level):
+        self.grade_level = grade_level
+        self.student_tallies = []
+
+    def order_tallies(self):
+        self.student_tallies.sort(key=lambda x: x.percent_total, reverse=True)
+
 class AdjacentGrades(object):
     def __init__(self, grade_list, percentage, grade, paper_total):
         self.higher_grade = None
@@ -216,7 +224,7 @@ class StatProfile(object):
         self.norm_mean = round(self.raw_mean/self.total*100, 2)
         self.norm_sd = round(self.raw_sd/self.total*100, 2)
         self.norm_fivenumsumm = [round(value/self.total*100, 2) for value in self.raw_fivenumsumm]
-        self.norm_iqr = self.norm_fivenumsumm[3] - self.norm_fivenumsumm[1]
+        self.norm_iqr = round(self.norm_fivenumsumm[3] - self.norm_fivenumsumm[1],2)
 
     @staticmethod
     def from_tag(values_list, total, tag):
@@ -305,19 +313,17 @@ def total_student_scores_for_cohort(paper):
         cohort_student_totals.append(student_total.total_student_score)
     return cohort_student_totals
 
-def make_student_grade_dict(student_tallies, course):
-    student_grade_dict = {}
+def make_grade_batch_list(student_tally_list, course):
+    grade_batch_list = []
     for grade_level in course.grade_levels:
-        grade_batch = []
-        for tally in student_tallies:
-            if tally.grade == grade_level.grade:
-                grade_batch.append(tally)
-        student_grade_dict[grade_level.grade] = grade_batch
+        grade_batch = GradeBatch(grade_level)
+        for tally in student_tally_list:
+            if tally.grade == grade_batch.grade_level.grade:
+                grade_batch.student_tallies.append(tally)
+        grade_batch.order_tallies()
+        grade_batch_list.append(grade_batch)
 
-    for level in student_grade_dict:
-        student_grade_dict[level].sort(key=lambda x: x.percent_total, reverse=True)
-
-    return student_grade_dict
+    return grade_batch_list
 
 def make_tag_statprofile_list(clazz, paper):
     tag_statprofile_list = []
@@ -362,20 +368,20 @@ def create_clazz_distribution_plot(clazz, paper):
     plot_data = plots.create_distribution_plot(clazz_statprofile.norm_values_list, clazz_statprofile.norm_sd, clazz_statprofile.norm_mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
 
-def make_grade_pie_data(student_grade_dict):
+def make_grade_pie_data(grade_batch_list):
     slices = []
     labels = []
-    for k,v in student_grade_dict.items():
+    for batch in grade_batch_list:
         label = ''
-        if len(v) == 1:
-            label = k + ' (1 Student)'
-        elif len(v) == 0:
-            label = k + ' (None)'
+        if len(batch.student_tallies) == 1:
+            label = batch.grade_level.grade + ' (1 Student)'
+        elif len(batch.student_tallies) == 0:
+            label = batch.grade_level.grade + ' (None)'
         else:
-            label = k + ' ({} Students)'.format(len(v))
+            label = batch.grade_level.grade + f' ({len(batch.student_tallies)} Students)'
 
         labels.append(label)
-        slices.append(len(v))
+        slices.append(len(batch.student_tallies))
 
     slices.reverse()
     labels.reverse()
