@@ -1,5 +1,7 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections
 
+
+
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper):
         self.title = None
@@ -10,7 +12,6 @@ class StudentPaperReport(object):
         self.sections = []
         self.build_self()
 
-    # TODO a list of selected sections should be an input to this class -> worry about this later. For now we will add them manually below:
     def build_self(self):
         self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievment Report"
         self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.paper.title}"
@@ -38,7 +39,6 @@ class ClazzPaperReport(object):
         self.sections = []
         self.build_self()
 
-    # TODO a list of selected sections should be an input to this class -> worry about this later. For now we will add them manually below:
     def build_self(self):
         self.title = f"{self.clazz.code} - Achievment Report"
         self.subtitle = f"{self.clazz.course.name}: {self.paper.title}"
