@@ -1,7 +1,5 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections
 
-
-
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper):
         self.title = None
@@ -42,6 +40,7 @@ class ClazzPaperReport(object):
     def build_self(self):
         self.title = f"{self.clazz.code} - Achievment Report"
         self.subtitle = f"{self.clazz.course.name}: {self.paper.title}"
+
         overview_section = clazz_paper_sections.OverviewSection('course/clazz/report_section_macros/overview.html', self.clazz, self.paper)
         self.sections.append(overview_section)
 
