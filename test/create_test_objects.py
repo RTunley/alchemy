@@ -78,7 +78,7 @@ def make_email(given_name, family_name, id):
     return email
 
 def add_students_and_aws_users(course, clazz):
-    index = 2000
+    index = 100
     user_tuples = [('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle')]
     student_list = []
 

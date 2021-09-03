@@ -19,6 +19,8 @@
         <table style="text-align:center" class="table table-hover table-bordered">
             <tr>
               {% for i in range(4) %}
+              <!-- TODO Boundaries for green / red colouring are currently hard coded -
+              eventually be chosen by school? -->
               {% if grade_overview_section.grade_batch_list[i].grade_level.lower_bound >= 70 %}
                 <th class="table-success">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
               {% elif grade_overview_section.grade_batch_list[i].grade_level.upper_bound <= 40 %}
@@ -53,7 +55,7 @@
                 {% elif grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound <= 40 %}
                   <th class="table-danger">{{ grade_overview_section.grade_batch_list[i+4].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i+4].grade_level.lower_bound }} %)</th>
                 {% else %}
-                  <th class="table-info">{{ grade_overview_section.grade_batch_list[i].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i].grade_level.lower_bound }} %)</th>
+                  <th class="table-info">{{ grade_overview_section.grade_batch_list[i+4].grade_level.grade }} ({{ grade_overview_section.grade_batch_list[i+4].grade_level.upper_bound }}-{{ grade_overview_section.grade_batch_list[i+4].grade_level.lower_bound }} %)</th>
                 {% endif %}
                 {% endfor %}
               </tr>

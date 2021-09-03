@@ -28,7 +28,6 @@ class OverviewDetailsSection(ClazzReportSection):
 
     def build_self(self):
         self.statprofile = data_manager.StatProfile(data_manager.total_student_scores_for_clazz(self.clazz, self.paper), self.paper.profile.total_points)
-        print("StatProfile for Overview Details: ", self.statprofile)
 
 class GradeOverviewSection(ClazzReportSection):
     def __init__(self, html_macro, clazz, paper):

@@ -394,6 +394,8 @@ def make_comparison_charts(statprofile_list):
     sd_list = []
     iqr_list = []
     labels = []
+    # print("Here is the statprofile list! :")
+    # print(statprofile_list) Statprofile list is empty
     for statprofile in statprofile_list:
         means.append(statprofile.norm_mean)
         medians.append(statprofile.norm_fivenumsumm[2])
@@ -404,18 +406,22 @@ def make_comparison_charts(statprofile_list):
         elif isinstance(statprofile_list[0].object, models.PaperQuestion):
             labels.append(statprofile.object.order_number)
 
-    if isinstance(statprofile.object, models.Tag):
-        center_title = 'Tag Comparison: Central Tendency'
-        spread_title = 'Tag Comparison: Spread'
-        x_axis = None
-    elif isinstance(statprofile_list[0].object, models.PaperQuestion):
-        center_title = 'Question Comparison: Central Tendency'
-        spread_title = 'Question Comparison: Spread'
-        x_axis = 'Question Number'
+    for statprofile in statprofile_list:
+        if isinstance(statprofile.object, models.Tag):
+            center_title = 'Tag Comparison: Central Tendency'
+            spread_title = 'Tag Comparison: Spread'
+            x_axis = None
+            center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
+            spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+            return (center_bar_plot, spread_bar_plot)
 
-    center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
-    spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
-    return (center_bar_plot, spread_bar_plot)
+        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
+            center_title = 'Question Comparison: Central Tendency'
+            spread_title = 'Question Comparison: Spread'
+            x_axis = 'Question Number'
+            center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
+            spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+            return (center_bar_plot, spread_bar_plot)
 
 def make_achievement_plots(statprofile_list):
     tag_plot_list = []
