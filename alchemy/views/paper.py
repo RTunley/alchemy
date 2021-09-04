@@ -146,8 +146,8 @@ def render_question_accordion_html(questions):
     paper_id = g.paper.id if g.paper else 0
     return flask.render_template_string(
         '''
-        {% import 'course/question_accordion_macro.html' as question_accordion %}
-        {{ question_accordion.render_questions(course_id, paper_id, questions) }}
+        {% import 'course/question_tabs_macro.html' as question_tabs %}
+        {{ question_tabs.render_tabs(course_id, paper_id, questions) }}
         ''', course_id = g.course.id, paper_id = paper_id, questions = questions)
 
 @bp_paper.route('/edit')

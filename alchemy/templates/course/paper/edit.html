@@ -46,9 +46,9 @@
 
     <!-- Tab showing all questions in the library -->
     <div id="available_questions_area" class="mt-3">
-      {% import "course/question_accordion_macro.html" as question_accordion %}
+      {% import "course/question_tabs_macro.html" as question_tabs %}
 
-      {{ question_accordion.render_questions(g.course.id, g.paper.id, available_questions) }}
+      {{ question_tabs.render_question_tabs(g.course.id, g.paper.id, available_questions) }}
     </div>
 
     <!-- Tab showing all questions in the paper -->

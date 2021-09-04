@@ -9,11 +9,12 @@
 {% endif %}
 
 {% for question in questions %}
-<div class="accordion" id="questionAccordion">
+<div class="accordion">
   <div class="card">
 
     <div class="card-header p-1 d-flex flex-md-row" id="heading{{ loop.index0 }}">
 
+      <!-- Showing question as part of a paper: allow question to be added/removed for paper -->
       {% if paper_id > 0 %}
       <a role="button" aria-label="Add question" class="btn btn-link" onmouseup="{{ 'paper_remove_question(%d, %d, %d)' % (course_id, paper_id, question.id) if question.__question_added_to_paper else 'paper_add_question(%d, %d, %d)' % (course_id, paper_id, question.id) }}">
         <span
@@ -29,6 +30,7 @@
         </button>
       </h2>
 
+      <!-- Showing question as part of the whole library: allow question to be edited or deleted from library. -->
       {% if paper_id == 0 %}
       <a role="button" aria-label="Edit question" onclick="question_form_load({{ course_id }}, {{ question.id }})" class="btn btn-link">
         <span data-feather="edit"></span>

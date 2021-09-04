@@ -1,0 +1,28 @@
+<!--
+  Renders text and multiple-choice questions in separate tabs.
+-->
+
+{% macro render_question_tabs(course_id, paper_id, questions) -%}
+
+{% import "course/question_accordion_macro.html" as question_accordion %}
+
+<ul class="nav nav-tabs justify-content-center" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="text_questions_tab" data-toggle="tab" href="#text_questions_div" role="tab" aria-controls="text_questions_div" aria-selected="true"><span data-feather="type"></span> Text questions</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active" id="multiple_choice_questions_tab" data-toggle="tab" href="#multiple_choice_questions_div" role="tab" aria-controls="multiple_choice_questions_div" aria-selected="false"><span data-feather="list"></span> Multiple choice questions</a>
+  </li>
+</ul>
+
+<div class="tab-content pt-3">
+  <div class="tab-pane" id="text_questions_div" role="tabpanel" aria-labelledby="text_questions_tab">
+    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_text_questions) }}
+  </div>
+
+  <div class="tab-pane show active" id="multiple_choice_questions_div" role="tabpanel" aria-labelledby="multiple_choice_questions_tab">
+    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_multiple_choice_questions) }}
+  </div>
+</div>
+
+{%- endmacro %}

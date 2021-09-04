@@ -1,8 +1,8 @@
-import string
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList, RadioField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, NumberRange
+from alchemy import models
 
 def build_course_tag_string(course):
     return ','.join([tag.name for tag in course.tags if len(tag.name) > 0])
@@ -19,9 +19,7 @@ class NewQuestionForm(FlaskForm):
 
     def init_fields(self, course):
         self.hidden_course_tags.data = build_course_tag_string(course)
-        self.solution_choices = []
-        for i in range(4):  # show this many empty options by default
-            self.solution_choices.append((string.ascii_uppercase[i], ''))
+        self.solution_choices = models.Question.solution_prefixes(4) # show this many empty options by default
 
 class EditQuestionForm(FlaskForm):
     content = TextAreaField('Question Content', validators = [DataRequired(),])

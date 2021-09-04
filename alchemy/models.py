@@ -175,6 +175,9 @@ class Question(db.Model):
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
     image = db.relationship("Image", back_populates='questions')
 
+    def is_multiple_choice(self):
+        return self.solution_choices is not None and len(self.solution_choices) > 0
+
     def decode_image(self):
         return self.image.content.decode('ascii')
 
@@ -197,6 +200,14 @@ class Question(db.Model):
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
+
+    @staticmethod
+    def solution_prefixes(prefixes_range):
+        prefixes = []
+        for i in range(prefixes_range):
+            prefixes.append((string.ascii_uppercase[i], ''))
+        return prefixes
+
 
 class Solution(db.Model):
     __tablename__ = 'solution'
@@ -261,6 +272,8 @@ class Paper(db.Model):
         return ordered_questions[removal_index]
 
     def reorder_questions(self, new_question_ordering):
+        if not new_question_ordering:
+            return False
         if len(self.paper_questions) != len(new_question_ordering):
             print('Cannot reorder, bad lengths', len(self.paper_questions), len(new_question_ordering))
             return False
