@@ -1,16 +1,26 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections, cohort_paper_sections
 
 class StudentPaperReport(object):
-    def __init__(self, student, clazz, paper):
+    def __init__(self, student, clazz, paper, section_types=['OverviewSection', 'AdjacentGradesSection']):
         self.title = None
         self.subtitle = None
         self.student = student
         self.clazz = clazz
         self.paper = paper
         self.sections = []
-        self.build_self()
+        self.build_self(section_types)
 
-    def build_self(self):
+    def build_self(self, section_types):
+        self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievment Report"
+        self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.paper.title}"
+
+        for section_type in section_types:
+            section_class = getattr(student_paper_sections, section_type)
+            section = section_class(self.student, self.paper)
+            self.sections.append(section)
+
+
+    def old_build_self(self):
         self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievment Report"
         self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.paper.title}"
         overview_section = student_paper_sections.OverviewSection('student/report_section_macros/overview.html', self.student, self.paper)
