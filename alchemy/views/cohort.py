@@ -2,7 +2,7 @@ import flask
 from flask import g
 from werkzeug.utils import secure_filename
 from alchemy import db, models, auth_manager, file_input, file_output
-from alchemy.reports import data_manager
+from alchemy.reports import data_manager, report_types
 import os
 
 bp_cohort = flask.Blueprint('cohort', __name__)
@@ -27,6 +27,14 @@ def get_clazz_course_profiles(course):
 @auth_manager.require_group
 def index():
     return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
+
+@bp_cohort.route('/paper_report/<int:paper_id>')
+@auth_manager.require_group
+def paper_report(paper_id=0):
+    paper = models.Paper.query.get_or_404(paper_id)
+    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
+    cohort_report = report_types.CohortPaperReport(paper)
+    return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)
 
 @bp_cohort.route('/add_student', methods=['POST'])
 @auth_manager.require_group

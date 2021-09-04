@@ -18,7 +18,7 @@
           <td>{{ paper.profile.total_points }}</td>
           <td>
             {% if (paper.paper_questions | length) != 0 %}
-                <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Cohort Report</a>
+                <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id) }}">View Cohort Report</a>
             {% endif %}
           </td>
         </tr>

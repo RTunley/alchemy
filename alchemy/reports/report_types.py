@@ -1,4 +1,4 @@
-from alchemy.reports import student_paper_sections, clazz_paper_sections
+from alchemy.reports import student_paper_sections, clazz_paper_sections, cohort_paper_sections
 
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper):
@@ -64,3 +64,20 @@ class ClazzPaperReport(object):
 
         question_details_section = clazz_paper_sections.QuestionDetailsSection('course/clazz/report_section_macros/question_details.html', self.clazz, self.paper)
         self.sections.append(question_details_section)
+
+class CohortPaperReport(object):
+    def __init__(self, paper):
+        self.title = None
+        self.subtitle = None
+        self.clazzes = []
+        self.paper = paper
+        self.sections = []
+        self.build_self()
+
+    def build_self(self):
+        self.title = f"{self.paper.course.name} - Cohort Achievment Report"
+        self.subtitle = f"Assessment: {self.paper.title}"
+        self.clazzes = [clazz for clazz in self.paper.course.clazzes]
+
+        overview_section = cohort_paper_sections.OverviewSection('course/cohort/report_section_macros/overview.html', self.paper)
+        self.sections.append(overview_section)
