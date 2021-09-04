@@ -368,6 +368,11 @@ def create_clazz_distribution_plot(clazz, paper):
     plot_data = plots.create_distribution_plot(clazz_statprofile.norm_values_list, clazz_statprofile.norm_sd, clazz_statprofile.norm_mean, 'Distribution of Overall Achievement', False, None)
     return plot_data
 
+def create_cohort_distribution_plot(paper):
+    cohort_statprofile = StatProfile(total_student_scores_for_cohort(paper), paper.profile.total_points)
+    plot_data = plots.create_distribution_plot(cohort_statprofile.norm_values_list, cohort_statprofile.norm_sd, cohort_statprofile.norm_mean, 'Distribution of Overall Achievement', False, None)
+    return plot_data
+
 def make_grade_pie_data(grade_batch_list):
     slices = []
     labels = []

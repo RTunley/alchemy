@@ -81,3 +81,9 @@ class CohortPaperReport(object):
 
         overview_section = cohort_paper_sections.OverviewSection('course/cohort/report_section_macros/overview.html', self.paper)
         self.sections.append(overview_section)
+
+        overview_plot_section = cohort_paper_sections.OverviewPlotSection('course/cohort/report_section_macros/overview_plot.html', self.paper)
+        self.sections.append(overview_plot_section)
+
+        overview_details_section = cohort_paper_sections.OverviewDetailsSection('course/cohort/report_section_macros/overview_details.html', self.paper)
+        self.sections.append(overview_details_section)
