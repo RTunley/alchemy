@@ -2,16 +2,15 @@ from alchemy import models
 from alchemy.reports import data_manager
 
 class StudentReportSection:
-    def __init__(self, html_macro, student, clazz, paper):
+    def __init__(self, html_macro, **kwargs):
         self.html_macro = html_macro
-        self.student = student
-        self.clazz = clazz
-        self.paper = paper
+        for key, value in kwargs.items():
+            setattr(self, key, value)
         self.build_self()
 
 class OverviewSection(StudentReportSection):
-    def __init__(self, html_macro, student, clazz, paper):
-        super().__init__('student/report_section_macros/overview.html', student, clazz, paper)
+    def __init__(self, **section_kwargs):
+        super().__init__('student/report_section_macros/overview.html', **section_kwargs)
 
     def build_self(self):
         self.tally = data_manager.PaperScoreTally.from_student(self.student, self.paper)
@@ -25,10 +24,8 @@ class AdjacentGradesSection(StudentReportSection):
         self.adjacent_grades = data_manager.AdjacentGrades(self.paper.course.grade_levels, tally.percent_total, tally.grade, tally.paper_total)
 
 class ClazzSummarySection(StudentReportSection):
-    def __init__(self, html_macro, student, clazz, paper):
-        self.html_macro = 'student/report_section_macros/clazz_summary.html'
-        self.paper = paper
-        self.clazz = clazz
+    def __init__(self, **section_kwargs):
+        super().__init__('student/report_section_macros/clazz_summary.html', **section_kwargs)
         self.build_self()
 
     def build_self(self):
