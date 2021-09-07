@@ -1,9 +1,9 @@
-{% macro render_section(tag_overview_section) -%}
+{% macro render_section(question_overview_section) -%}
 
 <div>
-  <h2><b>Tag Overview</b></h2>
+  <h2><b>Question Overview</b></h2>
   <br>
-  <h4>Central Tendency of Tag Achievement</h4>
+  <h4>Central Tendency of Question Achievement</h4>
   <br>
   <table>
     <tr>
@@ -14,9 +14,9 @@
             <th>Mean</th>
             <th>Median</th>
           </tr>
-          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
+          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
             <tr>
-              <td>{{ statprofile.object.name }}</td>
+              <td>{{ statprofile.object.order_number }}</td>
               <td>{{ statprofile.norm_mean }} %</td>
               <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
             </tr>
@@ -24,11 +24,11 @@
         </table>
       </td>
       <td>&nbsp &nbsp &nbsp</td>
-      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.center_bar_plot }}" alt="graph"></td>
+      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.center_bar_plot }}" alt="graph"></td>
     </tr>
   </table>
   <br>
-  <h4>Spread of Tag Achievement</h4>
+  <h4>Spread of Question Achievement</h4>
   <br>
   <table>
     <tr>
@@ -39,20 +39,21 @@
             <th>Standard Deviation</th>
             <th>Interquartile Range</th>
           </tr>
-          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
+          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_sd', reverse=True) %}
             <tr>
-              <td>{{ statprofile.object.name }}</td>
-              <td>{{ statprofile.norm_mean }} %</td>
-              <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
+              <td>{{ statprofile.object.order_number }}</td>
+              <td>{{ statprofile.norm_sd }} %</td>
+              <td>{{ statprofile.norm_iqr }} %</td>
             </tr>
           {% endfor %}
         </table>
       </td>
       <td>&nbsp &nbsp</td>
-      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ tag_overview_section.spread_bar_plot }}" alt="graph"></td>
+      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.spread_bar_plot }}" alt="graph"></td>
     </tr>
   </table>
   <br>
 </div>
+
 
 {%- endmacro %}

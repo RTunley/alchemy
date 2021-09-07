@@ -43,7 +43,7 @@ class TagOverviewSection(ClazzReportSection):
         super().__init__('course/clazz/report_section_macros/tag_overview.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz, self.paper)
+        self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz.students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
 
 class QuestionOverviewSection(ClazzReportSection):
@@ -51,7 +51,7 @@ class QuestionOverviewSection(ClazzReportSection):
         super().__init__('course/clazz/report_section_macros/question_overview.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_question_statprofile_list(self.clazz, self.paper)
+        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
 
 class TagDetailsSection(ClazzReportSection):
@@ -59,7 +59,7 @@ class TagDetailsSection(ClazzReportSection):
         super().__init__('course/clazz/report_section_macros/tag_details.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz, self.paper)
+        self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz.students, self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)
 
 class QuestionDetailsSection(ClazzReportSection):
@@ -67,5 +67,5 @@ class QuestionDetailsSection(ClazzReportSection):
         super().__init__('course/clazz/report_section_macros/question_details.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_question_statprofile_list(self.clazz, self.paper)
+        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)

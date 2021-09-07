@@ -325,11 +325,11 @@ def make_grade_batch_list(student_tally_list, course):
 
     return grade_batch_list
 
-def make_tag_statprofile_list(clazz, paper):
+def make_tag_statprofile_list(student_list, paper):
     tag_statprofile_list = []
     for tag_profile in paper.profile.tag_profile_list:
         raw_totals = []
-        for student in clazz.students:
+        for student in student_list:
             scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
             tag_total = get_tag_score(student, tag_profile.name, paper, scores)
             raw_totals.append(tag_total)
@@ -337,7 +337,7 @@ def make_tag_statprofile_list(clazz, paper):
         tag_statprofile_list.append(tag_statprofile)
     return tag_statprofile_list
 
-def make_question_statprofile_list(clazz, paper):
+def make_question_statprofile_list(paper):
     question_statprofile_list = []
     for pq in paper.paper_questions:
         scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()

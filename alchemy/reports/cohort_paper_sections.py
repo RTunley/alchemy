@@ -43,3 +43,23 @@ class GradeOverviewSection(CohortReportSection):
 
         self.grade_batch_list = data_manager.make_grade_batch_list(student_tallies, self.paper.course)
         self.grade_pie_data = data_manager.make_grade_pie_data(self.grade_batch_list)
+
+class TagOverviewSection(CohortReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('course/cohort/report_section_macros/tag_overview.html', **section_kwargs)
+
+    def build_self(self):
+        all_students = []
+        for clazz in self.paper.course.clazzes:
+            for student in clazz.students:
+                all_students.append(student)
+        self.statprofiles = data_manager.make_tag_statprofile_list(all_students, self.paper)
+        self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
+
+class QuestionOverviewSection(CohortReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('course/cohort/report_section_macros/question_overview.html', **section_kwargs)
+
+    def build_self(self):
+        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
+        self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
