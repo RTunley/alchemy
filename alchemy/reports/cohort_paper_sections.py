@@ -34,12 +34,11 @@ class GradeOverviewSection(CohortReportSection):
         super().__init__('course/cohort/report_section_macros/grades_overview.html', **section_kwargs)
 
     def build_self(self):
-        clazzes = self.paper.course.clazzes
+        all_students = data_manager.all_students_in_course(self.paper.course)
         student_tallies = []
-        for clazz in clazzes:
-            for student in clazz.students:
-                paper_score_tally = data_manager.PaperScoreTally.from_student(student, self.paper)
-                student_tallies.append(paper_score_tally)
+        for student in all_students:
+            paper_score_tally = data_manager.PaperScoreTally.from_student(student, self.paper)
+            student_tallies.append(paper_score_tally)
 
         self.grade_batch_list = data_manager.make_grade_batch_list(student_tallies, self.paper.course)
         self.grade_pie_data = data_manager.make_grade_pie_data(self.grade_batch_list)
