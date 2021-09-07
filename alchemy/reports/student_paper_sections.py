@@ -16,8 +16,8 @@ class OverviewSection(StudentReportSection):
         self.tally = data_manager.PaperScoreTally.from_student(self.student, self.paper)
 
 class AdjacentGradesSection(StudentReportSection):
-    def __init__(self, html_macro, student, clazz, paper):
-        super().__init__('student/report_section_macros/adjacent_grades.html', student, clazz, paper)
+    def __init__(self, **section_kwargs):
+        super().__init__('student/report_section_macros/adjacent_grades.html', **section_kwargs)
 
     def build_self(self):
         tally = data_manager.PaperScoreTally.from_student(self.student, self.paper)
@@ -32,10 +32,8 @@ class ClazzSummarySection(StudentReportSection):
         self.tally = data_manager.PaperMultiScoreTally.from_clazz(self.clazz, self.paper)
 
 class CohortSummarySection(StudentReportSection):
-    def __init__(self, html_macro, student, clazz, paper):
-        self.html_macro = 'student/report_section_macros/cohort_summary.html'
-        self.paper = paper
-        self.build_self()
+    def __init__(self, **section_kwargs):
+        super().__init__('student/report_section_macros/cohort_summary.html', **section_kwargs)
 
     def build_self(self):
         self.tally = data_manager.PaperMultiScoreTally.from_cohort(self.paper)
@@ -43,8 +41,8 @@ class CohortSummarySection(StudentReportSection):
 ## Strengths and Weaknesses = Highlights
 
 class HighlightsSection(StudentReportSection):
-    def __init__(self, html_macro, student, clazz, paper):
-        super().__init__('student/report_section_macros/highlights_section.html', student, clazz, paper)
+    def __init__(self, **section_kwargs):
+        super().__init__('student/report_section_macros/highlights_section.html', **section_kwargs)
 
     def build_self(self):
         raw_scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
