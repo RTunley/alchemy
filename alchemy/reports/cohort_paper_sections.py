@@ -49,10 +49,7 @@ class TagOverviewSection(CohortReportSection):
         super().__init__('course/cohort/report_section_macros/tag_overview.html', **section_kwargs)
 
     def build_self(self):
-        all_students = []
-        for clazz in self.paper.course.clazzes:
-            for student in clazz.students:
-                all_students.append(student)
+        all_students = data_manager.all_students_in_course(self.paper.course)
         self.statprofiles = data_manager.make_tag_statprofile_list(all_students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
 
@@ -63,3 +60,20 @@ class QuestionOverviewSection(CohortReportSection):
     def build_self(self):
         self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
+
+class TagDetailsSection(CohortReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('course/cohort/report_section_macros/tag_details.html', **section_kwargs)
+
+    def build_self(self):
+        all_students = data_manager.all_students_in_course(self.paper.course)
+        self.statprofiles = data_manager.make_tag_statprofile_list(all_students, self.paper)
+        self.plots = data_manager.make_achievement_plots(self.statprofiles)
+
+class QuestionDetailsSection(CohortReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('course/cohort/report_section_macros/question_details.html', **section_kwargs)
+
+    def build_self(self):
+        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
+        self.plots = data_manager.make_achievement_plots(self.statprofiles)

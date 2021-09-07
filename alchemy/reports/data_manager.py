@@ -240,6 +240,13 @@ class StatProfile(object):
 
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
+def all_students_in_course(course):
+    all_students = []
+    for clazz in course.clazzes:
+        for student in clazz.students:
+            all_students.append(student)
+    return(all_students)
+
 def total_score(score_list):
     return sum(score.value for score in score_list)
 

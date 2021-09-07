@@ -38,7 +38,7 @@ class ClazzPaperReport(object):
             self.sections.append(section)
 
 class CohortPaperReport(object):
-    def __init__(self, paper, section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection']):
+    def __init__(self, paper, section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']):
         self.title = None
         self.subtitle = None
         self.clazzes = []
