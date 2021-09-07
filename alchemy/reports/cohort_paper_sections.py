@@ -57,7 +57,8 @@ class QuestionOverviewSection(CohortReportSection):
         super().__init__('course/cohort/report_section_macros/question_overview.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
+        all_students = data_manager.all_students_in_course(self.paper.course)
+        self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
 
 class TagDetailsSection(CohortReportSection):
@@ -74,5 +75,6 @@ class QuestionDetailsSection(CohortReportSection):
         super().__init__('course/cohort/report_section_macros/question_details.html', **section_kwargs)
 
     def build_self(self):
-        self.statprofiles = data_manager.make_question_statprofile_list(self.paper)
+        all_students = data_manager.all_students_in_course(self.paper.course)
+        self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)

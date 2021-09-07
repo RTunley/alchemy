@@ -344,11 +344,16 @@ def make_tag_statprofile_list(student_list, paper):
         tag_statprofile_list.append(tag_statprofile)
     return tag_statprofile_list
 
-def make_question_statprofile_list(paper):
+def make_question_statprofile_list(student_list, paper):
+    student_ids = [student.id for student in student_list]
     question_statprofile_list = []
     for pq in paper.paper_questions:
-        scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
-        raw_totals = [score.value for score in scores]
+        all_scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
+        group_scores = []
+        for score in all_scores:
+            if score.student_id in student_ids:
+                group_scores.append(score)
+        raw_totals = [score.value for score in group_scores]
         question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
         question_statprofile_list.append(question_statprofile)
     return question_statprofile_list
