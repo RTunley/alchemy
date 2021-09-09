@@ -2,6 +2,7 @@ import flask
 from flask import g
 from alchemy import db, models, auth_manager, file_input, file_output
 from alchemy.reports import report_types, data_manager
+import urllib
 import os
 
 bp_clazz = flask.Blueprint('clazz', __name__)
@@ -95,11 +96,13 @@ def paper_results():
     clazz_paper_profile = data_manager.ClazzPaperProfile(g.clazz, paper)
     return flask.render_template('course/clazz/paper_results.html', clazz_paper_profile = clazz_paper_profile)
 
-@bp_clazz.route('/paper_report/<int:paper_id>')
+@bp_clazz.route('/paper_report/<int:paper_id>/')
 @auth_manager.require_group
-def paper_report(paper_id=0):
+def paper_report(paper_id):
     paper = models.Paper.query.get_or_404(paper_id)
+    section_selection_string = flask.request.args.get('section_selection_string')
+    section_selections = section_selection_string.split(',')
+    print(section_selections)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    clazz_section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']
-    clazz_report = report_types.ClazzPaperReport(g.clazz, paper, clazz_section_types)
+    clazz_report = report_types.ClazzPaperReport(g.clazz, paper, section_selections)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)

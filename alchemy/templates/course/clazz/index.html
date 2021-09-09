@@ -29,9 +29,9 @@
         <td>
           {% if (paper.paper_questions | length) != 0 %}
             {% if paper.has_all_scores %}
-              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id, section_selection_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection') }}">View Class Report</a>
             {% else %}
-              <a class="btn btn-success btn-sm disabled" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id)}}">View Class Report</a>
+              <a class="btn btn-success btn-sm disabled" target="_blank">View Class Report</a>
             {% endif %}
           {% endif %}
         </td>
