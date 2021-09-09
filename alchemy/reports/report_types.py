@@ -1,7 +1,7 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections, cohort_paper_sections
 
 class StudentPaperReport(object):
-    def __init__(self, student, clazz, paper, section_types=['OverviewSection', 'AdjacentGradesSection', 'ClazzSummarySection', 'CohortSummarySection', 'HighlightsSection']):
+    def __init__(self, student, clazz, paper, section_types):
         self.title = None
         self.subtitle = None
         self.student = student
@@ -20,7 +20,7 @@ class StudentPaperReport(object):
             self.sections.append(section)
 
 class ClazzPaperReport(object):
-    def __init__(self, clazz, paper, section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']):
+    def __init__(self, clazz, paper, section_types):
         self.title = None
         self.subtitle = None
         self.clazz = clazz
@@ -38,7 +38,7 @@ class ClazzPaperReport(object):
             self.sections.append(section)
 
 class CohortPaperReport(object):
-    def __init__(self, paper, section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']):
+    def __init__(self, paper, section_types) :
         self.title = None
         self.subtitle = None
         self.clazzes = []

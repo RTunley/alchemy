@@ -33,7 +33,8 @@ def index():
 def paper_report(paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    cohort_report = report_types.CohortPaperReport(paper)
+    cohort_section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']
+    cohort_report = report_types.CohortPaperReport(paper, cohort_section_types)
     return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)
 
 @bp_cohort.route('/add_student', methods=['POST'])
