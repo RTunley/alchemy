@@ -45,6 +45,7 @@ def paper_report(clazz_id=0, paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     clazz = models.Clazz.query.get_or_404(clazz_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    student_section_types = ['OverviewSection', 'AdjacentGradesSection', 'ClazzSummarySection', 'CohortSummarySection', 'HighlightsSection']
-    student_report = report_types.StudentPaperReport(g.student, clazz, paper, student_section_types)
+    section_selection_string = flask.request.args.get('section_selection_string_get')
+    section_selections = section_selection_string.split(',')
+    student_report = report_types.StudentPaperReport(g.student, clazz, paper, section_selections)
     return flask.render_template('student/paper_report.html', student_report = student_report)
