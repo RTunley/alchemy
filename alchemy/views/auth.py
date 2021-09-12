@@ -16,7 +16,7 @@ def redirect_to_user_home():
         print('Warning: authentication is disabled! This should only happen if you are testing stuff!')
         first_account = models.Account.query.first()
         student = models.Student.query.first()
-        response = flask.redirect(flask.url_for('account.student.index', account_id = first_account.id, student_id = student.id))
+        response = flask.redirect(flask.url_for('student.index', account_id = first_account.id, student_id = student.id))
         return response
 
     # TODO when student users are added, can check here whether group is staff
@@ -36,7 +36,7 @@ def redirect_to_user_home():
         if not student:
             print('Error! Cannot find student with id:', g.current_user.id)
             flask.abort(401)
-        response = flask.redirect(flask.url_for('account.student.index', account_id = first_account.id, student_id = student.id))
+        response = flask.redirect(flask.url_for('student.index', account_id = first_account.id, student_id = student.id))
         return response
     else:
         print('Error! Unrecognisable user group:', g.current_user.group)

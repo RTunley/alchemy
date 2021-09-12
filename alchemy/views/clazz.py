@@ -104,7 +104,6 @@ def paper_report(paper_id):
     paper = models.Paper.query.get_or_404(paper_id)
     section_selection_string = flask.request.args.get('section_selection_string_get')
     section_selections = section_selection_string.split(',')
-    print(section_selections)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper, section_selections)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)

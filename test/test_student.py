@@ -34,22 +34,6 @@ class StudentTestCase(TestCase):
         db.session.remove()
         db.drop_all()
 
-    # def test_index(self):
-    #     pass
-    #     # course = Course.query.first()
-    #     # clazz = Clazz.query.first()
-    #     # response = self.client.get('/course/{}/clazz/{}'.format(course.id, clazz.id), follow_redirects = True)
-    #     # self.assertEqual(response.status_code, 200)
-    #
-    # def test_student_info_present(self):
-    #     pass
-    #     # course = Course.query.first()
-    #     # clazz = Clazz.query.first()
-    #     # response = self.client.get('/course/{}/clazz/{}'.format(course.id, clazz.id), follow_redirects = True)
-    #     # for student in clazz.students:
-    #     #     self.assertTrue(bytes(student.aws_user.family_name, "UTF-8") in response.data)
-    #     #     self.assertTrue(bytes(student.aws_user.given_name, "UTF-8") in response.data)
-
     def test_paper_report(self):
         clazz = Clazz.query.first()
         paper = Paper.query.first()
@@ -59,7 +43,7 @@ class StudentTestCase(TestCase):
         for section_type in section_types:
             with self.subTest(section=section_type):
                 data = {'paper_id': paper.id, 'clazz_id': clazz.id, 'student_id': student.id, 'section_selection_string_get': section_type}
-                response = self.client.get(f'/student_paper_report/clazz/{clazz.id}/paper/{paper.id}', query_string = data, follow_redirects = True)
+                response = self.client.get(f'/student/{student.id}/student_paper_report/clazz/{clazz.id}/paper/{paper.id}', query_string = data, follow_redirects = True)
                 self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
