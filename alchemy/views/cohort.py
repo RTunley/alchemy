@@ -16,6 +16,7 @@ def get_cohort_size(course):
 @bp_cohort.before_request
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
+    g.cohort_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
 
 def get_clazz_course_profiles(course):
     clazz_course_profiles = []
