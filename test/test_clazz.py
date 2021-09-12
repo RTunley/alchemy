@@ -61,9 +61,13 @@ class ClazzTestCase(TestCase):
         clazz = Clazz.query.first()
         paper = Paper.query.first()
         scores = Score.query.all()
-        data = {'paper_id': paper.id}
-        response = self.client.get(f'/course/{course.id}/clazz/{clazz.id}/paper_report/{paper.id}', query_string = data)
-        self.assertEqual(response.status_code, 200)
+        section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']
+
+        for section_type in section_types:
+            with self.subTest(section=section_type):
+                data = {'paper_id': paper.id, 'section_selection_string_get': section_type}
+                response = self.client.get(f'/course/{course.id}/clazz/{clazz.id}/paper_report/{paper.id}', query_string = data, follow_redirects = True)
+                self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
