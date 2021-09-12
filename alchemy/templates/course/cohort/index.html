@@ -18,7 +18,7 @@
           <td>{{ paper.profile.total_points }}</td>
           <td>
             {% if (paper.paper_questions | length) != 0 %}
-                <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id, section_selection_string = g.cohort_paper_report_sections_string) }}">View Cohort Report</a>
+                <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id, section_selection_string_get = g.cohort_paper_report_sections_string) }}">View Cohort Report</a>
             {% endif %}
           </td>
         </tr>
@@ -73,7 +73,7 @@
                     <td class="align-middle">{{ clazz_profile.clazz.code }}</td>
                     {% for tally in student_profile.paper_score_tallies %}
                       {% if tally.has_all_scores %}
-                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id) }}">View Report</a></td>
+                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}">View Report</a></td>
                       {% else %}
                         <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
                         </td>

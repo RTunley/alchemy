@@ -16,6 +16,7 @@ def get_cohort_size(course):
 @bp_cohort.before_request
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
+    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection'
     g.cohort_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
 
 def get_clazz_course_profiles(course):
@@ -34,7 +35,9 @@ def index():
 def paper_report(paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
-    section_selection_string = flask.request.args.get('section_selection_string')
+    print("Sent: ", g.cohort_paper_report_sections_string)
+    section_selection_string = flask.request.args.get('section_selection_string_get')
+    print("Received: ", section_selection_string)
     section_selections = section_selection_string.split(',')
     cohort_report = report_types.CohortPaperReport(paper, section_selections)
     return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)

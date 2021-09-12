@@ -10,7 +10,8 @@ bp_clazz = flask.Blueprint('clazz', __name__)
 @bp_clazz.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
-    g.clazz_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection' 
+    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection'
+    g.clazz_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
 
 @bp_clazz.url_defaults
 def url_defaults(endpoint, values):
@@ -101,7 +102,7 @@ def paper_results():
 @auth_manager.require_group
 def paper_report(paper_id):
     paper = models.Paper.query.get_or_404(paper_id)
-    section_selection_string = flask.request.args.get('section_selection_string')
+    section_selection_string = flask.request.args.get('section_selection_string_get')
     section_selections = section_selection_string.split(',')
     print(section_selections)
     paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
