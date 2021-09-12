@@ -147,7 +147,7 @@ def render_question_accordion_html(questions):
     return flask.render_template_string(
         '''
         {% import 'course/question_tabs_macro.html' as question_tabs %}
-        {{ question_tabs.render_tabs(course_id, paper_id, questions) }}
+        {{ question_tabs.render_question_tabs(course_id, paper_id, questions) }}
         ''', course_id = g.course.id, paper_id = paper_id, questions = questions)
 
 @bp_paper.route('/edit')

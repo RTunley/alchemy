@@ -2,41 +2,12 @@
   <p class="text-center p-3">No questions added yet.</p>
 {% endif %}
 
-<table>
-  <tbody id="sortable_table_body" data-alchemy_paper_id="{{ g.paper.id }}" data-alchemy_course_id="{{ g.course.id }}" >
+{% import "course/paper/question_table_macro.html" as question_table %}
 
-    {% for question in g.paper.question_objects() %}
-    <tr>
-      <td>
+<h4>Multiple choice questions</h4>
 
-        <div class="accordion" {% if show_editing_controls %}style="cursor: move"{% endif %}>
-          <div class="card">
+{{ question_table.render_questions_table(g.course.id, g.paper.id, g.paper.question_objects()|filter_multiple_choice_questions, "multiple_choice_questions_table") }}
 
-            <div class="card-header p-1 d-flex flex-md-row">
-              {% if show_editing_controls %}
-                <a role="button" aria-label="Remove question" class="btn btn-link" onclick="paper_remove_question({{ g.course.id }}, {{ question.id }})">
-                  <span data-feather="minus-circle"></span>
-                </a>
-              {% endif %}
+<h4 class="mt-3">Open answer questions</h4>
 
-              <div class="mb-0 mr-md-auto p-2">
-                <h6>
-                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">Question {{ loop.index }}</a>
-                </h6>
-                <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">[{{ question.points | prettify_number }} points] {{ question.content }}</a>
-              </div>
-            </div>
-
-            <div id="paper_question_collapse{{ loop.index0 }}" class="collapse" aria-labelledby="heading{{ loop.index0 }}">
-              {% import "course/question_details_macro.html" as question_details %}
-              {{ question_details.render_question_details(question) }}
-            </div>
-          </div>
-        </div>
-
-      </td>
-    </tr>
-    {% endfor %}
-
-</tbody>
-</table>
+{{ question_table.render_questions_table(g.course.id, g.paper.id, g.paper.question_objects()|filter_text_questions, "open_answer_questions_table") }}

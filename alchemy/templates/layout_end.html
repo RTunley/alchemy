@@ -29,7 +29,11 @@
 
         {% if show_editing_controls %}
         // Set up draggable table rows
-        $('#sortable_table_body').sortable({
+        $('#open_answer_questions_table').sortable({
+          opacity: 0.5,
+          update: paper_reorder_questions,
+        });
+        $('#multiple_choice_questions_table').sortable({
           opacity: 0.5,
           update: paper_reorder_questions,
         });
@@ -37,8 +41,11 @@
       }
 
       function paper_reorder_questions(event, ui) {
-        var tbody = $('#sortable_table_body');
-        var sorted_question_ids = tbody.sortable('serialize', { key: 'q_id' });
+        var tbody_id = ui.item.attr('id').startsWith('open_answer')
+            ? 'open_answer_questions_table'
+            : 'multiple_choice_questions_table';
+        var tbody = $('#' + tbody_id);
+        var sorted_question_ids = tbody.sortable('serialize');
         var paper_id = tbody.attr('data-alchemy_paper_id');
         var course_id = tbody.attr('data-alchemy_course_id');
 

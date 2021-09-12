@@ -1,0 +1,42 @@
+{% macro render_questions_table(course_id, paper_id, questions, tbody_id) -%}
+
+<table>
+  <tbody id="{{ tbody_id }}" data-alchemy_paper_id="{{ paper_id }}" data-alchemy_course_id="{{ course_id }}" >
+
+    {% for question in questions %}
+    <tr id="{{ tbody_id }}_{{ question.id }}"><!-- this id identifies the question id for jquery sortable -->
+      <td>
+
+        <div class="accordion" {% if show_editing_controls %}style="cursor: move"{% endif %}>
+          <div class="card">
+
+            <div class="card-header p-1 d-flex flex-md-row">
+              {% if show_editing_controls %}
+                <a role="button" aria-label="Remove question" class="btn btn-link" onclick="paper_remove_question({{ g.course.id }}, {{ question.id }})">
+                  <span data-feather="minus-circle"></span>
+                </a>
+              {% endif %}
+
+              <div class="mb-0 mr-md-auto p-2">
+                <h6>
+                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">Question {{ loop.index }}</a>
+                </h6>
+                <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">[{{ question.points | prettify_number }} points] {{ question.content }}</a>
+              </div>
+            </div>
+
+            <div id="paper_question_collapse{{ loop.index0 }}" class="collapse" aria-labelledby="heading{{ loop.index0 }}">
+              {% import "course/question_details_macro.html" as question_details %}
+              {{ question_details.render_question_details(question) }}
+            </div>
+          </div>
+        </div>
+
+      </td>
+    </tr>
+    {% endfor %}
+
+</tbody>
+</table>
+
+{% endmacro %}
