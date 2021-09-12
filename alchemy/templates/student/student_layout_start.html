@@ -30,6 +30,7 @@
           <h6 class="mt-2 mr-3">
             Alchemy{% if 'account' in g %}: {{ g.account.name }}{% endif %}
           </h6>
+          <button type="button" class="btn btn-success" href = "{{ url_for('account.student.index', student_id = g.student.id) }}">My Home Page</button>
 
           <ul class="nav nav-pills">
             <li class="nav-item dropdown">

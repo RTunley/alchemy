@@ -38,8 +38,8 @@
         <tr>
           <td>{{ tally.paper.title }}</td>
           {% if tally.has_all_scores %}
-            <td>{{ tally.grade }} | {{ tally.percent_total }}% | {{ tally.total }}/{{ tally.paper.profile.total_points }}</td>
-            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id) }}" >View Report</a></td>
+            <td>{{ tally.grade }} | {{ tally.percent_total }}% | {{ tally.raw_total }} / {{ tally.paper.profile.total_points }}</td>
+            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('account.student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_paper_report_sections_string) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned</td>
             <td><a class="btn btn-success btn-sm disabled">View Report</a></td>
