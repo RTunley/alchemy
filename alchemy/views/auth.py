@@ -14,13 +14,10 @@ def redirect_to_user_home():
             flask.abort(401)
     else:
         print('Warning: authentication is disabled! This should only happen if you are testing stuff!')
-        first_account = models.Account.query.first()
         student = models.Student.query.first()
-        response = flask.redirect(flask.url_for('student.index', account_id = first_account.id, student_id = student.id))
+        response = flask.redirect(flask.url_for('student.index', student_id = student.id))
         return response
 
-    # TODO when student users are added, can check here whether group is staff
-    # or student, then redirect to the right page.
     g.current_user = flask_jwt_extended.get_current_user()
     if g.current_user.group == 'admin':
         # TODO instead of just returning the first available account, should find
@@ -29,14 +26,11 @@ def redirect_to_user_home():
         response = flask.redirect(flask.url_for('account.index', account_id = first_account.id))
         return response
     elif g.current_user.group == 'student':
-        # TODO once student is moved out of the account endpoint,
-        # remove this first_account variable and account_id argument.
-        first_account = models.Account.query.first()
         student = models.Student.query.get(g.current_user.id)
         if not student:
             print('Error! Cannot find student with id:', g.current_user.id)
             flask.abort(401)
-        response = flask.redirect(flask.url_for('student.index', account_id = first_account.id, student_id = student.id))
+        response = flask.redirect(flask.url_for('student.index', student_id = student.id))
         return response
     else:
         print('Error! Unrecognisable user group:', g.current_user.group)
