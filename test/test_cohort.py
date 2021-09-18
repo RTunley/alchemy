@@ -26,8 +26,18 @@ class CohortTestCase(TestCase):
         db.create_all()
         test_account = cto.create_account()
         test_course = cto.create_course(test_account)
+        grade_levels = cto.create_grade_levels(test_course)
         test_clazz = cto.add_clazz(test_course)
         student_list = cto.add_students_and_aws_users(test_course, test_clazz)
+
+        q1 = cto.create_question1(test_course)
+        q2 = cto.create_question2(test_course)
+        tag1 = cto.create_attached_tag(test_course, q1, "Easy")
+        tag2 = cto.create_attached_tag(test_course, q2, "Hard")
+        test_paper = cto.create_paper(test_course)
+        cto.add_question_to_paper(test_paper, q1)
+        cto.add_question_to_paper(test_paper, q2)
+        cto.add_scores(test_paper, student_list)
 
     def tearDown(self):
         db.session.remove()
@@ -113,6 +123,17 @@ class CohortTestCase(TestCase):
         self.assertEqual(new_student.aws_user.family_name, 'Trench')
         self.assertEqual(new_student.aws_user.given_name, 'Mariana')
         self.assertEqual(new_student.aws_user.email, 'mariana.trench@schoolofrock.com')
+
+    def test_paper_report(self):
+        course = Course.query.first()
+        paper = Paper.query.first()
+        section_types = ['OverviewSection', 'OverviewPlotSection', 'OverviewDetailsSection', 'GradeOverviewSection', 'TagOverviewSection', 'QuestionOverviewSection', 'TagDetailsSection', 'QuestionDetailsSection']
+
+        for section_type in section_types:
+            with self.subTest(section=section_type):
+                data = {'paper_id': paper.id, 'section_selection_string_get': section_type}
+                response = self.client.get(f'/course/{course.id}/cohort/paper_report/{paper.id}', query_string = data, follow_redirects = True)
+                self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()

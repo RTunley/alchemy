@@ -36,7 +36,7 @@
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
               <div class="dropdown-menu">
                 {% for clazz in g.student.clazzes %}
-                <a class="dropdown-item" href="{{ url_for('account.student.course_view', course_id=clazz.course.id) }}">{{ clazz.course.name }}</a>
+                <a class="dropdown-item" href="{{ url_for('student.course_view', course_id=clazz.course.id) }}">{{ clazz.course.name }}</a>
                 {% endfor %}
               </div>
             </li>
@@ -49,7 +49,7 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ g.current_user.username }}</a>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('account.student.index') }}">Student home</a>
+                <a class="dropdown-item" href="{{ url_for('student.index') }}">Student Home</a>
                 <a class="dropdown-item" href="{{ url_for('auth.sign_out') }}">Sign out</a>
               </div>
             </li>

@@ -88,8 +88,8 @@ def require_group(func):
 def create_or_update_aws_user(jwt_payload, user_info):
     try:
         aws_user = models.AwsUser.from_jwt(jwt_payload)
-    except ValueError as valueError:
-        print('Unable to load user!', valueError)
+    except ValueError as value_error:
+        print('Unable to load user!', value_error)
         flask.abort(401)
     is_new_user = False
     if not aws_user.id:

@@ -59,7 +59,7 @@ class Student(db.Model):
         clazzes = properties.pop('clazzes', [])
         scores = properties.pop('scores', [])
         aws_user = AwsUser.create('student', **properties)
-        return Student(aws_user=aws_user, clazzes=clazzes, scores=scores)
+        return Student(id=aws_user.id, aws_user=aws_user, clazzes=clazzes, scores=scores)
 
 class Admin(db.Model):
     __tablename__ = 'admin'
@@ -71,7 +71,7 @@ class Admin(db.Model):
     def create(**properties):
         'Creates a Admin and its accompanying AwsUser from the specified properties.'
         aws_user = AwsUser.create('admin', **properties)
-        return Admin(aws_user=aws_user)
+        return Admin(id=aws_user.id, aws_user=aws_user)
 
 class AwsUser(db.Model):
     __tablename__ = 'aws_user'
@@ -91,10 +91,10 @@ class AwsUser(db.Model):
         updated = False
         for field_key in AwsUser.USER_ATTRIBUTES:
             if type(user_attrs) == dict:
-                field_value = user_attrs.get(field_key, '')
+                field_value = user_attrs.get(field_key)
             else:
-                field_value = getattr(user_attrs, field_key, '')
-            if field_value != getattr(self, field_key, ''):
+                field_value = getattr(user_attrs, field_key)
+            if field_value is not None and field_value != getattr(self, field_key, ''):
                 setattr(self, field_key, field_value)
                 updated = True
         return updated
@@ -134,6 +134,13 @@ class AwsUser(db.Model):
         if len(groups) > 1:
             raise ValueError('Error: only 1 group supported, but user {username} has multiple groups: {groups}')
         aws_user = AwsUser.query.filter_by(sub = sub).first()
+        if aws_user is None:
+            aws_user = AwsUser.query.filter_by(username = username).first()
+            if aws_user:
+                # This user was created locally, so now assign it the sub found on the server
+                # that matches the same username.
+                aws_user.sub = sub
+                db.session.commit()
         if aws_user is None:
             print(f'Creating new user from payload', jwt_payload)
             aws_user = AwsUser(sub = sub, username = username, group = groups[0])

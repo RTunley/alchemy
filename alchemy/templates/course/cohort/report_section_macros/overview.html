@@ -1,0 +1,20 @@
+{% macro render_section(overview_section) -%}
+
+<h2><b>Overview</b></h2>
+<br>
+<p>Average achievment on this assessment across all students in {{ overview_section.paper.course.name }} is:</p>
+<table style="text-align:center" class="table table-hover">
+  <thead>
+    <th>Achievement (Raw)</th>
+    <th>As %</th>
+    <th>Grade Level</th>
+  </thead>
+  <tr>
+    <td style="text-align: center">{{ overview_section.tally.raw_mean }} / {{ overview_section.tally.paper_total }}</td>
+    <td style="text-align: center">{{ overview_section.tally.percent_mean }}% </td>
+    <td style="text-align: center">{{ overview_section.tally.mean_grade }}</td>
+  </tr>
+</table>
+<br>
+
+{%- endmacro %}

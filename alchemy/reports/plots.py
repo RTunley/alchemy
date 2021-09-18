@@ -18,7 +18,6 @@ def create_pie_chart(plot_title, slices, labels):
     ax1.pie(slices, labels = labels, startangle = 90, autopct='%1.1f%%', wedgeprops = {'ec': 'black'})
     ax1.set_title(plot_title)
 
-
     plt.savefig(img, format='png')
     img.seek(0)
     plot_data = urllib.parse.quote(base64.b64encode(img.read()).decode())

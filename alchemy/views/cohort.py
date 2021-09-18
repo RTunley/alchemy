@@ -1,7 +1,8 @@
 import flask
 from flask import g
 from werkzeug.utils import secure_filename
-from alchemy import db, models, auth_manager, summary_profiles, file_input, file_output
+from alchemy import db, models, auth_manager, file_input, file_output
+from alchemy.reports import data_manager, report_types
 import os
 
 bp_cohort = flask.Blueprint('cohort', __name__)
@@ -15,22 +16,29 @@ def get_cohort_size(course):
 @bp_cohort.before_request
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
+    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection'
+    g.cohort_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
+
+def get_clazz_course_profiles(course):
+    clazz_course_profiles = []
+    for clazz in course.clazzes:
+        clazz_course_profiles.append(data_manager.ClazzCourseProfile(clazz, g.course))
+    return clazz_course_profiles
 
 @bp_cohort.route('/index')
 @auth_manager.require_group
 def index():
-    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
-def get_all_student_profiles(course):
-    clazz_profile_tuples = []
-    for clazz in course.clazzes:
-        student_course_profile_list = []
-        for student in clazz.students:
-            new_course_profile = summary_profiles.make_student_course_profile(student, course)
-            student_course_profile_list.append(new_course_profile)
-
-        clazz_profile_tuples.append((clazz,student_course_profile_list))
-    return clazz_profile_tuples
+@bp_cohort.route('/paper_report/<int:paper_id>')
+@auth_manager.require_group
+def paper_report(paper_id=0):
+    paper = models.Paper.query.get_or_404(paper_id)
+    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
+    section_selection_string = flask.request.args.get('section_selection_string_get')
+    section_selections = section_selection_string.split(',')
+    cohort_report = report_types.CohortPaperReport(paper, section_selections)
+    return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)
 
 @bp_cohort.route('/add_student', methods=['POST'])
 @auth_manager.require_group
@@ -41,7 +49,6 @@ def add_student():
     student_id = int(flask.request.form['student_id'])
     email = flask.request.form['student_email']
     clazz = models.Clazz.query.get_or_404(clazz_id)
-    username = email.split('@')[0].lower()
     if models.AwsUser.query.get(student_id) is not None:
         flask.flash(f'User {student_id} already exists!')
     elif models.Student.query.get(student_id) is not None:
@@ -50,7 +57,7 @@ def add_student():
         new_student = models.Student.create(id=student_id, given_name=new_given_name, family_name=new_family_name, email=email, clazzes=[clazz])
         db.session.add(new_student)
         db.session.commit()
-    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
 @bp_cohort.route('/upload_excel', methods=['POST'])
 @auth_manager.require_group
@@ -86,7 +93,7 @@ def upload_class_data():
         else:
             flask.flash('Allowed File Type Is .xlxs or .csv')
 
-    return flask.redirect(flask.url_for('course.cohort.index', num_students = get_cohort_size(g.course), profile_tuples = get_all_student_profiles(g.course)))
+    return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
 @bp_cohort.route('/download_excel', methods = ['GET', 'POST'])
 @auth_manager.require_group
