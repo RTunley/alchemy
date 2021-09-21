@@ -23,7 +23,7 @@
         <td>Student ID</td>
         <td>Given Name</td>
         <td>Family Name</td>
-        {% for paper_question in clazz_paper_profile.paper.ordered_paper_questions() %}
+        {% for paper_question in clazz_paper_profile.paper.paper_questions %}
           <td>Question {{ paper_question.order_number }}
             ( / {{ paper_question.question.points | prettify_number }} )
           </td>

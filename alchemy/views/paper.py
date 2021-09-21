@@ -39,7 +39,6 @@ def index():
         return render_edit_paper(paper)
     else:
         # Show the paper home page
-        g.paper.paper_questions = sorted(g.paper.paper_questions, key = lambda x: x.order_number)
         return flask.render_template('course/paper/index.html')
 
 @bp_paper.route('/edit_title', methods = ['POST'])
@@ -62,7 +61,6 @@ def remove():
 @bp_paper.route('/printable', methods = ['GET'])
 @auth_manager.require_group
 def printable():
-    g.paper.paper_questions = sorted(g.paper.paper_questions, key = lambda x: x.order_number)
     return flask.render_template('course/paper/printable.html')
     # #css = [''] #any css files you want to include
     # pdf = pdfkit.from_string(rendered, False)
@@ -74,7 +72,6 @@ def printable():
 @bp_paper.route('/solutions_printable')
 @auth_manager.require_group
 def solutions_printable():
-    g.paper.paper_questions = sorted(g.paper.paper_questions, key = lambda x: x.order_number)
     return flask.render_template('course/paper/solutions_printable.html')
     #css = [''] #any css files you want to include
     # pdf = pdfkit.from_string(rendered, False)

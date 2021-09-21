@@ -34,7 +34,6 @@ def index():
 @auth_manager.require_group
 def paper_report(paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
-    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     section_selection_string = flask.request.args.get('section_selection_string_get')
     section_selections = section_selection_string.split(',')
     cohort_report = report_types.CohortPaperReport(paper, section_selections)
