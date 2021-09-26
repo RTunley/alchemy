@@ -5,20 +5,23 @@ function reload_multiple_choice_questions(form_prefix) {
 
   var hidden_solution_choices = document.getElementById(form_prefix + 'hidden_solution_choices')
   var solution_choices = JSON.parse(hidden_solution_choices.value)
+
   var solution_choices_list_div = document.getElementById(form_prefix + 'solution_choices_list_div')
-
-  for (var i = 0; i < solution_choices.length; ++i) {
-    var choice_label = solution_choices[i].choice_label
-    var choice_text = solution_choices[i].choice_text
-    var new_element = new_multiple_choice_question_element(form_prefix, choice_label, choice_text)
-    solution_choices_list_div.appendChild(new_element)
-  }
-
-  window.multiple_choice_qs[form_prefix] = solution_choices
 
   var hidden_solution_correct_label = document.getElementById(form_prefix + 'hidden_solution_correct_label')
   var correct_solution_choice = document.getElementById(form_prefix + 'correct_solution_choice')
   correct_solution_choice.innerText = hidden_solution_correct_label.value
+
+  for (var i = 0; i < solution_choices.length; ++i) {
+    var choice_label = solution_choices[i].choice_label
+    var choice_text = solution_choices[i].choice_text
+    var selected = (choice_label == hidden_solution_correct_label.value)
+
+    var new_element = new_multiple_choice_question_element(form_prefix, choice_label, choice_text, selected)
+    solution_choices_list_div.appendChild(new_element)
+  }
+
+  window.multiple_choice_qs[form_prefix] = solution_choices
 
   // Render dynamically-created feather icons
   feather.replace()
@@ -49,7 +52,7 @@ function get_current_solution_choices(form_prefix) {
   return solution_choices
 }
 
-function new_multiple_choice_question_element(form_prefix, choice_label, choice_text) {
+function new_multiple_choice_question_element(form_prefix, choice_label, choice_text, selected) {
   // Renders something like this:
   // <div class="input-group mb-1">
   //   <div class="input-group-prepend">
@@ -82,9 +85,10 @@ function new_multiple_choice_question_element(form_prefix, choice_label, choice_
   var radio_button = document.createElement('input')
   radio_button.type = 'radio'
   radio_button.name = 'multiple_choice_radio_group'
+  radio_button.checked = selected
+  radio_button.className = 'solution_choice_radio'
   radio_button.addEventListener('click', function(event) {
-    var correct_solution_choice = document.getElementById(form_prefix + 'correct_solution_choice')
-    correct_solution_choice.innerText = choice_label
+    update_correct_solution_choice(form_prefix, choice_label)
   })
   input_group_text_div.appendChild(radio_button)
 
@@ -94,6 +98,7 @@ function new_multiple_choice_question_element(form_prefix, choice_label, choice_
   solution_text_input.placeholder = 'Option text'
   solution_text_input.value = choice_text
   input_group.appendChild(solution_text_input)
+  update_choice_label_color(solution_text_input, selected)
 
   var delete_button_div = document.createElement('div')
   delete_button_div.className = 'input-group-append'
@@ -122,7 +127,7 @@ function remove_multiple_choice_question(form_prefix, choice_label, choice_eleme
   var i
   for (i = 0; i < solution_choices.length; ++i) {
     if (solution_choices[i].choice_label == choice_label) {
-      window.question_tags[form_prefix].splice(i, 1)
+      window.multiple_choice_qs[form_prefix].splice(i, 1)
       break
     }
   }
@@ -131,6 +136,36 @@ function remove_multiple_choice_question(form_prefix, choice_label, choice_eleme
   var choice_label_divs = document.getElementById(form_prefix + 'solution_choices_list_div').querySelectorAll('.solution_choice_label');
   for (i = 0; i < choice_label_divs.length; ++i) {
       choice_label_divs[i].innerHTML = solution_prefix(i) + ' &nbsp;'
+  }
+
+  // If the correct choice was removed, reset the correct choice label
+  var correct_solution_choice = document.getElementById(form_prefix + 'correct_solution_choice')
+  if (correct_solution_choice.innerText == choice_label) {
+    correct_solution_choice.innerText = '(Not selected)'
+  }
+}
+
+function update_correct_solution_choice(form_prefix, choice_label) {
+  var correct_solution_choice = document.getElementById(form_prefix + 'correct_solution_choice')
+  correct_solution_choice.innerText = choice_label
+
+  var solution_choices_list_div = document.getElementById(form_prefix + 'solution_choices_list_div')
+  var choice_radio_inputs = solution_choices_list_div.querySelectorAll('input.solution_choice_radio');
+  var choice_text_inputs = solution_choices_list_div.querySelectorAll('input.solution_choice_text');
+
+  for (var i = 0; i < choice_radio_inputs.length; ++i) {
+    var is_selected_choice = choice_radio_inputs[i].checked
+    update_choice_label_color(choice_text_inputs[i], is_selected_choice)
+  }
+}
+
+function update_choice_label_color(choice_label_div, selected) {
+  if (selected) {
+    choice_label_div.style.backgroundColor = 'green'
+    choice_label_div.style.color = 'white'
+  } else {
+    choice_label_div.style.backgroundColor = 'transparent'
+    choice_label_div.style.color = 'black'
   }
 }
 
@@ -142,7 +177,7 @@ function add_multiple_choice_question(form_prefix, choice_text_input) {
   var solution_choices_list_div = document.getElementById(form_prefix + 'solution_choices_list_div')
   solution_choices_list_div.appendChild(new_element)
 
-  choice_text_input.value = ''
+  choice_text_input.value = ''  // reset the input field for adding new options
   window.multiple_choice_qs[form_prefix].push(new_solution_choice)
 
   // Render dynamically-created feather icons

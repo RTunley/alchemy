@@ -101,14 +101,3 @@ function create_button(tag_string){
   newButton.id = tag_string + '-button'
   return newButton
 }
-
-function question_form_load(course_id, question_id) {
-  $('#question_edit_modal').modal('show')
-  $.getJSON('/course/' + course_id + '/library/edit_question_render_form', {
-    question_id: question_id,
-  }, function(data) {
-    $('#edit_question_area').html(data.edit_question_html)
-    reload_question_tags('edit_question_')
-    init_page()
-  })
-}

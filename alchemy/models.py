@@ -212,6 +212,10 @@ class Question(db.Model):
         return type(self) is type(other) and self.id == other.id
 
     @staticmethod
+    def solution_prefix(i):
+        return string.ascii_uppercase[i]
+
+    @staticmethod
     def solution_prefixes(prefixes_range):
         prefixes = []
         for i in range(prefixes_range):
