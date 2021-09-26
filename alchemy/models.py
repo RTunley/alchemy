@@ -173,8 +173,10 @@ class Question(db.Model):
 
     solution_id = db.Column(db.Integer, db.ForeignKey('solution.id'))
     solution = db.relationship('Solution')
-    solution_choices = db.relationship('Solution', secondary=question_solution_choices)
-
+    solution_choices = db.relationship('Solution',
+            secondary=question_solution_choices,
+            order_by='Solution.order_number',
+            collection_class=ordering_list('order_number'))
     points = db.Column(db.Float(), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     tags = db.relationship('Tag', secondary=questions_tags, back_populates='questions')
@@ -221,6 +223,7 @@ class Solution(db.Model):
     __tablename__ = 'solution'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(), nullable=False)
+    order_number = db.Column(db.Integer)
 
 class Image(db.Model):
     __tablename__ = 'image'

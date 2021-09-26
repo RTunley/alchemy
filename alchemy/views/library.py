@@ -4,9 +4,7 @@ import sqlalchemy
 from alchemy import db, models, views, auth_manager
 from alchemy.views import forms
 import secrets
-import os
-import base64
-import io
+import os, base64, json, io
 
 bp_library = flask.Blueprint('library', __name__)
 
@@ -29,14 +27,32 @@ def add_image(form_field):
     db.session.add(new_image)
     return new_image
 
+def build_question_solution_choices(solution_choices, correct_solution_label):
+    solution_choices_result = []
+    correct_solution_result = None
+    for solution_choice in solution_choices:
+        choice_label = solution_choice['choice_label']
+        choice_text = solution_choice['choice_text']
+        solution = models.Solution(content=choice_text)
+        solution_choices_result.append(solution)
+        if choice_label == correct_solution_label:
+            correct_solution_result = solution
+    return solution_choices_result, correct_solution_result
+
 @bp_library.route('/add_question', methods=['POST'])
 @auth_manager.require_group
 def add_question():
     new_question_form = forms.NewQuestionForm()
     if new_question_form.validate_on_submit():
+        solution_choices, correct_solution = build_question_solution_choices(json.loads(new_question_form.hidden_solution_choices.data), new_question_form.hidden_solution_correct_label.data)
+        if not correct_solution:
+            # This is an open answer solution, not a multiple choice solution
+            correct_solution = models.Solution(content=new_question_form.solution.data)
+
         question = models.Question(
             content = new_question_form.content.data,
-            solution = models.Solution(content=new_question_form.solution.data),
+            solution = correct_solution,
+            solution_choices = solution_choices,
             points = new_question_form.points.data,
             q_course = g.course,
             tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
@@ -51,6 +67,7 @@ def add_question():
 @bp_library.route('/edit_question_submit', methods=['POST'])
 @auth_manager.require_group
 def edit_question_submit():
+    # TODO need to handle editing of multiple choice questions
     edit_question_form = forms.EditQuestionForm()
     if edit_question_form.validate_on_submit():
         question_id = int(flask.request.form.get('question_id'))

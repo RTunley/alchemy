@@ -9,7 +9,7 @@
     <div class="content area">
       <p class="card-text">{{ question.content }}</p>
 
-      {% if question.solution_choices %}
+      {% if question.is_multiple_choice() %}
       <ul style="list-style-type:none;">
         {% for solution_choice in question.solution_choices %}
         <li>{{ question.describe_solution(solution_choice) }}</li>

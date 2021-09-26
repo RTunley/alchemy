@@ -1,3 +1,4 @@
+import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FloatField, HiddenField, FieldList, RadioField
 from flask_wtf.file import FileField, FileAllowed
@@ -7,10 +8,13 @@ from alchemy import models
 def build_course_tag_string(course):
     return ','.join([tag.name for tag in course.tags if len(tag.name) > 0])
 
+
 class NewQuestionForm(FlaskForm):
-    content = TextAreaField('Question Content', validators = [DataRequired(),])
-    solution = TextAreaField('Question Solution', validators = [DataRequired(),])
+    content = TextAreaField('Question Content')
+    solution = TextAreaField('Question Solution')
     points = FloatField('Points',validators = [InputRequired(), NumberRange(min = 1, max = 50)])
+    hidden_solution_choices = HiddenField(id='new_question_hidden_solution_choices')
+    hidden_solution_correct_label = HiddenField(id='new_question_hidden_solution_correct_label')
     hidden_course_tags = HiddenField(id='new_question_hidden_course_tags')
     hidden_question_tags = HiddenField(id='new_question_hidden_question_tags')
     new_tag = StringField('New Tag', id='new_question_new_tag')
@@ -19,9 +23,12 @@ class NewQuestionForm(FlaskForm):
 
     def init_fields(self, course):
         self.hidden_course_tags.data = build_course_tag_string(course)
-        self.solution_choices = models.Question.solution_prefixes(4) # show this many empty options by default
+
+        # show 4 empty options by default
+        self.hidden_solution_choices.data = json.dumps([ {'choice_label': choice_label, 'choice_text': choice_text } for (choice_label, choice_text) in models.Question.solution_prefixes(4) ])
 
 class EditQuestionForm(FlaskForm):
+    # TODO support editing of multiple choice questions
     content = TextAreaField('Question Content', validators = [DataRequired(),])
     solution = TextAreaField('Question Solution', validators = [DataRequired(),])
     points = FloatField('Points',validators = [InputRequired(),])
