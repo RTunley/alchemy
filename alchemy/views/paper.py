@@ -95,7 +95,7 @@ def questions_filtered_by_tag_filter(tag_filter):
 @auth_manager.require_group
 def filter_questions_by_tag():
     tag_filter = flask.request.args.get('tag_filter')
-    filtered_questions = questions_filtered_by_tag_filter(tag_filter)
+    filtered_questions = questions_filtered_by_tag_filter(tag_filter.split(','))
 
     if g.paper is None:
         # Return all matching questions in the entire course
