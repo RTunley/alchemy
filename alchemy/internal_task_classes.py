@@ -1,3 +1,4 @@
+## TODO or maybe we should store them in separate tables....?
 
 class Paper(db.Model):
     __tablename__ = 'paper'
@@ -47,7 +48,6 @@ class Descriptor(object):
         self.min_points = min_points
         self.max_points = max_points
         # TODO The max_points of the critteria will be the same as the largest max_points of the descriptors.
-
 
 ## Example - IB Science Criteria (Biology, Physics, Chemistry) ##
 
