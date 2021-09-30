@@ -161,22 +161,17 @@ class PaperQuestion(db.Model):
     question = db.relationship('Question', back_populates='papers')
     paper = db.relationship('Paper', back_populates='paper_questions')
 
-question_solution_choices = db.Table('question_solution_choices', db.Model.metadata,
-    db.Column('question_id', db.ForeignKey('question.id'), primary_key=True),
-    db.Column('solution_id', db.ForeignKey('solution.id'), primary_key=True)
-)
-
 class Question(db.Model):
     __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(), nullable=False)
 
-    solution_id = db.Column(db.Integer, db.ForeignKey('solution.id'))
-    solution = db.relationship('Solution')
-    solution_choices = db.relationship('Solution',
-            secondary=question_solution_choices,
+    all_solutions = db.relationship('Solution',
+            backref="question",
             order_by='Solution.order_number',
             collection_class=ordering_list('order_number'))
+    correct_solution_index = db.Column(db.Integer)
+
     points = db.Column(db.Float(), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     tags = db.relationship('Tag', secondary=questions_tags, back_populates='questions')
@@ -185,31 +180,46 @@ class Question(db.Model):
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
     image = db.relationship("Image", back_populates='questions')
 
+    def correct_solution(self):
+        if len(self.all_solutions) == 0:
+            raise ValueError('all_solutions should never be empty')
+        if len(self.all_solutions) == 1:
+            return self.all_solutions[0]
+        if self.correct_solution_index is None:
+            print(f'Error, question {self.id} has multiple solution but no correct_solution_index')
+            return None
+        if self.correct_solution_index >= len(self.all_solutions):
+            print(f'Error, question {self.id} has correct_solution_index={correct_solution_index} but only {len(self.all_solutions)} solutions')
+            return None
+        return self.all_solutions[self.correct_solution_index]
+
     def is_multiple_choice(self):
-        return self.solution_choices is not None and len(self.solution_choices) > 0
+        return len(self.all_solutions) > 1
 
     def decode_image(self):
         return self.image.content.decode('ascii')
-
-    def solution_choice_index(self):
-        'Returns the index of the correct solution choice.'
-        for i in range(len(self.solution_choices)):
-            if self.solution_choices[i] == self.solution:
-                return i
-        return -1
 
     def describe_solution(self, solution):
         '''Returns a text description of the solution.
            E.g. "A) The answer" if this matches the first solution for a multiple
            choice question, otherwise just returns "The answer".'''
-        for i in range(len(self.solution_choices)):
-            if self.solution_choices[i] == solution:
+        for i in range(len(self.all_solutions)):
+            if self.all_solutions[i] == solution:
                 label = string.ascii_uppercase[i]
                 return f'{label}) {solution.content}'
         return solution.content
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
+
+    @staticmethod
+    def create(**kwargs):
+        correct_solution_index = kwargs.get('correct_solution_index', None)
+        all_solutions = kwargs.get('all_solutions', None)
+        if all_solutions and len(all_solutions) > 1:
+            if correct_solution_index is None or not (0 <= correct_solution_index < len(all_solutions)):
+                raise ValueError(f'correct_solution_index={correct_solution_index} is not valid index in solutions list of size {len(all_solutions)}')
+        return Question(**kwargs)
 
     @staticmethod
     def solution_prefix(i):
@@ -226,6 +236,7 @@ class Question(db.Model):
 class Solution(db.Model):
     __tablename__ = 'solution'
     id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     content = db.Column(db.String(), nullable=False)
     order_number = db.Column(db.Integer)
 

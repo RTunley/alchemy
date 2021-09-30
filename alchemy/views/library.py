@@ -29,15 +29,16 @@ def add_image(form_field):
 
 def build_multiple_choice_solution(solution_choices, correct_solution_label):
     solution_choices_result = []
-    correct_solution_result = None
-    for solution_choice in solution_choices:
+    correct_solution_index = -1
+    for i in range(len(solution_choices)):
+        solution_choice = solution_choices[i]
         choice_label = solution_choice['choice_label']
         choice_text = solution_choice['choice_text']
         solution = models.Solution(content=choice_text)
         solution_choices_result.append(solution)
         if choice_label == correct_solution_label:
-            correct_solution_result = solution
-    return solution_choices_result, correct_solution_result
+            correct_solution_index = i
+    return solution_choices_result, correct_solution_index
 
 def set_question_properties_from_form(question, form):
     # Set simple properties
@@ -51,27 +52,27 @@ def set_question_properties_from_form(question, form):
             db.session.delete(question.image)
         question.image = add_image(form.image)
 
-    # Update solution. Simplify by just replacing properties.
-    new_solution_choices, new_solution = build_multiple_choice_solution(
-            json.loads(form.hidden_solution_choices.data),
+    solution_choices = json.loads(form.hidden_solution_choices.data) if form.hidden_solution_choices.data else []
+
+    # Update solution. Simplify by just replacing properties instead of updating them.
+    new_solution_choices, correct_solution_index = build_multiple_choice_solution(
+            solution_choices,
             form.hidden_solution_correct_label.data)
-    if not new_solution:
-        # This is an open answer solution, not a multiple choice solution
-        new_solution = models.Solution(content=form.solution.data)
-    if question.solution_choices:
-        for choice in question.solution_choices:
+    if not new_solution_choices:
+        # this is an open answer question rather than multiple choice
+        new_solution_choices = [models.Solution(content=form.solution.data)]
+    if question.all_solutions:
+        for choice in question.all_solutions:
             db.session.delete(choice)
-    if question.solution:
-        db.session.delete(question.solution)
-    question.solution_choices = new_solution_choices
-    question.solution = new_solution
+    question.all_solutions = new_solution_choices
+    question.correct_solution_index = correct_solution_index
 
 @bp_library.route('/add_question', methods=['POST'])
 @auth_manager.require_group
 def add_question():
     new_question_form = forms.NewQuestionForm()
     if new_question_form.validate_on_submit():
-        question = models.Question(q_course = g.course)
+        question = models.Question.create(q_course = g.course)
         set_question_properties_from_form(question, new_question_form)
         db.session.add(question)
         db.session.commit()

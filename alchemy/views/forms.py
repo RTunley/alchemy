@@ -44,17 +44,16 @@ class EditQuestionForm(FlaskForm):
         self.content.data = question.content
 
         solution_choices = []
-        for i in range(len(question.solution_choices)):
-            choice = question.solution_choices[i]
+        for i in range(len(question.all_solutions)):
+            choice = question.all_solutions[i]
             choice_label = models.Question.solution_prefix(i)
             params = {'choice_label': choice_label, 'choice_text': choice.content}
             solution_choices.append(params)
         self.hidden_solution_choices.data = json.dumps(solution_choices)
 
         self.hidden_solution_correct_label.data = ''
-        correct_solution_index = question.solution_choice_index()
-        if correct_solution_index >= 0:
-            self.hidden_solution_correct_label.data = solution_choices[correct_solution_index]['choice_label']
+        if question.correct_solution_index >= 0:
+            self.hidden_solution_correct_label.data = solution_choices[question.correct_solution_index]['choice_label']
 
         self.points.data = question.points
         tag_name_list = []

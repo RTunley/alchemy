@@ -116,7 +116,7 @@ def filter_questions_by_text():
                 models.Question.course_id == g.course.id,
                 sqlalchemy.or_(
                     models.Question.content.like(search_query),
-                    models.Question.solution.content.like(search_query)
+                    # models.Question.solution.content.like(search_query)
                 )).all()
     else:
         # Return all questions for this course

@@ -11,7 +11,7 @@
 
       {% if question.is_multiple_choice() %}
       <ul style="list-style-type:none;">
-        {% for solution_choice in question.solution_choices %}
+        {% for solution_choice in question.all_solutions %}
         <li>{{ question.describe_solution(solution_choice) }}</li>
         {% endfor %}
       </ul>
@@ -26,7 +26,7 @@
     <div class="solution-area">
       <h5>Solution</h5>
       <p class="card-text">
-        {{ question.describe_solution(question.solution) }}
+        {{ question.describe_solution(question.correct_solution()) }}
       </p>
     </div>
     <div class="tag-area">
