@@ -6,9 +6,9 @@
 
 <div class="card-body">
   <div class="accordion-grid">
-    <div class="content area">
-      <p class="card-text">{{ question.content }}</p>
 
+    <div class="content-area">
+      <p class="card-text">{{ question.content }}</p>
       {% if question.is_multiple_choice() %}
       <ul style="list-style-type:none;">
         {% for solution_choice in question.all_solutions %}
@@ -22,31 +22,37 @@
           <image class="center" src="data:image/png;base64,{{ question.decode_image() }}">
         </p>
       {% endif %}
-    </div>
-    <div class="solution-area">
+
+      <br /><hr />
+
       <h5>Solution</h5>
       <p class="card-text">
         {{ question.describe_solution(question.correct_solution()) }}
       </p>
     </div>
-    <div class="tag-area">
-      <h6 class="card-subtitle mt-2 mb-1 text-muted">Tags</h6>
-        <p class="card-text">
-          <ul>
-            {% for tag in question.tags %}
-            <li>{{ tag.name }}</li>
-            {% endfor %}
-          </ul>
-        </p>
-    </div>
-    <div class="inclusions-area">
-      <h6 class="card-subtitle mt-2 mb-1 text-muted">Assessment Inclusions</h6>
-      <ul>
-        {% for paper_question in question.papers %}
-          <li>{{ paper_question.paper.title }} (Question {{paper_question.order_number}})</li>
+
+    <div class="question-metadata">
+      <h6 class="card-subtitle text-muted">Tags</h6>
+      <p class="card-text">
+        <ul>
+          {% for tag in question.tags %}
+          <li>{{ tag.name }}</li>
           {% endfor %}
         </ul>
+      </p>
+
+      <br />
+
+      <h6 class="card-subtitle text-muted">Assessment Inclusions</h6>
+      <p class="card-text">
+        <ul>
+        {% for paper_question in question.papers %}
+          <li>{{ paper_question.paper.title }} (Q{{paper_question.order_number}})</li>
+          {% endfor %}
+        </ul>
+      </p>
     </div>
+
   </div>
 </div>
 
