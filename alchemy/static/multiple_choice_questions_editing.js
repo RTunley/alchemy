@@ -2,6 +2,9 @@ function reload_multiple_choice_questions(form_prefix) {
   if (!window.multiple_choice_qs) {
     window.multiple_choice_qs = {}
   }
+  if (!window.last_selected_solution_tab) {
+    window.last_selected_solution_tab = 'open_answer'
+  }
 
   var hidden_solution_choices = document.getElementById(form_prefix + 'hidden_solution_choices')
   var solution_choices = JSON.parse(hidden_solution_choices.value)
@@ -32,6 +35,24 @@ function reload_multiple_choice_questions(form_prefix) {
     hidden_solution_choices.value = JSON.stringify(window.multiple_choice_qs[form_prefix])
     hidden_solution_correct_label.value = correct_solution_choice.innerText
   })
+
+  $('a[data-toggle="tab"]').on('show.bs.tab', function (event) {
+    if (event.target.href.endsWith('text_questions_div')) {
+      window.last_selected_solution_tab = 'open_answer'
+    } else if (event.target.href.endsWith('multiple_choice_questions_div')) {
+      window.last_selected_solution_tab = 'mcq'
+    }
+  })
+
+  // Select open-answer solution tab if this is a new question, or if editing a question that already has multiple choice solutions
+  var solutionTabTarget = (form_prefix == 'new_question_' || solution_choices.length <= 1)
+      ? form_prefix + 'solution_text_tab'
+      : form_prefix + 'solution_choices_tab'
+  $('#' + solutionTabTarget).tab('show')
+}
+
+function get_last_selected_solution_tab() {
+  return window.last_selected_solution_tab || 'open_answer'
 }
 
 function get_current_solution_choices(form_prefix) {

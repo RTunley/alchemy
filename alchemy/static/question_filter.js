@@ -88,6 +88,7 @@ function library_filter_text_changed() {
 function paper_filter_questions_by_text(html_container_id, html_scroll_marker_id, course_id, paper_id, search_text) {
   $.getJSON('/course/' + course_id + '/paper/' + paper_id + '/filter_questions_by_text', {
     search_text: search_text,
+    tab: get_last_selected_solution_tab(),
   }, function(data) {
     $('#' + html_container_id).html(data.question_accordion_html)
 
@@ -103,6 +104,7 @@ function paper_filter_questions_by_text(html_container_id, html_scroll_marker_id
 function paper_filter_questions_by_tag(html_container_id, html_scroll_marker_id, course_id, paper_id, tag_filter_list) {
   $.getJSON('/course/' + course_id + '/paper/' + paper_id + '/filter_questions_by_tag', {
     tag_filter: tag_filter_list.join(','),
+    tab: get_last_selected_solution_tab(),
   }, function(data) {
     $('#' + html_container_id).html(data.question_accordion_html)
 

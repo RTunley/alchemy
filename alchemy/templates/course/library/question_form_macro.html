@@ -24,8 +24,7 @@ question_id: the id of the question if editing a question, otherwise an empty st
   </div>
   <div class="form-row">
     <div class="col-md-9 mb-3">
-
-      <ul class="nav nav-tabs justify-content-center" role="tablist">
+      <ul id="{{ form_prefix }}solution_tabs" class="nav nav-tabs justify-content-center" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link active" id="{{ form_prefix }}solution_text_tab" data-toggle="tab" href="#{{ form_prefix }}solution_text_div" role="tab" aria-controls="{{ form_prefix }}solution_text_div" aria-selected="true"><span data-feather="type"></span> Open answer solution</a>
         </li>

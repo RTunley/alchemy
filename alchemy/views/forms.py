@@ -42,18 +42,21 @@ class EditQuestionForm(FlaskForm):
     def init_fields(self, course, question):
         self.hidden_course_tags.data = build_course_tag_string(course)
         self.content.data = question.content
-
-        solution_choices = []
-        for i in range(len(question.all_solutions)):
-            choice = question.all_solutions[i]
-            choice_label = models.Question.solution_prefix(i)
-            params = {'choice_label': choice_label, 'choice_text': choice.content}
-            solution_choices.append(params)
-        self.hidden_solution_choices.data = json.dumps(solution_choices)
-
+        self.hidden_solution_choices.data = '[]'
         self.hidden_solution_correct_label.data = ''
-        if question.correct_solution_index >= 0:
-            self.hidden_solution_correct_label.data = solution_choices[question.correct_solution_index]['choice_label']
+
+        if question.is_multiple_choice():
+            solution_choices = []
+            for i in range(len(question.all_solutions)):
+                choice = question.all_solutions[i]
+                choice_label = models.Question.solution_prefix(i)
+                params = {'choice_label': choice_label, 'choice_text': choice.content}
+                solution_choices.append(params)
+            self.hidden_solution_choices.data = json.dumps(solution_choices)
+            if question.correct_solution_index is not None and question.correct_solution_index >= 0:
+                self.hidden_solution_correct_label.data = solution_choices[question.correct_solution_index]['choice_label']
+        else:
+            self.solution.data = question.all_solutions[0].content
 
         self.points.data = question.points
         tag_name_list = []

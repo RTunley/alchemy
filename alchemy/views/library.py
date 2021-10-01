@@ -18,7 +18,8 @@ def index():
     form = forms.NewQuestionForm()
     form.init_fields(g.course)
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
-    return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags)
+
+    return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags, tab=flask.request.args.get('tab'))
 
 def add_image(form_field):
     form_field.data.stream.seek(0)
@@ -83,14 +84,14 @@ def add_question():
 @bp_library.route('/edit_question_submit', methods=['POST'])
 @auth_manager.require_group
 def edit_question_submit():
-    # TODO need to handle editing of multiple choice questions
     edit_question_form = forms.EditQuestionForm()
     if edit_question_form.validate_on_submit():
         question_id = int(flask.request.form.get('question_id'))
         question = models.Question.query.get_or_404(question_id)
         set_question_properties_from_form(question, edit_question_form)
         db.session.commit()
-        return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id))
+        tab = 'mcq' if question.is_multiple_choice() else 'open_answer'
+        return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id, tab=tab))
     return '<html><body>Invalid form data!</body></html>'
 
 @bp_library.route('/edit_question_render_form')

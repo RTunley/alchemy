@@ -78,13 +78,15 @@ def add_questions_and_tags(course):
     for question in questions:
         db.session.add(question)
 
-    choices = []
-    for content in ['Eight', 'A gazillion', 'No-one knows', 'Forty-two']:
-        choices.append(m.Solution(content=content))
-
+    choices = [m.Solution(content=content) for content in ('Eight', 'A gazillion', 'No-one knows', 'Forty-two')]
     question_5 = m.Question.create(content = 'What is the magic number?', all_solutions = choices, correct_solution_index = 2, points = points_1, course_id = course.id, tags=[tag_2])
     db.session.add(question_5)
     questions.append(question_5)
+
+    choices = [m.Solution(content=content) for content in ('Hardly any', 'A whole lot', 'It depends')]
+    question_6 = m.Question.create(content = 'How much wood does a woodchuck chuck?', all_solutions = choices, correct_solution_index = 2, points = points_1, course_id = course.id, tags=[tag_3])
+    db.session.add(question_6)
+    questions.append(question_6)
 
     db.session.commit()
     return(questions)
@@ -136,7 +138,7 @@ def add_students_and_aws_users(clazzes):
 
 def add_scores(paper, student_list):
     #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4,3,3,4).
-    score_tuples = [(0,0,0,0,0), (1,1,1,0,0), (2,1,1,1,1), (2,1,2,2,2), (4,0,3,2,3), (2,4,2,3,2), (4,4,3,3,4)]
+    score_tuples = [(0,0,0,0,0,0), (1,1,1,0,0,1), (2,1,1,1,1,2), (2,1,2,2,2,1), (4,0,3,2,3,2), (2,4,2,3,2,4), (4,4,3,3,4,3)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id

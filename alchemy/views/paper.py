@@ -26,6 +26,9 @@ def before_request():
     else:
         g.html_title = f'{g.course.name} - {g.paper.title}'
 
+def tab_for_question(question):
+    return 'mcq' if question.is_multiple_choice() else 'open_answer'
+
 @bp_paper.route('/', methods = ['GET', 'POST'])
 @auth_manager.require_group
 def index():
@@ -95,20 +98,22 @@ def questions_filtered_by_tag_filter(tag_filter):
 @auth_manager.require_group
 def filter_questions_by_tag():
     tag_filter = flask.request.args.get('tag_filter')
+    tab = flask.request.args.get('tab')
     filtered_questions = questions_filtered_by_tag_filter(tag_filter.split(','))
 
     if g.paper is None:
         # Return all matching questions in the entire course
-        return flask.jsonify(question_accordion_html = render_question_accordion_html(filtered_questions))
+        return flask.jsonify(question_accordion_html = render_question_accordion_html(filtered_questions, tab))
     else:
         # Return all matching questions in this paper
         available_questions = questions_available_for_paper(g.paper, filtered_questions)
-        return flask.jsonify(question_accordion_html = render_question_accordion_html(available_questions))
+        return flask.jsonify(question_accordion_html = render_question_accordion_html(available_questions, tab))
 
 @bp_paper.route('/filter_questions_by_text')
 @auth_manager.require_group
 def filter_questions_by_text():
     search_text = flask.request.args.get('search_text').strip()
+    tab = flask.request.args.get('tab')
     if len(search_text) > 0:
         # Find question content or solution values for this course that contain this search text
         search_query = '%{}%'.format(search_text)
@@ -124,11 +129,11 @@ def filter_questions_by_text():
 
     if g.paper is None:
         # Return all matching questions in the entire course
-        return flask.jsonify(question_accordion_html = render_question_accordion_html(filtered_questions))
+        return flask.jsonify(question_accordion_html = render_question_accordion_html(filtered_questions, tab))
     else:
         # Return all matching questions in this paper
         available_questions = questions_available_for_paper(g.paper, filtered_questions)
-        return flask.jsonify(question_accordion_html = render_question_accordion_html(available_questions))
+        return flask.jsonify(question_accordion_html = render_question_accordion_html(available_questions, tab))
 
 def questions_available_for_paper(paper, from_question_list):
     available_questions = []
@@ -139,13 +144,13 @@ def questions_available_for_paper(paper, from_question_list):
         available_questions.append(question)
     return available_questions
 
-def render_question_accordion_html(questions):
+def render_question_accordion_html(questions, tab = None):
     paper_id = g.paper.id if g.paper else 0
     return flask.render_template_string(
         '''
         {% import 'course/question_tabs_macro.html' as question_tabs %}
-        {{ question_tabs.render_question_tabs(course_id, paper_id, questions) }}
-        ''', course_id = g.course.id, paper_id = paper_id, questions = questions)
+        {{ question_tabs.render_question_tabs(course_id, paper_id, questions, tab) }}
+        ''', course_id = g.course.id, paper_id = paper_id, questions = questions, tab = tab)
 
 @bp_paper.route('/edit')
 @auth_manager.require_group
@@ -164,7 +169,7 @@ def render_edit_paper(paper):
 
     return flask.render_template('course/paper/edit.html', available_questions = available_questions, all_course_tags = all_tags, show_editing_controls = True)
 
-def paper_editing_json_response(paper, tag_filter = None):
+def paper_editing_json_response(paper, tag_filter = None, tab = None):
     course = models.Course.query.get(paper.course_id)
 
     if tag_filter:
@@ -175,18 +180,21 @@ def paper_editing_json_response(paper, tag_filter = None):
 
     # return the updated list of available questions and paper questions
     return flask.jsonify(
-        available_questions_html = render_question_accordion_html(available_questions), paper_questions_html = flask.render_template('course/paper/questions_list.html',
+        available_questions_html = render_question_accordion_html(available_questions, tab), paper_questions_html = flask.render_template('course/paper/questions_list.html',
             show_editing_controls = True), stats_sidebar_html = flask.render_template('course/paper/profile.html'))
 
 @bp_paper.route('/reorder_questions')
 @auth_manager.require_group
 def reorder_questions():
     question_id_list = urllib.parse.parse_qsl(flask.request.args.get('sorted_question_ids'))
+    tab = ''
     if len(question_id_list) > 0:
         new_question_order = [int(question_id) for dummy, question_id in question_id_list]
         if g.paper.reorder_questions(new_question_order):
             db.session.commit()
-    return paper_editing_json_response(g.paper)
+        first_question = models.Question.query.get_or_404(new_question_order[0])
+        tab = tab_for_question(first_question)
+    return paper_editing_json_response(g.paper, tab=tab)
 
 @bp_paper.route('/add_question')
 @auth_manager.require_group
@@ -199,7 +207,7 @@ def add_question():
     db.session.add(paper_question)
     db.session.commit()
     g.paper.build_profile()
-    return paper_editing_json_response(g.paper, tag_filter)
+    return paper_editing_json_response(g.paper, tag_filter, tab=tab_for_question(question))
 
 @bp_paper.route('/remove_question')
 @auth_manager.require_group
@@ -207,6 +215,7 @@ def remove_question():
     question_id = int(flask.request.args.get('question_id'))
     question = models.Question.query.get_or_404(question_id)
     tag_filter = flask.request.args.get('tag_filter')
+    tab = tab_for_question(question)
 
     paper_question = g.paper.remove_question(question.id)
     if paper_question:
@@ -215,7 +224,7 @@ def remove_question():
         return flask.Response(status = 404)
     db.session.commit()
     g.paper.build_profile()
-    return paper_editing_json_response(g.paper, tag_filter)
+    return paper_editing_json_response(g.paper, tag_filter, tab=tab)
 
 @bp_paper.route('/duplicate')
 @auth_manager.require_group

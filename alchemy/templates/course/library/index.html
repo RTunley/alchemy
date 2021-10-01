@@ -40,7 +40,7 @@
 
   <div id="question_accordion_container">
     {% import "course/question_tabs_macro.html" as question_tabs %}
-    {{ question_tabs.render_question_tabs(g.course.id, 0, g.course.questions) }}
+    {{ question_tabs.render_question_tabs(g.course.id, 0, g.course.questions, tab) }}
   </div>
 
 </main>
