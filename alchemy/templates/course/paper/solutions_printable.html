@@ -20,7 +20,7 @@
       {% endif %}
       <br>
       <h3>Solution</h3>
-      <p>{{ paper_question.question.correct_solution().content }}</p>
+      <p>{{ paper_question.question.get_solution().content }}</p>
       <b>[Total: {{ paper_question.question.points | prettify_number }} Marks]</b>
       <br>
     {% endfor %}

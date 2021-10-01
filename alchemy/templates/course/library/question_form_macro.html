@@ -26,29 +26,29 @@ question_id: the id of the question if editing a question, otherwise an empty st
     <div class="col-md-9 mb-3">
       <ul id="{{ form_prefix }}solution_tabs" class="nav nav-tabs justify-content-center" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="{{ form_prefix }}solution_text_tab" data-toggle="tab" href="#{{ form_prefix }}solution_text_div" role="tab" aria-controls="{{ form_prefix }}solution_text_div" aria-selected="true"><span data-feather="type"></span> Open answer solution</a>
+          <a class="nav-link active" id="{{ form_prefix }}open_answer_tab" data-toggle="tab" href="#{{ form_prefix }}open_answer_tabpanel" role="tab" aria-controls="{{ form_prefix }}open_answer_tabpanel"><span data-feather="type"></span> Open answer solution</a>
         </li>
         <li class="nav-item" role="presentation">
-          <a class="nav-link" id="{{ form_prefix }}solution_choices_tab" data-toggle="tab" href="#{{ form_prefix }}solution_choices_div" role="tab" aria-controls="{{ form_prefix }}solution_choices_div" aria-selected="false"><span data-feather="list"></span> Multiple choice solution</a>
+          <a class="nav-link" id="{{ form_prefix }}mcq_choices_tab" data-toggle="tab" href="#{{ form_prefix }}mcq_choices_tabpanel" role="tab" aria-controls="{{ form_prefix }}mcq_choices_tabpanel"><span data-feather="list"></span> Multiple choice solution</a>
         </li>
       </ul>
       <div class="tab-content pt-3">
-        <div class="tab-pane show active" id="{{ form_prefix }}solution_text_div" role="tabpanel" aria-labelledby="{{ form_prefix }}solution_text_tab">
+        <div class="tab-pane show active" id="{{ form_prefix }}open_answer_tabpanel" role="tabpanel" aria-labelledby="{{ form_prefix }}open_answer_tab">
           {{ form.solution(class="form-control", rows="4") }}
         </div>
-        <div class="tab-pane" id="{{ form_prefix }}solution_choices_div" role="tabpanel" aria-labelledby="{{ form_prefix }}solution_choices_tab">
+        <div class="tab-pane" id="{{ form_prefix }}mcq_choices_tabpanel" role="tabpanel" aria-labelledby="{{ form_prefix }}mcq_choices_tab">
 
-          <div id="{{ form_prefix }}solution_choices_list_div">
+          <div id="{{ form_prefix }}mcq_choices_list_div">
           </div>
 
           <div class="input-group my-3">
-            <input id="{{ form_prefix }}new_solution_text" type="text" class="form-control" aria-label="Text input to add another option" placeholder="Add another option...">
+            <input id="{{ form_prefix }}new_mcq_choice_text" type="text" class="form-control" aria-label="Text input to add another option" placeholder="Add another option...">
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button"><span data-feather="plus" onclick="add_multiple_choice_question('{{ form_prefix}}', document.getElementById('{{ form_prefix }}new_solution_text'));"></span></button>
+              <button class="btn btn-outline-secondary" type="button"><span data-feather="plus" onclick="add_mcq_choice('{{ form_prefix}}', document.getElementById('{{ form_prefix }}new_mcq_choice_text'));"></span></button>
             </div>
           </div>
 
-          <p>Correct answer: <span id="{{ form_prefix }}correct_solution_choice">(Not selected)</span></p>
+          <p>Correct answer: <span id="{{ form_prefix }}correct_mcq_choice">(Not selected)</span></p>
 
         </div>
       </div>

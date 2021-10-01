@@ -28,18 +28,18 @@ def add_image(form_field):
     db.session.add(new_image)
     return new_image
 
-def build_multiple_choice_solution(solution_choices, correct_solution_label):
-    solution_choices_result = []
+def build_multiple_choice_solution(mcq_choices, correct_solution_label):
+    mcq_choices_result = []
     correct_solution_index = -1
-    for i in range(len(solution_choices)):
-        solution_choice = solution_choices[i]
-        choice_label = solution_choice['choice_label']
-        choice_text = solution_choice['choice_text']
+    for i in range(len(mcq_choices)):
+        mcq_choice = mcq_choices[i]
+        choice_label = mcq_choice['choice_label']
+        choice_text = mcq_choice['choice_text']
         solution = models.Solution(content=choice_text)
-        solution_choices_result.append(solution)
+        mcq_choices_result.append(solution)
         if choice_label == correct_solution_label:
             correct_solution_index = i
-    return solution_choices_result, correct_solution_index
+    return mcq_choices_result, correct_solution_index
 
 def set_question_properties_from_form(question, form):
     # Set simple properties
@@ -53,19 +53,19 @@ def set_question_properties_from_form(question, form):
             db.session.delete(question.image)
         question.image = add_image(form.image)
 
-    solution_choices = json.loads(form.hidden_solution_choices.data) if form.hidden_solution_choices.data else []
+    mcq_choices = json.loads(form.hidden_mcq_choices.data) if form.hidden_mcq_choices.data else []
 
     # Update solution. Simplify by just replacing properties instead of updating them.
-    new_solution_choices, correct_solution_index = build_multiple_choice_solution(
-            solution_choices,
-            form.hidden_solution_correct_label.data)
-    if not new_solution_choices:
+    new_mcq_choices, correct_solution_index = build_multiple_choice_solution(
+            mcq_choices,
+            form.hidden_correct_mcq_choice_label.data)
+    if not new_mcq_choices:
         # this is an open answer question rather than multiple choice
-        new_solution_choices = [models.Solution(content=form.solution.data)]
+        new_mcq_choices = [models.Solution(content=form.solution.data)]
     if question.all_solutions:
         for choice in question.all_solutions:
             db.session.delete(choice)
-    question.all_solutions = new_solution_choices
+    question.all_solutions = new_mcq_choices
     question.correct_solution_index = correct_solution_index
 
 @bp_library.route('/add_question', methods=['POST'])

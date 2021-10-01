@@ -41,7 +41,7 @@ class LibraryTestCase(TestCase):
                 content, solution_content, points, question_valid = question_data[i]
                 prev_question_count = len(course.questions)
                 response = self.client.post('/course/{}/library/add_question'.format(course.id),
-                data = dict(content=content, solution=solution_content, points=points, hidden_solution_choices=[], hidden_solution_correct_label=''),
+                data = dict(content=content, solution=solution_content, points=points, hidden_mcq_choices=[], hidden_correct_mcq_choice_label=''),
                 follow_redirects = True)
 
                 if question_valid:
@@ -51,7 +51,7 @@ class LibraryTestCase(TestCase):
                     # question has correct attributes
                     question = Question.query.filter_by(course_id=course.id).all()[-1]
                     self.assertEqual(question.content, content)
-                    self.assertEqual(question.correct_solution().content, solution_content)
+                    self.assertEqual(question.get_solution().content, solution_content)
                     self.assertEqual(question.points, points)
                 else:
                     self.assertEqual(len(course.questions), prev_question_count)
@@ -63,7 +63,7 @@ class LibraryTestCase(TestCase):
         tag = cto.create_attached_tag(course, q, "Familiar")
         response = self.client.get("/course/{}/library".format(course.id), follow_redirects = True)
         self.assertTrue(bytes(q.content, "UTF-8") in response.data)
-        self.assertTrue(bytes(q.correct_solution().content, "UTF-8") in response.data)
+        self.assertTrue(bytes(q.get_solution().content, "UTF-8") in response.data)
         self.assertTrue(bytes(tag.name, "UTF-8") in response.data)
 
     # Testing added tags appear in html
@@ -88,7 +88,7 @@ class LibraryTestCase(TestCase):
         # question has correct attributes
         question = Question.query.filter_by(course_id = course.id).first()
         self.assertEqual(question.content, 'Edited Question')
-        self.assertEqual(question.correct_solution().content, 'Edited Solution')
+        self.assertEqual(question.get_solution().content, 'Edited Solution')
         self.assertEqual(question.points, 10)
 
     # testing the delete question endpoint, no paper

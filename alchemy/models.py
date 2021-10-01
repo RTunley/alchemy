@@ -180,7 +180,7 @@ class Question(db.Model):
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
     image = db.relationship("Image", back_populates='questions')
 
-    def correct_solution(self):
+    def get_solution(self):
         if len(self.all_solutions) == 0:
             raise ValueError('all_solutions should never be empty')
         if len(self.all_solutions) == 1:
@@ -222,11 +222,11 @@ class Question(db.Model):
         return Question(**kwargs)
 
     @staticmethod
-    def solution_prefix(i):
+    def mcq_choice_prefix(i):
         return string.ascii_uppercase[i]
 
     @staticmethod
-    def solution_prefixes(prefixes_range):
+    def mcq_choice_prefixes(prefixes_range):
         prefixes = []
         for i in range(prefixes_range):
             prefixes.append((string.ascii_uppercase[i], ''))
@@ -282,7 +282,7 @@ class Paper(db.Model):
         insertion_index = len(self.paper_questions)
         if question.is_multiple_choice():
             # insert it before the first open answer question
-            insertion_index = self.open_answers_start_index()
+            insertion_index = self.open_answer_questions_start_index()
         paper_question = PaperQuestion(paper_id=self.id, question_id=question.id)
         self.paper_questions.insert(insertion_index, paper_question)
         return paper_question
@@ -294,7 +294,7 @@ class Paper(db.Model):
                 return question
         return None
 
-    def open_answers_start_index(self):
+    def open_answer_questions_start_index(self):
         for i in range(len(self.paper_questions)):
             if not self.paper_questions[i].question.is_multiple_choice():
                 return i
@@ -304,12 +304,12 @@ class Paper(db.Model):
         if not new_question_ordering:
             return False
         # Place multiple-choice questions before open-answer questions
-        open_answers_index = self.open_answers_start_index()
-        multiple_choice_questions = self.paper_questions[:open_answers_index]
-        open_answer_questions = self.paper_questions[open_answers_index:]
+        open_answer_questions_start_index = self.open_answer_questions_start_index()
+        mcqs = self.paper_questions[:open_answer_questions_start_index]
+        open_answer_questions = self.paper_questions[open_answer_questions_start_index:]
 
         first_question = Question.query.get_or_404(new_question_ordering[0])
-        questions_to_reorder = multiple_choice_questions if first_question.is_multiple_choice() else open_answer_questions
+        questions_to_reorder = mcqs if first_question.is_multiple_choice() else open_answer_questions
 
         if len(questions_to_reorder) != len(new_question_ordering):
             print('Cannot reorder, bad lengths', len(questions_to_reorder), len(new_question_ordering))
@@ -319,7 +319,7 @@ class Paper(db.Model):
         if first_question.is_multiple_choice():
             self.paper_questions = reordered_questions + open_answer_questions
         else:
-            self.paper_questions = multiple_choice_questions + reordered_questions
+            self.paper_questions = mcqs + reordered_questions
         self.paper_questions.reorder()
         return True
 

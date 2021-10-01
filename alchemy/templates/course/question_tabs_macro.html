@@ -8,20 +8,20 @@
 
 <ul class="nav nav-tabs justify-content-center" role="tablist">
   <li class="nav-item" role="presentation">
-    <a class="nav-link {{ 'active' if tab!='mcq' else '' }}" id="text_questions_tab" data-toggle="tab" href="#text_questions_div" role="tab" aria-controls="text_questions_div"><span data-feather="type"></span> Open answer questions</a>
+    <a class="nav-link {{ 'active' if tab!='mcq' else '' }}" id="open_answer_questions_tab" data-toggle="tab" href="#open_answer_questions_tabpanel" role="tab" aria-controls="open_answer_questions_tabpanel" onclick="set_last_selected_question_tab('open_answer');"><span data-feather="type"></span> Open answer questions</a>
   </li>
   <li class="nav-item" role="presentation">
-    <a class="nav-link {{ 'active' if tab=='mcq' else '' }}" id="multiple_choice_questions_tab" data-toggle="tab" href="#multiple_choice_questions_div" role="tab" aria-controls="multiple_choice_questions_div"><span data-feather="list"></span> Multiple choice questions</a>
+    <a class="nav-link {{ 'active' if tab=='mcq' else '' }}" id="mcqs_tab" data-toggle="tab" href="#mcqs_tabpanel" role="tab" aria-controls="mcqs_tabpanel" onclick="set_last_selected_question_tab('mcq');"><span data-feather="list"></span> Multiple choice questions</a>
   </li>
 </ul>
 
 <div class="tab-content pt-3">
-  <div class="tab-pane {{ 'show active' if tab!='mcq' else '' }}" id="text_questions_div" role="tabpanel" aria-labelledby="text_questions_tab">
-    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_text_questions) }}
+  <div class="tab-pane {{ 'show active' if tab!='mcq' else '' }}" id="open_answer_questions_tabpanel" role="tabpanel" aria-labelledby="open_answer_questions_tab">
+    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_open_answer_questions) }}
   </div>
 
-  <div class="tab-pane {{ 'show active' if tab=='mcq' else '' }}" id="multiple_choice_questions_div" role="tabpanel" aria-labelledby="multiple_choice_questions_tab">
-    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_multiple_choice_questions) }}
+  <div class="tab-pane {{ 'show active' if tab=='mcq' else '' }}" id="mcqs_tabpanel" role="tabpanel" aria-labelledby="mcqs_tab">
+    {{ question_accordion.render_questions(course_id, paper_id, questions|filter_mcqs) }}
   </div>
 </div>
 

@@ -2,6 +2,14 @@ function init_library_filter_properties(properties) {
   window.library_filter_properties = properties
 }
 
+function set_last_selected_question_tab(tab) {
+  window.last_selected_question_tab = tab
+}
+
+function get_last_selected_question_tab() {
+  return window.last_selected_question_tab || 'open_answer'
+}
+
 function library_filter_tag_clicked(tag_id, button) {
   // Update the list of filtered tags
   if (!window.question_tag_filter) {
@@ -88,7 +96,7 @@ function library_filter_text_changed() {
 function paper_filter_questions_by_text(html_container_id, html_scroll_marker_id, course_id, paper_id, search_text) {
   $.getJSON('/course/' + course_id + '/paper/' + paper_id + '/filter_questions_by_text', {
     search_text: search_text,
-    tab: get_last_selected_solution_tab(),
+    tab: get_last_selected_question_tab(),
   }, function(data) {
     $('#' + html_container_id).html(data.question_accordion_html)
 
@@ -104,7 +112,7 @@ function paper_filter_questions_by_text(html_container_id, html_scroll_marker_id
 function paper_filter_questions_by_tag(html_container_id, html_scroll_marker_id, course_id, paper_id, tag_filter_list) {
   $.getJSON('/course/' + course_id + '/paper/' + paper_id + '/filter_questions_by_tag', {
     tag_filter: tag_filter_list.join(','),
-    tab: get_last_selected_solution_tab(),
+    tab: get_last_selected_question_tab(),
   }, function(data) {
     $('#' + html_container_id).html(data.question_accordion_html)
 
