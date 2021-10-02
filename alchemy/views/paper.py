@@ -117,11 +117,22 @@ def filter_questions_by_text():
     if len(search_text) > 0:
         # Find question content or solution values for this course that contain this search text
         search_query = '%{}%'.format(search_text)
+
+        course_question_ids = [question.id for question in models.Question.query.filter(
+                models.Question.course_id == g.course.id).all()]
+        matching_solution_question_ids = [solution.question_id for solution in
+                models.Solution.query.filter(
+                        models.Solution.content.like(search_query),
+                        models.Solution.question_id.in_(course_question_ids)
+                        ).all()]
+
         filtered_questions = models.Question.query.filter(
-                models.Question.course_id == g.course.id,
                 sqlalchemy.or_(
-                    models.Question.content.like(search_query),
-                    # models.Question.solution.content.like(search_query)
+                    models.Question.id.in_(matching_solution_question_ids),
+                    sqlalchemy.and_(
+                        models.Question.course_id == g.course.id,
+                        models.Question.content.like(search_query),
+                    )
                 )).all()
     else:
         # Return all questions for this course
