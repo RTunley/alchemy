@@ -1,5 +1,6 @@
 import sqlalchemy
 from alchemy import db
+from sqlalchemy.ext.orderinglist import ordering_list
 import alchemy.views.profile as paper_profile
 import base64, string
 
@@ -160,19 +161,16 @@ class PaperQuestion(db.Model):
     question = db.relationship('Question', back_populates='papers')
     paper = db.relationship('Paper', back_populates='paper_questions')
 
-question_solution_choices = db.Table('question_solution_choices', db.Model.metadata,
-    db.Column('question_id', db.ForeignKey('question.id'), primary_key=True),
-    db.Column('solution_id', db.ForeignKey('solution.id'), primary_key=True)
-)
-
 class Question(db.Model):
     __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(), nullable=False)
 
-    solution_id = db.Column(db.Integer, db.ForeignKey('solution.id'))
-    solution = db.relationship('Solution')
-    solution_choices = db.relationship('Solution', secondary=question_solution_choices)
+    all_solutions = db.relationship('Solution',
+            backref="question",
+            order_by='Solution.order_number',
+            collection_class=ordering_list('order_number'))
+    correct_solution_index = db.Column(db.Integer)
 
     points = db.Column(db.Float(), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
@@ -182,25 +180,31 @@ class Question(db.Model):
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
     image = db.relationship("Image", back_populates='questions')
 
+    def get_solution(self):
+        if len(self.all_solutions) == 0:
+            raise ValueError('all_solutions should never be empty')
+        if len(self.all_solutions) == 1:
+            return self.all_solutions[0]
+        if self.correct_solution_index is None:
+            print(f'Error, question {self.id} has multiple solution but no correct_solution_index')
+            return None
+        if self.correct_solution_index >= len(self.all_solutions):
+            print(f'Error, question {self.id} has correct_solution_index={correct_solution_index} but only {len(self.all_solutions)} solutions')
+            return None
+        return self.all_solutions[self.correct_solution_index]
+
     def is_multiple_choice(self):
-        return self.solution_choices is not None and len(self.solution_choices) > 0
+        return len(self.all_solutions) > 1
 
     def decode_image(self):
         return self.image.content.decode('ascii')
-
-    def solution_choice_index(self):
-        'Returns the index of the correct solution choice.'
-        for i in range(len(self.solution_choices)):
-            if self.solution_choices[i] == self.solution:
-                return i
-        return -1
 
     def describe_solution(self, solution):
         '''Returns a text description of the solution.
            E.g. "A) The answer" if this matches the first solution for a multiple
            choice question, otherwise just returns "The answer".'''
-        for i in range(len(self.solution_choices)):
-            if self.solution_choices[i] == solution:
+        for i in range(len(self.all_solutions)):
+            if self.all_solutions[i] == solution:
                 label = string.ascii_uppercase[i]
                 return f'{label}) {solution.content}'
         return solution.content
@@ -209,7 +213,20 @@ class Question(db.Model):
         return type(self) is type(other) and self.id == other.id
 
     @staticmethod
-    def solution_prefixes(prefixes_range):
+    def create(**kwargs):
+        correct_solution_index = kwargs.get('correct_solution_index', None)
+        all_solutions = kwargs.get('all_solutions', None)
+        if all_solutions and len(all_solutions) > 1:
+            if correct_solution_index is None or not (0 <= correct_solution_index < len(all_solutions)):
+                raise ValueError(f'correct_solution_index={correct_solution_index} is not valid index in solutions list of size {len(all_solutions)}')
+        return Question(**kwargs)
+
+    @staticmethod
+    def mcq_choice_prefix(i):
+        return string.ascii_uppercase[i]
+
+    @staticmethod
+    def mcq_choice_prefixes(prefixes_range):
         prefixes = []
         for i in range(prefixes_range):
             prefixes.append((string.ascii_uppercase[i], ''))
@@ -219,7 +236,9 @@ class Question(db.Model):
 class Solution(db.Model):
     __tablename__ = 'solution'
     id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     content = db.Column(db.String(), nullable=False)
+    order_number = db.Column(db.Integer)
 
 class Image(db.Model):
     __tablename__ = 'image'
@@ -239,7 +258,9 @@ class Paper(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     scores = db.relationship('Score', backref='paper')
-    paper_questions = db.relationship('PaperQuestion', back_populates='paper')
+    paper_questions = db.relationship('PaperQuestion',
+            order_by='PaperQuestion.order_number',
+            collection_class=ordering_list('order_number', count_from=1))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
 
     def __init__(self, **kwargs):
@@ -252,48 +273,54 @@ class Paper(db.Model):
 
     def question_objects(self):
         question_objects_list = []
-        for question in self.ordered_paper_questions():
+        for question in self.paper_questions:
             question_objects_list.append(question.question)
         return question_objects_list
 
-    def ordered_paper_questions(self):
-        return db.session.query(PaperQuestion).filter_by(paper_id=self.id).order_by(PaperQuestion.order_number).all()
-
     def new_question(self, question):
-        existing_paper_questions = self.ordered_paper_questions()
-        paper_question = PaperQuestion(paper_id=self.id, question_id=question.id, order_number=len(existing_paper_questions)+1)
+        # Place multiple-choice questions before open-answer questions
+        insertion_index = len(self.paper_questions)
+        if question.is_multiple_choice():
+            # insert it before the first open answer question
+            insertion_index = self.open_answer_questions_start_index()
+        paper_question = PaperQuestion(paper_id=self.id, question_id=question.id)
+        self.paper_questions.insert(insertion_index, paper_question)
         return paper_question
 
     def remove_question(self, question_id):
-        ordered_questions = sorted(self.paper_questions, key=lambda x: x.order_number)
-        question = None
-        removal_index = -1
-        for i in range(0, len(ordered_questions)):
-            if ordered_questions[i].question_id == question_id:
-                removal_index = i
-                break
-        if removal_index < 0:
-            return None
-        for i in range(removal_index + 1, len(ordered_questions)):
-            ordered_questions[i].order_number -= 1
-        return ordered_questions[removal_index]
+        for question in self.paper_questions:
+            if question.question_id == question_id:
+                self.paper_questions.remove(question)
+                return question
+        return None
+
+    def open_answer_questions_start_index(self):
+        for i in range(len(self.paper_questions)):
+            if not self.paper_questions[i].question.is_multiple_choice():
+                return i
+        return 0
 
     def reorder_questions(self, new_question_ordering):
         if not new_question_ordering:
             return False
-        if len(self.paper_questions) != len(new_question_ordering):
-            print('Cannot reorder, bad lengths', len(self.paper_questions), len(new_question_ordering))
+        # Place multiple-choice questions before open-answer questions
+        open_answer_questions_start_index = self.open_answer_questions_start_index()
+        mcqs = self.paper_questions[:open_answer_questions_start_index]
+        open_answer_questions = self.paper_questions[open_answer_questions_start_index:]
+
+        first_question = Question.query.get_or_404(new_question_ordering[0])
+        questions_to_reorder = mcqs if first_question.is_multiple_choice() else open_answer_questions
+
+        if len(questions_to_reorder) != len(new_question_ordering):
+            print('Cannot reorder, bad lengths', len(questions_to_reorder), len(new_question_ordering))
             return False
-        paper_question_associations = self.ordered_paper_questions()
-        for paper_question in paper_question_associations:
-            try:
-                # question order_number starts from 1
-                new_question_order_number = new_question_ordering.index(paper_question.question_id) + 1
-            except IndexError:
-                print('Cannot find question to re-order:', paper_question.question_id)
-                return False
-            else:
-                paper_question.order_number = new_question_order_number
+        reordered_questions = sorted(questions_to_reorder, key=lambda paper_question: new_question_ordering.index(paper_question.question_id))
+
+        if first_question.is_multiple_choice():
+            self.paper_questions = reordered_questions + open_answer_questions
+        else:
+            self.paper_questions = mcqs + reordered_questions
+        self.paper_questions.reorder()
         return True
 
     def build_profile(self):

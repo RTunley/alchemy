@@ -91,7 +91,7 @@ class PaperTestCase(TestCase):
         response = self.client.get('/course/{}/paper/{}/solutions_printable'.format(course.id, paper.id))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(bytes(q.content, "UTF-8") in response.data)
-        self.assertTrue(bytes(q.solution.content, "UTF-8") in response.data)
+        self.assertTrue(bytes(q.get_solution().content, "UTF-8") in response.data)
 
     def test_add_question(self):
         course = Course.query.first()
@@ -104,7 +104,8 @@ class PaperTestCase(TestCase):
         added_pq = PaperQuestion.query.filter_by(paper_id = paper.id).first()
         added_q = added_pq.question
         self.assertEqual(added_q.content, q.content)
-        self.assertEqual(added_q.solution, q.solution)
+        self.assertEqual(added_q.all_solutions, q.all_solutions)
+        self.assertEqual(added_q.correct_solution_index, q.correct_solution_index)
         self.assertEqual(added_q.points, q.points)
 
     def test_remove_question(self):

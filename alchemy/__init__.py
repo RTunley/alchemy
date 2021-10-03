@@ -33,12 +33,12 @@ def prettify_number(arg):
         return int(arg)
     return arg
 
-@application.template_filter('filter_text_questions')
-def filter_text_questions(questions):
+@application.template_filter('filter_open_answer_questions')
+def filter_open_answer_questions(questions):
     return [q for q in questions if not q.is_multiple_choice()]
 
-@application.template_filter('filter_multiple_choice_questions')
-def filter_text_questions(questions):
+@application.template_filter('filter_mcqs')
+def filter_open_answer_questions(questions):
     return [q for q in questions if q.is_multiple_choice()]
 
 

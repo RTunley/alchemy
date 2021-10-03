@@ -18,7 +18,7 @@
           <p>{{ statprofile.object.question.content }}</p>
           <br>
           <h4>Question Solution</h4>
-          <p>{{ statprofile.object.question.solution }}</p>
+          <p>{{ statprofile.object.question.get_solution().content }}</p>
           <br>
           <p>Mean achievment on this assessment for Question {{ statprofile.object.order_number }} is:</p>
           <table style="text-align:center" class="table table-hover">

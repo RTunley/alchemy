@@ -4,9 +4,7 @@ import sqlalchemy
 from alchemy import db, models, views, auth_manager
 from alchemy.views import forms
 import secrets
-import os
-import base64
-import io
+import os, base64, json, io
 
 bp_library = flask.Blueprint('library', __name__)
 
@@ -20,7 +18,8 @@ def index():
     form = forms.NewQuestionForm()
     form.init_fields(g.course)
     all_tags = db.session.query(models.Tag).order_by(models.Tag.name).all()
-    return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags)
+
+    return flask.render_template('course/library/index.html', new_question_form = form, all_course_tags = all_tags, tab=flask.request.args.get('tab'))
 
 def add_image(form_field):
     form_field.data.stream.seek(0)
@@ -29,19 +28,53 @@ def add_image(form_field):
     db.session.add(new_image)
     return new_image
 
+def build_multiple_choice_solution(mcq_choices, correct_solution_label):
+    mcq_choices_result = []
+    correct_solution_index = -1
+    for i in range(len(mcq_choices)):
+        mcq_choice = mcq_choices[i]
+        choice_label = mcq_choice['choice_label']
+        choice_text = mcq_choice['choice_text']
+        solution = models.Solution(content=choice_text)
+        mcq_choices_result.append(solution)
+        if choice_label == correct_solution_label:
+            correct_solution_index = i
+    return mcq_choices_result, correct_solution_index
+
+def set_question_properties_from_form(question, form):
+    # Set simple properties
+    question.content = form.content.data
+    question.points = form.points.data
+    question.tags = build_question_tags(form.hidden_question_tags.data, question.q_course, db)
+
+    # Set image
+    if form.image.data:
+        if question.image:
+            db.session.delete(question.image)
+        question.image = add_image(form.image)
+
+    mcq_choices = json.loads(form.hidden_mcq_choices.data) if form.hidden_mcq_choices.data else []
+
+    # Update solution. Simplify by just replacing properties instead of updating them.
+    new_mcq_choices, correct_solution_index = build_multiple_choice_solution(
+            mcq_choices,
+            form.hidden_correct_mcq_choice_label.data)
+    if not new_mcq_choices:
+        # this is an open answer question rather than multiple choice
+        new_mcq_choices = [models.Solution(content=form.solution.data)]
+    if question.all_solutions:
+        for choice in question.all_solutions:
+            db.session.delete(choice)
+    question.all_solutions = new_mcq_choices
+    question.correct_solution_index = correct_solution_index
+
 @bp_library.route('/add_question', methods=['POST'])
 @auth_manager.require_group
 def add_question():
     new_question_form = forms.NewQuestionForm()
     if new_question_form.validate_on_submit():
-        question = models.Question(
-            content = new_question_form.content.data,
-            solution = models.Solution(content=new_question_form.solution.data),
-            points = new_question_form.points.data,
-            q_course = g.course,
-            tags = build_question_tags(new_question_form.hidden_question_tags.data, g.course, db))
-        if new_question_form.image.data:
-            question.image = add_image(new_question_form.image)
+        question = models.Question.create(q_course = g.course)
+        set_question_properties_from_form(question, new_question_form)
         db.session.add(question)
         db.session.commit()
         flask.flash('New question has been added to the library!', 'success')
@@ -55,15 +88,10 @@ def edit_question_submit():
     if edit_question_form.validate_on_submit():
         question_id = int(flask.request.form.get('question_id'))
         question = models.Question.query.get_or_404(question_id)
-        question.content = edit_question_form.content.data
-        question.solution.content = edit_question_form.solution.data
-        question.points = edit_question_form.points.data
-        question.tags = build_question_tags(edit_question_form.hidden_question_tags.data, question.q_course, db)
-        if edit_question_form.image.data:
-            db.session.delete(question.image)
-            question.image = add_image(edit_question_form.image)
+        set_question_properties_from_form(question, edit_question_form)
         db.session.commit()
-        return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id))
+        tab = 'mcq' if question.is_multiple_choice() else 'open_answer'
+        return flask.redirect(flask.url_for('course.library.index', course_id = question.q_course.id, tab=tab))
     return '<html><body>Invalid form data!</body></html>'
 
 @bp_library.route('/edit_question_render_form')

@@ -54,11 +54,10 @@ def student_scores_update():
             continue
         question_cols = score_row[question_col_start:question_col_end]
         total_raw, total_percent, grade = score_row[question_col_end:]
-        ordered_paper_questions = paper.ordered_paper_questions()
-        if len(question_cols) != len(ordered_paper_questions):
-            print('Error! Received', len(question_cols), 'question columns for student', student_id, 'but found', len(ordered_paper_questions), 'questions for paper', paper_id, 'in database')
+        if len(question_cols) != len(paper.paper_questions):
+            print('Error! Received', len(question_cols), 'question columns for student', student_id, 'but found', len(paper.paper_questions), 'questions for paper', paper_id, 'in database')
             continue
-        for i, paper_question in enumerate(ordered_paper_questions):
+        for i, paper_question in enumerate(paper.paper_questions):
             new_value = question_cols[i]
             if type(new_value) == 'str' and new_value.strip() == '':
                 new_value = None    # clear the score value
@@ -94,7 +93,6 @@ def student_scores_update():
 @auth_manager.require_group
 def paper_results():
     paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
-    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     clazz_paper_profile = data_manager.ClazzPaperProfile(g.clazz, paper)
     return flask.render_template('course/clazz/paper_results.html', clazz_paper_profile = clazz_paper_profile)
 
@@ -104,6 +102,5 @@ def paper_report(paper_id):
     paper = models.Paper.query.get_or_404(paper_id)
     section_selection_string = flask.request.args.get('section_selection_string_get')
     section_selections = section_selection_string.split(',')
-    paper.paper_questions = sorted(paper.paper_questions, key=lambda x: x.order_number)
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper, section_selections)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
