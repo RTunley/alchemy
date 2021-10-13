@@ -10,8 +10,14 @@
 
     <div class="card-text">
 
-        <p>Total Questions: {{ g.paper.profile.total_questions }}</p>
-        <p>Total Marks: {{ g.paper.profile.total_points }}</p>
+        <p>Multiple Choice Questions: {{ g.paper.profile.total_mc_questions }}</p>
+        <p>Open Answer Questions: {{ g.paper.profile.total_oa_questions }}</p>
+        <b>Total Questions: {{ g.paper.profile.total_questions }}</b>
+        <br>
+        <br>
+        <p>Multiple Choice Marks: {{ g.paper.profile.total_mcq_points }} ({{ g.paper.profile.mcq_points_norm_ratio }} %)</p>
+        <p>Open Answer Marks: {{ g.paper.profile.total_oaq_points }} ({{ g.paper.profile.oaq_points_norm_ratio }} %)</p>
+        <b>Total Marks: {{ g.paper.profile.total_points }}</b>
 
         <h5 class="card-subtitle mt-4 mb-2">Tags</h5>
         <ul>

@@ -13,7 +13,13 @@ def build_tag_profile(paper, primary_tag):
 class PaperProfile:
     def __init__(self):
         self.total_questions = 0
+        self.total_mc_questions = 0
+        self.total_oa_questions = 0
         self.total_points = 0
+        self.total_mc_points = 0
+        self.mcq_points_norm_ratio = 0
+        self.total_oa_points = 0
+        self.oaq_points_norm_ratio = 0
         self.tag_profile_list = []
 
 class TagProfile:

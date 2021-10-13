@@ -298,6 +298,7 @@ class Paper(db.Model):
                 return question
         return None
 
+    ## TODO eliminate this so that indexing continues from MC section into OA section
     def open_answer_questions_start_index(self):
         for i in range(len(self.paper_questions)):
             if not self.paper_questions[i].question.is_multiple_choice():
@@ -331,11 +332,23 @@ class Paper(db.Model):
         self.profile = paper_profile.PaperProfile()
         self.profile.total_questions = len(self.paper_questions)
         tag_list = []
-        for paper_question in self.paper_questions:
-            self.profile.total_points += paper_question.question.points
-            for tag in paper_question.question.tags:
+        for pq in self.paper_questions:
+            if len(pq.question.all_solutions) > 1:
+                self.profile.total_mc_questions += 1
+                self.profile.total_mc_points += pq.question.points
+            elif len(pq.question.all_solutions) == 1:
+                self.profile.total_oa_questions += 1
+                self.profile.total_oa_points += pq.question.points
+            else:
+                pass
+            ## TODO do we need this else? Are there checks in place to ensure that there are ONLY questions with 1 or multiple solutions?
+            self.profile.total_points += pq.question.points
+            for tag in pq.question.tags:
                 if tag not in tag_list:
                     tag_list.append(tag)
+
+        self.profile.mcq_points_norm_ratio = round(self.profile.total_mc_points/self.profile.total_points*100, 1)
+        self.profile.oaq_points_norm_ratio = round(self.profile.total_oa_points/self.profile.total_points*100, 1)
 
         for tag in tag_list:
             new_tag_profile = paper_profile.build_tag_profile(self, tag)
