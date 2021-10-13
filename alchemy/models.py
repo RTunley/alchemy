@@ -204,9 +204,13 @@ class Question(db.Model):
            E.g. "A) The answer" if this matches the first solution for a multiple
            choice question, otherwise just returns "The answer".'''
         for i in range(len(self.all_solutions)):
-            if self.all_solutions[i] == solution:
-                label = string.ascii_uppercase[i]
-                return f'{label}) {solution.content}'
+            if len(self.all_solutions)>1:
+                if self.all_solutions[i] == solution:
+                    label = string.ascii_uppercase[i]
+                    return f'{label}) {solution.content}'
+            else:
+                if self.all_solutions[i] == solution:
+                    return f'{solution.content}'
         return solution.content
 
     def __eq__(self, other):
