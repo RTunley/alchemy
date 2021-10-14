@@ -346,9 +346,11 @@ class Paper(db.Model):
             for tag in pq.question.tags:
                 if tag not in tag_list:
                     tag_list.append(tag)
-
-        self.profile.mcq_points_norm_ratio = round(self.profile.total_mc_points/self.profile.total_points*100, 1)
-        self.profile.oaq_points_norm_ratio = round(self.profile.total_oa_points/self.profile.total_points*100, 1)
+        if self.profile.total_mc_questions > 0:
+            self.profile.has_mc_questions = True
+        if self.profile.total_points != 0:
+            self.profile.mcq_points_norm_ratio = round(self.profile.total_mc_points/self.profile.total_points*100, 1)
+            self.profile.oaq_points_norm_ratio = round(self.profile.total_oa_points/self.profile.total_points*100, 1)
 
         for tag in tag_list:
             new_tag_profile = paper_profile.build_tag_profile(self, tag)

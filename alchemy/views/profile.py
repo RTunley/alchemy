@@ -20,6 +20,7 @@ class PaperProfile:
         self.mcq_points_norm_ratio = 0
         self.total_oa_points = 0
         self.oaq_points_norm_ratio = 0
+        self.has_mc_questions = False
         self.tag_profile_list = []
 
 class TagProfile:
