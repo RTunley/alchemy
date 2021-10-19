@@ -281,6 +281,28 @@ class Paper(db.Model):
             question_objects_list.append(question.question)
         return question_objects_list
 
+    def has_mc_questions(self):
+        has_mc_questions = False
+        for question in self.question_objects():
+            if question.is_multiple_choice():
+                return True
+        else:
+            return False
+
+    def has_oa_questions(self):
+        has_oa_questions = False
+        for question in self.question_objects():
+            if not question.is_multiple_choice():
+                return True
+        else:
+            return False
+
+    def get_mc_paper_questions(self):
+        return [paper_question for paper_question in self.paper_questions if paper_question.question.is_multiple_choice()]
+
+    def get_oa_paper_questions(self):
+        return [paper_question for paper_question in self.paper_questions if not paper_question.question.is_multiple_choice()]
+
     def new_question(self, question):
         # Place multiple-choice questions before open-answer questions
         insertion_index = len(self.paper_questions)
@@ -357,6 +379,14 @@ class Paper(db.Model):
             new_tag_profile.calculate_q_percentage(self.profile)
             new_tag_profile.calculate_p_percentage(self.profile)
             self.profile.tag_profile_list.append(new_tag_profile)
+
+## TODO finish this function and also make the has_multiple_choice_questions() to make HTML formatting easier
+    def has_open_answer_questions():
+        for pq in self.paper_questions:
+            pass
+            #use question.is_multiple_choice()
+            #if there are open answer questions_id
+        return True
 
     # TODO rename function, it mutates
     def check_clazz_scores(self, clazz):

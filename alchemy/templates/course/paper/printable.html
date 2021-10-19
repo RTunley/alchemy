@@ -9,24 +9,61 @@
     <h3 style="text-align-right">Name: _____________________</h3>
     <br>
     <br>
-    {% for paper_question in g.paper.paper_questions %}
-      <h3>Question {{ paper_question.order_number }}</h3>
-      <b>[{{ paper_question.question.points | prettify_number }} Marks]</b>
-      <p>{{ paper_question.question.content }}</p>
-      {% if paper_question.question.image %}
-        <p class="aligncenter">
-          <image class="center" src="data:image/png;base64,{{ paper_question.question.decode_image() }}">
-        </p>
-      {% endif %}
-      <!-- include whitespace for answers -->
+    {% if g.paper.has_mc_questions() and g.paper.has_oa_questions() %}
+      <p>Please write your answers for all multiple choice questions in the table below. Circled answers may not be marked.</p>
+      <table style="border: 1px solid black; border-collapse: collapse">
+        <tr style="border: 1px solid black; border-collapse: collapse">
+          <th style="border: 1px solid black; border-collapse: collapse; padding: 15px">QUESTION</th>
+          <th style="border: 1px solid black; border-collapse: collapse; padding: 15px">ANSWER</th>
+        </tr>
+        {% for mc_paper_question in g.paper.get_mc_paper_questions() %}
+          <tr style="border: 1px solid black; border-collapse: collapse">
+            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px">{{ mc_paper_question.order_number }}</td>
+            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px"><pre> </pre></td>
+          </tr>
+        {% endfor %}
+      </table>
       <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-    {% endfor %}
+      <h2>Section 1: Multiple Choice Questions</h2>
+      <h3>({{ g.paper.get_mc_paper_questions()|length }} Questions)</h3>
+      {% for mc_paper_question in g.paper.get_mc_paper_questions() %}
+        <!-- Print the question content -->
+        <h3>Question {{ mc_paper_question.order_number }}</h3>
+        <p>{{ mc_paper_question.question.content }}</p>
+        {% if mc_paper_question.question.image %}
+          <p class="aligncenter">
+            <image class="center" src="data:image/png;base64,{{ mc_paper_question.question.decode_image() }}">
+          </p>
+        {% endif %}
+        <br>
+        <!-- Print options -->
+        {% for solution in mc_paper_question.question.all_solutions %}
+          A) {{ solution.content }}
+          <br>
+        {% endfor %}
+      {% endfor %}
+
+      <h2>Section 2: Open Answer Questions</h2>
+      <h3>({{ g.paper.get_oa_paper_questions()|length }} Questions)</h3>
+      {% for oa_paper_question in g.paper.get_oa_paper_questions() %}
+        <h3>Question {{ oa_paper_question.order_number }}</h3>
+        <b>[{{ oa_paper_question.question.points | prettify_number }} Marks]</b>
+        <p>{{ oa_paper_question.question.content }}</p>
+        {% if oa_paper_question.question.image %}
+          <p class="aligncenter">
+            <image class="center" src="data:image/png;base64,{{ oa_paper_question.question.decode_image() }}">
+          </p>
+        {% endif %}
+          <!-- include whitespace for answers -->
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+      {% endfor %}
+    {% endif %}
   </body>
 
   <!-- MathJax -->
