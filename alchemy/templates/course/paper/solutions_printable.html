@@ -18,7 +18,7 @@
         {% for mc_paper_question in g.paper.get_mc_paper_questions() %}
           <tr style="border: 1px solid black; border-collapse: collapse">
             <td style="border: 1px solid black; border-collapse: collapse; padding: 15px">{{ mc_paper_question.order_number }}</td>
-            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px"><pre> </pre></td>
+            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px">{{ mc_paper_question.question.get_mc_solution_label() }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -54,7 +54,7 @@
           </p>
         {% endif %}
         <h3>Solution</h3>
-        <p>{{ oa_paper_question.question.get_solution().content }}</p>
+        <p style="border: 1px solid green; border-collapse: collapse;">{{ oa_paper_question.question.get_solution().content }}</p>
         <b>[Total: {{ oa_paper_question.question.points | prettify_number }} Marks]</b>
         <br>
         <br>
@@ -72,7 +72,7 @@
         {% for mc_paper_question in g.paper.get_mc_paper_questions() %}
           <tr style="border: 1px solid black; border-collapse: collapse">
             <td style="border: 1px solid black; border-collapse: collapse; padding: 15px">{{ mc_paper_question.order_number }}</td>
-            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px"><pre> </pre></td>
+            <td style="border: 1px solid black; border-collapse: collapse; padding: 15px">{{ mc_paper_question.question.get_mc_solution_label() }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -110,7 +110,7 @@
           </p>
         {% endif %}
         <h3>Solution</h3>
-        <p>{{ oa_paper_question.question.get_solution().content }}</p>
+        <p style="border: 1px solid green; border-collapse: collapse;">{{ oa_paper_question.question.get_solution().content }}</p>
         <b>[Total: {{ oa_paper_question.question.points | prettify_number }} Marks]</b>
         <br>
         <br>

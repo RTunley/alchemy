@@ -199,6 +199,12 @@ class Question(db.Model):
     def decode_image(self):
         return self.image.content.decode('ascii')
 
+    def get_mc_solution_label(self):
+        for i in range(len(self.all_solutions)):
+            if self.all_solutions[i] == self.get_solution():
+                solution_label = self.mcq_choice_prefix(i)
+                return solution_label
+
     def describe_solution(self, solution):
         '''Returns a text description of the solution.
            E.g. "A) The answer" if this matches the first solution for a multiple
