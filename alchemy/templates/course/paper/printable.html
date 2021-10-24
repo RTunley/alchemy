@@ -24,8 +24,8 @@
         {% endfor %}
       </table>
       <br>
-      <h2>Section 1: Multiple Choice Questions</h2>
-      <h3>({{ g.paper.get_mc_paper_questions()|length }} Questions)</h3>
+      <center><h2>Section 1: Multiple Choice Questions</h2></center>
+      <center><h3>({{ g.paper.get_mc_paper_questions()|length }} Questions)</h3></center>
       {% for mc_paper_question in g.paper.get_mc_paper_questions() %}
         <!-- Print the question content -->
         <h3>Question {{ mc_paper_question.order_number }}</h3>
@@ -37,16 +37,17 @@
         {% endif %}
         <br>
         <!-- Print options -->
-        {% for solution in mc_paper_question.question.all_solutions %}
-          A) {{ solution.content }}
-          <br>
-        {% endfor %}
+        <ul style="list-style-type:none;">
+          {% for mcq_choice in mc_paper_question.question.all_solutions %}
+          <li>{{ mc_paper_question.question.describe_solution(mcq_choice) }}</li>
+          {% endfor %}
+        </ul>
       {% endfor %}
       <center><b>End of Multiple Choice Section<b></center>
       <br>
-      <h2>Section 2: Open Answer Questions</h2>
-      <h3>({{ g.paper.get_oa_paper_questions()|length }} Questions)</h3>
-      <p>Please write your answers to all questions in the spaces provided.</p>
+      <center><h2>Section 2: Open Answer Questions</h2></center>
+      <center><h3>({{ g.paper.get_oa_paper_questions()|length }} Questions)</h3></center>
+      <center><p>Please write your answers to all questions in the spaces provided.</p></center>
       <br>
       {% for oa_paper_question in g.paper.get_oa_paper_questions() %}
         <h3>Question {{ oa_paper_question.order_number }}</h3>
@@ -96,10 +97,11 @@
         {% endif %}
         <br>
         <!-- Print options -->
-        {% for solution in mc_paper_question.question.all_solutions %}
-          A) {{ solution.content }}
-          <br>
-        {% endfor %}
+        <ul style="list-style-type:none;">
+          {% for mcq_choice in mc_paper_question.question.all_solutions %}
+          <li>{{ mc_paper_question.question.describe_solution(mcq_choice) }}</li>
+          {% endfor %}
+        </ul>
       {% endfor %}
       <center><b>End of Assessment<b></center>
     {% endif %}
