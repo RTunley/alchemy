@@ -219,6 +219,12 @@ class Question(db.Model):
                     return f'{solution.content}'
         return solution.content
 
+    def get_solution_label(self, solution):
+        for i in range(len(self.all_solutions)):
+            if self.all_solutions[i] == solution:
+                label = string.ascii_uppercase[i]
+            return f'{label}'
+
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
 
@@ -385,14 +391,6 @@ class Paper(db.Model):
             new_tag_profile.calculate_q_percentage(self.profile)
             new_tag_profile.calculate_p_percentage(self.profile)
             self.profile.tag_profile_list.append(new_tag_profile)
-
-## TODO finish this function and also make the has_multiple_choice_questions() to make HTML formatting easier
-    def has_open_answer_questions():
-        for pq in self.paper_questions:
-            pass
-            #use question.is_multiple_choice()
-            #if there are open answer questions_id
-        return True
 
     # TODO rename function, it mutates
     def check_clazz_scores(self, clazz):
