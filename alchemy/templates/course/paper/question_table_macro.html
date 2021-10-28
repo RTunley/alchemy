@@ -19,13 +19,13 @@
 
               <div class="mb-0 mr-md-auto p-2">
                 <h6>
-                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">Question {{ loop.index + question_start_offset }}</a>
+                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}_{{ tbody_id }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}_{{ tbody_id }}" href="#" role="button">Question {{ loop.index + question_start_offset }}</a>
                 </h6>
-                <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">[{{ question.points | prettify_number }} points] {{ question.content }}</a>
+                <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}_{{ tbody_id }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}_{{ tbody_id }}" href="#" role="button">[{{ question.points | prettify_number }} points] {{ question.content }}</a>
               </div>
             </div>
 
-            <div id="paper_question_collapse{{ loop.index0 }}" class="collapse" aria-labelledby="heading{{ loop.index0 }}">
+            <div id="paper_question_collapse{{ loop.index0 }}_{{ tbody_id }}" class="collapse">
               {% import "course/question_details_macro.html" as question_details %}
               {{ question_details.render_question_details(question) }}
             </div>
