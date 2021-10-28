@@ -14,9 +14,11 @@
   <body>
     <br>
     <h3>Input Results from {{ clazz_paper_profile.paper.title }} for {{ g.clazz.code }}</h3>
+    <br>
     {% if clazz_paper_profile.paper.has_mc_questions() %}
       <h4>Multiple Choice: Input Results</h4>
-        <p>You can input the results of the multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
+      <br>
+      <p>You can input the results of the multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
       <br>
       <table class="table table-hover">
         <thead>
@@ -33,11 +35,34 @@
             <td>{{ student.id }}</td>
             <td>{{ student.aws_user.given_name }}</td>
             <td>{{ student.aws_user.family_name }}</td>
-            <td><a type="button" class="btn btn-outline-light" data-toggle="student_mc_modal" data-target="#input_mc_modal">Edit</a></td>
+            <td>
+              <a role="button" class="btn btn-outline-light" aria-label="mc results" onclick="mc_results_form_load({{ clazz_paper_profile.paper.id }}, {{ student.id }})">
+                Edit</a>
+            </td>
             <td> y / n </td>
+          </tr>
         {% endfor %}
       </table>
     {% endif %}
+      <div class="modal fade" id="mc_results_modal" tabindex="-1" aria-labelledby="mc_results_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="mc_results_modal_label">Enter Multiple Choice Results</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div id="mc_input_area">
+                Loading...
+                <!-- Edit Question form will be injected here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     <br>
     <h4>Question Results Grid</h4>
     <br>
@@ -156,6 +181,18 @@
         results_table.setData(data.scores_table_json)
       }
     });
+  }
+
+  function mc_results_form_load(clazz_id, paper_id, student_id) {
+    $('#question_edit_modal').modal('show')
+    $.getJSON('/course/clazz/' + clazz_id + '/library/edit_question_render_form', {
+      question_id: question_id,
+    }, function(data) {
+      $('#mc_input_area').html(data.edit_question_html)
+      reload_question_tags('edit_question_')
+      reload_mcq_solutions_tab('edit_question_')
+      init_page()
+    })
   }
 
 </script>
