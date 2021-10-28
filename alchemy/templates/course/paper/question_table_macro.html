@@ -1,4 +1,4 @@
-{% macro render_questions_table(course_id, paper_id, questions, tbody_id) -%}
+{% macro render_questions_table(course_id, paper_id, questions, tbody_id, question_start_offset=0) -%}
 
 <table>
   <tbody id="{{ tbody_id }}" data-alchemy_paper_id="{{ paper_id }}" data-alchemy_course_id="{{ course_id }}" >
@@ -19,7 +19,7 @@
 
               <div class="mb-0 mr-md-auto p-2">
                 <h6>
-                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">Question {{ loop.index }}</a>
+                  <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">Question {{ loop.index + question_start_offset }}</a>
                 </h6>
                 <a data-toggle="collapse" data-target="#paper_question_collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="paper_question_collapse{{ loop.index0 }}" href="#" role="button">[{{ question.points | prettify_number }} points] {{ question.content }}</a>
               </div>

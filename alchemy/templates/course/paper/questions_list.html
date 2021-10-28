@@ -10,4 +10,4 @@
 
 <h4 class="mt-3">Open answer questions</h4>
 
-{{ question_table.render_questions_table(g.course.id, g.paper.id, g.paper.question_objects()|filter_open_answer_questions, "open_answer_questions_table") }}
+{{ question_table.render_questions_table(g.course.id, g.paper.id, g.paper.question_objects()|filter_open_answer_questions, "open_answer_questions_table", g.paper.get_mc_paper_questions()|length) }}
