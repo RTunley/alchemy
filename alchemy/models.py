@@ -223,7 +223,8 @@ class Question(db.Model):
         for i in range(len(self.all_solutions)):
             if self.all_solutions[i] == solution:
                 label = string.ascii_uppercase[i]
-            return f'{label}'
+                return f'{label}'
+        return ''
 
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id

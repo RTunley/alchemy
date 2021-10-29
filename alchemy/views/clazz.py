@@ -96,6 +96,20 @@ def paper_results():
     clazz_paper_profile = data_manager.ClazzPaperProfile(g.clazz, paper)
     return flask.render_template('course/clazz/paper_results.html', clazz_paper_profile = clazz_paper_profile)
 
+@bp_clazz.route('/mc_results_input')
+@auth_manager.require_group
+def mc_results_input():
+    clazz = models.Clazz.query.get_or_404(flask.request.args.get('clazz_id'))
+    paper = models.Paper.query.get_or_404(flask.request.args.get('paper_id'))
+    student = models.Student.query.get_or_404(flask.request.args.get('student_id'))
+
+    mc_input_macro = '''
+          {% import "course/clazz/student_mc_input_macro.html" as mc_input %}
+          {{ mc_input.render_mc_results(paper, student) }}
+    '''
+
+    return flask.jsonify(mc_input_html = flask.render_template_string(mc_input_macro, paper = paper, student = student))
+
 @bp_clazz.route('/paper_report/<int:paper_id>/')
 @auth_manager.require_group
 def paper_report(paper_id):

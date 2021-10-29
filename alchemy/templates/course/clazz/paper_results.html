@@ -36,7 +36,7 @@
             <td>{{ student.aws_user.given_name }}</td>
             <td>{{ student.aws_user.family_name }}</td>
             <td>
-              <a role="button" class="btn btn-outline-light" aria-label="mc results" onclick="mc_results_form_load({{ clazz_paper_profile.paper.id }}, {{ student.id }})">
+              <a role="button" class="btn btn-outline-light" aria-label="mc results" onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})">
                 Edit</a>
             </td>
             <td> y / n </td>
@@ -44,25 +44,12 @@
         {% endfor %}
       </table>
     {% endif %}
-      <div class="modal fade" id="mc_results_modal" tabindex="-1" aria-labelledby="mc_results_modal_label" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="mc_results_modal_label">Enter Multiple Choice Results</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div id="mc_input_area">
-                Loading...
-                <!-- Edit Question form will be injected here -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div id="mc_input_area">
+      <!-- {% import "course/clazz/student_mc_input_macro.html" as mc_input %}
+      {{ mc_input.render_mc_results(clazz_paper_profile.paper, g.clazz.students[0]) }} -->
+      Loading...
+      <!-- Edit Question form will be injected here -->
+    </div>
     <br>
     <h4>Question Results Grid</h4>
     <br>
@@ -183,14 +170,15 @@
     });
   }
 
-  function mc_results_form_load(clazz_id, paper_id, student_id) {
-    $('#question_edit_modal').modal('show')
-    $.getJSON('/course/clazz/' + clazz_id + '/library/edit_question_render_form', {
-      question_id: question_id,
+  function mc_results_form_load(course_id, clazz_id, paper_id, student_id) {
+    // $('#input_mc_modal').modal('show');
+    $.getJSON('/course/' + course_id + '/clazz/' + clazz_id + '/mc_results_input', {
+      clazz_id: clazz_id,
+      paper_id: paper_id,
+      student_id: student_id
     }, function(data) {
-      $('#mc_input_area').html(data.edit_question_html)
-      reload_question_tags('edit_question_')
-      reload_mcq_solutions_tab('edit_question_')
+      $('#mc_input_area').html(data.mc_input_html)
+      $('#input_mc_modal').modal('show')
       init_page()
     })
   }
