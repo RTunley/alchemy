@@ -11,6 +11,7 @@
         </button>
       </div>
       <div class="modal-body">
+        <p>Click on the student's selections for each question, then click 'Save' to record the results. Correct answers are shown in green.</p>
         <table class="table table-hover">
           <tr>
             <th class="text-align-center">Question</th>
@@ -21,7 +22,11 @@
               <td class="text-align-center">{{ paper_question.order_number }}</td>
               <td class="text-align-center">
                 {% for solution in paper_question.question.all_solutions %}
-                  <button type="button" class="btn btn-info">{{ paper_question.question.get_solution_label(solution) }}</button>
+                  {% if solution == paper_question.question.get_solution() %}
+                    <button type="button" class="btn btn-success">{{ paper_question.question.get_solution_label(solution) }}</button>
+                  {% else %}
+                    <button type="button" class="btn btn-info">{{ paper_question.question.get_solution_label(solution) }}</button>
+                  {% endif %}
                 {% endfor %}
               </td>
             </tr>
