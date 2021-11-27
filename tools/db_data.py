@@ -42,37 +42,37 @@ def add_questions_and_tags(course):
         db.session.add(tag)
     db.session.commit()
 
-    la_content_1 = """Calculate the average acceleration of a cyclist whose velocity changes from 2.1 m/s \([S]\) to 2.5 m/s \([W]\) over 3.5 seconds. """
-    la_solution_1 = m.Solution(content = """Since \(a = \\frac{\Delta v}{\Delta t}\), find \(v_{final} - v_{initial}\) (triangle - 1 point, magnitude - 1 point, direction, 1 point). Then divide by the change in time (1 point).""")
-    la_points_1 = 4
-    la_question_1 = m.Question.create(content = la_content_1, all_solutions = [la_solution_1], points = la_points_1, course_id = course.id, tags=[tag_2])
+    oa_content_1 = """Calculate the average acceleration of a cyclist whose velocity changes from 2.1 m/s \([S]\) to 2.5 m/s \([W]\) over 3.5 seconds. """
+    oa_solution_1 = m.Solution(content = """Since \(a = \\frac{\Delta v}{\Delta t}\), find \(v_{final} - v_{initial}\) (triangle - 1 point, magnitude - 1 point, direction, 1 point). Then divide by the change in time (1 point).""")
+    oa_points_1 = 4
+    oa_question_1 = m.Question.create(content = oa_content_1, all_solutions = [oa_solution_1], points = oa_points_1, course_id = course.id, tags=[tag_2])
 
-    la_content_2 = """A car with mass 5200 kg and a truck wih mass 8340 kg are moving towards each other, both moving 5.1 m/s. In a completely inelastic collision, calculate the final velocity of the combined masses."""
-    la_solution_2 = m.Solution(content = """$$m_1v - m_2v = (m_1+m_2)v_{final} \\  \\text{(2 points)}$$
+    oa_content_2 = """A car with mass 5200 kg and a truck wih mass 8340 kg are moving towards each other, both moving 5.1 m/s. In a completely inelastic collision, calculate the final velocity of the combined masses."""
+    oa_solution_2 = m.Solution(content = """$$m_1v - m_2v = (m_1+m_2)v_{final} \\  \\text{(2 points)}$$
                     So
 
                     \[ v_{final} = v\\frac{m_1-m_2}{m_1+m_2} \\ \\text{(1 point)}\]
 
                     \[\]
                     (1 point correct units and sig figs in final answer)""")
-    la_points_2 = 4
-    la_question_2 = m.Question.create(content = la_content_2, all_solutions = [la_solution_2], points = la_points_2, course_id = course.id, tags = [tag_1, tag_2])
+    oa_points_2 = 4
+    oa_question_2 = m.Question.create(content = oa_content_2, all_solutions = [oa_solution_2], points = oa_points_2, course_id = course.id, tags = [tag_1, tag_2])
 
-    la_content_3 = """A small satellite moves through a Low Earth Orbit (LEO) of 2000 km. Jim claims in the satellite were larger it would crash into the Earth, and Jenny disagrees. Explain whether Jim is correct and justify your response with known physics. """
-    la_solution_3 = m.Solution(content = """Since \(mv^2/r = GMm/r^2\) (1 point uniform circular motion, 1 point gravitation, 1 point setting them equal), the mass of the satellite is irrelevent (1 point) and Jim is incorrect. An orbit at this distance could be achived by any object with the correct velocity (1 point). """)
-    la_points_3 = 3
-    la_question_3 = m.Question.create(content = la_content_3, all_solutions = [la_solution_3], points = la_points_3, course_id = course.id, tags = [tag_3])
+    oa_content_3 = """A small satellite moves through a Low Earth Orbit (LEO) of 2000 km. Jim claims in the satellite were larger it would crash into the Earth, and Jenny disagrees. Explain whether Jim is correct and justify your response with known physics. """
+    oa_solution_3 = m.Solution(content = """Since \(mv^2/r = GMm/r^2\) (1 point uniform circular motion, 1 point gravitation, 1 point setting them equal), the mass of the satellite is irrelevent (1 point) and Jim is incorrect. An orbit at this distance could be achived by any object with the correct velocity (1 point). """)
+    oa_points_3 = 3
+    oa_question_3 = m.Question.create(content = oa_content_3, all_solutions = [oa_solution_3], points = oa_points_3, course_id = course.id, tags = [tag_3])
 
-    la_content_4 = """A rubber ball with mass = 0.3 kg travels towards a brick wall at 4 m/s. After bouncing, it travels back the way it came at 3 m/s. Calculate the impulse of the ball due to the wall. """
-    la_solution_4 = m.Solution(content = """\(I = \Delta p\) So we have
+    oa_content_4 = """A rubber ball with mass = 0.3 kg travels towards a brick wall at 4 m/s. After bouncing, it travels back the way it came at 3 m/s. Calculate the impulse of the ball due to the wall. """
+    oa_solution_4 = m.Solution(content = """\(I = \Delta p\) So we have
 
                     \[I = p_f - p_i \] (1 point)
 
                     \[ = 0.6 kg \\times (3 \\ m/s \\ [L] - 4 \\ m/s \\ [R]) \] (1 point)
 
                     \[ = 2.1 \\ kg \\ m/s \\ [L] \] (1 point)""")
-    la_points_4 = 3
-    la_question_4 = m.Question.create(content = la_content_4, all_solutions = [la_solution_4], points = la_points_4, course_id = course.id, tags = [tag_2])
+    oa_points_4 = 3
+    oa_question_4 = m.Question.create(content = oa_content_4, all_solutions = [oa_solution_4], points = oa_points_4, course_id = course.id, tags = [tag_2])
 
     mc_choices_1 = [m.Solution(content=content) for content in ('\[r = (\\frac{3m}{4\pi\\rho})^{\\frac{1}{3}}\]', '\[r = \\frac{3m}{4\pi\\rho}\]', '\[r = (\\frac{4\pi\\rho}{3m})^{\\frac{1}{3}}\]', '\[r = \\frac{4\pi\\rho}{3m}\]')]
     mc_content_1 = """A sphere-shaped submarine will be used for deep sea exploration, but the engineers are unsure how large to make it. Using the volume of a sphere \(V = \\frac{4}{3}\pi r^3\), a mathematical expression for the radius which involves its density is: """
@@ -86,18 +86,24 @@ def add_questions_and_tags(course):
     mc_content_3 = "An object like the moon is kept in a perfectly circular orbit because there is a: "
     mc_question_3 = m.Question.create(content = mc_content_3, all_solutions = mc_choices_3, correct_solution_index = 3, points = 1, course_id = course.id, tags = [tag_3])
 
-    questions = [la_question_1, la_question_2, la_question_3, la_question_4, mc_question_1, mc_question_2, mc_question_3]
+    questions = [oa_question_1, oa_question_2, oa_question_3, oa_question_4, mc_question_1, mc_question_2, mc_question_3]
     for question in questions:
         db.session.add(question)
 
     db.session.commit()
     return(questions)
 
-def add_paper(course):
-    paper = m.Paper(title = 'Mechanics Quiz', course_id = course.id)
+def add_paper(title, course):
+    paper = m.Paper(title = title, course_id = course.id)
     db.session.add(paper)
     db.session.commit()
     return(paper)
+
+def get_mc_questions(course):
+    return [question for question in course.questions if question.is_multiple_choice()]
+
+def get_oa_questions(course):
+    return [question for question in course.questions if not question.is_multiple_choice()]
 
 def add_questions_to_paper(paper, questions):
     for question in questions:
