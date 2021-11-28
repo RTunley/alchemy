@@ -386,14 +386,6 @@ class Paper(db.Model):
             new_tag_profile.calculate_p_percentage(self.profile)
             self.profile.tag_profile_list.append(new_tag_profile)
 
-## TODO finish this function and also make the has_multiple_choice_questions() to make HTML formatting easier
-    def has_open_answer_questions():
-        for pq in self.paper_questions:
-            pass
-            #use question.is_multiple_choice()
-            #if there are open answer questions_id
-        return True
-
     def has_all_clazz_scores(self, clazz):
         clazz_id = clazz.id
         scores = Score.query.filter_by(paper_id = self.id).all()
@@ -411,6 +403,14 @@ class Paper(db.Model):
 
     def has_all_scores(self):
         scores = Score.query.filter_by(paper_id = self.id).all()
+        for score in scores:
+            if score == None:
+                return False
+            else:
+                return True
+
+    def has_all_student_scores(self, student):
+        scores = Score.query.filter_by(paper_id = self.id, student_id = student.id).all()
         for score in scores:
             if score == None:
                 return False

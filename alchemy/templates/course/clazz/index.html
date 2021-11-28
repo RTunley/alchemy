@@ -53,7 +53,7 @@
         <td class="align-middle">{{ profile.student.id }}</td>
         <td class="align-middle">{{ profile.student.aws_user.family_name }}, {{ profile.student.aws_user.given_name }}</td>
         {% for paper_score_tally in profile.paper_score_tallies %}
-          {% if paper_score_tally.has_all_scores %}
+          {% if paper_score_tally.has_all_scores() %}
             <td>{{ paper_score_tally.percent_total }}% | {{ paper_score_tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', paper_id = paper_score_tally.paper.id, student_id = profile.student.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}" >View Report</a></td>
           {% else %}
             <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>

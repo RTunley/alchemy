@@ -76,8 +76,9 @@
                     <td class="align-middle">{{ student_profile.student.aws_user.family_name }}, {{ student_profile.student.aws_user.given_name }}</td>
                     <td class="align-middle">{{ clazz_profile.clazz.code }}</td>
                     {% for tally in student_profile.paper_score_tallies %}
-                      {% if tally.has_all_scores %}
-                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}">View Report</a></td>
+                      {% if tally.has_all_scores() %}
+                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br>
+                          <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}">View Report</a></td>
                       {% else %}
                         <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
                         </td>

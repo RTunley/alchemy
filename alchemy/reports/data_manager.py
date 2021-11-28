@@ -45,7 +45,6 @@ class PaperScoreTally(object):
         self.raw_total = score
         self.percent_total = calc_percentage(self.raw_total, self.paper_total)
         self.grade = determine_grade(self.percent_total, paper.course)
-        self.has_all_scores = True
 
     @staticmethod
     def from_student(student, paper):
@@ -53,11 +52,14 @@ class PaperScoreTally(object):
         ## TODO How to ensure the scores are in the same order as paper_question.order_number?
         paper_score_tally = PaperScoreTally(student, paper, total_score(scores))
         paper_score_tally.scores = scores
-        for score in scores:
-            if score == None or score.value == None:
-                paper_score_tally.has_all_scores = False
-
         return paper_score_tally
+
+    def has_all_scores(self):
+        for score in self.scores:
+            if score == None or score.value == None:
+                return False
+            else:
+                return True
 
 class PaperMultiScoreTally(object):
     def __init__(self, paper, score_list):
