@@ -394,8 +394,7 @@ class Paper(db.Model):
             #if there are open answer questions_id
         return True
 
-    # TODO rename function, it mutates
-    def check_clazz_scores(self, clazz):
+    def has_all_clazz_scores(self, clazz):
         clazz_id = clazz.id
         scores = Score.query.filter_by(paper_id = self.id).all()
         clazz_scores = []
@@ -406,9 +405,17 @@ class Paper(db.Model):
                 clazz_scores.append(score)
         for score in clazz_scores:
             if score == None:
-                self.has_all_scores = False
+                return False
             else:
-                self.has_all_scores = True
+                return True
+
+    def has_all_scores(self):
+        scores = Score.query.filter_by(paper_id = self.id).all()
+        for score in scores:
+            if score == None:
+                return False
+            else:
+                return True
 
 class Score(db.Model):
     __tablename__ = 'score'

@@ -25,8 +25,8 @@ def before_request():
 @bp_clazz.route('/')
 @auth_manager.require_group
 def index():
-    for paper in g.course.papers:
-        paper.check_clazz_scores(g.clazz)
+    # for paper in g.course.papers:
+    #     paper.check_clazz_scores(g.clazz)
     student_course_profiles = data_manager.make_student_course_profiles(g.course, g.clazz.students)
     return flask.render_template('course/clazz/index.html', profiles = student_course_profiles)
 
