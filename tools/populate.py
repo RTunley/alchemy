@@ -27,7 +27,7 @@ def populate_db():
     mc_quiz = db_data.add_paper("MC Quiz", course)
     mc_questions = db_data.get_mc_questions(course)
     print(mc_questions)
-    #db_data.add_questions_to_paper(mc_quiz, mc_questions)
+    db_data.add_questions_to_paper(mc_quiz, mc_questions)
     oa_quiz = db_data.add_paper("OA Quiz", course)
     oa_questions = db_data.get_oa_questions(course)
     print(oa_questions)
