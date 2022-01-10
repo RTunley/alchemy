@@ -21,7 +21,9 @@ class Course(db.Model):
     tags = db.relationship('Tag', backref='tag_course')
     clazzes = db.relationship('Clazz', backref='course')
     papers = db.relationship('Paper', backref='course')
+    #TODO should the backref on grade_levels be 'course' instead of 'grade_levels'?
     grade_levels = db.relationship('GradeLevel', backref='grade_levels')
+    assessment_categories = db.relationship('AssessmentCategory', backref='assessment_categories')
 
     def order_grade_levels(self):
         self.grade_levels.sort(key=lambda x: x.lower_bound,  reverse = True)
@@ -38,6 +40,14 @@ class GradeLevel(db.Model):
     lower_bound = db.Column(db.Integer)
     upper_bound = db.Column(db.Integer)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+
+class AssessmentCategory(db.Model):
+    __tablename__ = 'assessment_category'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    weight = db.Column(db.Float)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    papers = db.relationship('Paper', backref='categories')
 
 class Clazz(db.Model):
     __tablename__ = 'clazz'
@@ -279,6 +289,7 @@ class Paper(db.Model):
             order_by='PaperQuestion.order_number',
             collection_class=ordering_list('order_number', count_from=1))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('assessment_category.id'), nullable=False)
 
     def __init__(self, **kwargs):
         super(Paper, self).__init__(**kwargs)
