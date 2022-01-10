@@ -109,7 +109,7 @@ def add_papers_and_categories(course):
         db.session.add(category)
     db.session.commit()
 
-    test = m.Paper(title = 'Mechanics Quiz', course_id = course.id, category_id = category_1.id)
+    test = m.Paper(title = 'Mechanics Test', course_id = course.id, category_id = category_1.id)
     mc_quiz = m.Paper(title = 'Multiple Choice Quiz', course_id = course.id, category_id = category_2.id)
     oa_quiz = m.Paper(title = 'Open Answer Quiz', course_id = course.id, category_id = category_2.id)
     papers = [test, mc_quiz, oa_quiz]

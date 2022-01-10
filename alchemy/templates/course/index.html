@@ -26,8 +26,6 @@
   <h1 class="my-3">{{ g.course.name }}</h1>
 
   <h2>Assessment Profile</h2>
-  <p>[Real Categories do not exist yet, but will be important later since not all assessments will be weighted the same.]</p>
-  <p>[Will eventually need to build this into Models]</p>
   <br>
   <div class="profile">
     <div>
@@ -38,21 +36,13 @@
           <th>Course Weighting</th>
           <th>Number of Assessments</th>
         </thead>
-        <tr>
-          <th>Exams</th>
-          <th>60%</th>
-          <th>2</th>
-        </tr>
-        <tr>
-          <th>Lab Reports</th>
-          <th>30%</th>
-          <th>2</th>
-        </tr>
-        <tr>
-          <th>Quizzes</th>
-          <th>10%</th>
-          <th>4</th>
-        </tr>
+        {% for category in g.course.assessment_categories %}
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.weight*100 }} %</td>
+            <td>{{ category.papers | length }}</td>
+          </tr>
+        {% endfor %}
       </table>
     </div>
     <div class="achievement_categories">
@@ -72,7 +62,7 @@
               <a href="{{ url_for('course.paper.index', paper_id=paper.id) }}">{{ paper.title }}</a>
             </div>
           </th>
-          <th>Exam</th>
+          <th>{{ paper.category.name }}</th>
         </tr>
         {% endfor %}
       </table>

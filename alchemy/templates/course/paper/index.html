@@ -9,6 +9,8 @@
   </div>
 
   <h1 class="my-3">{{ g.course.name }} - {{ g.paper.title }}</h1>
+  <h2>(Category: {{ g.paper.category.name }})</h2>
+  <br>
 
   {% if (g.paper.scores | length) != 0 %}
   <p><small><em><b>Note:</b> This assessment cannot be edited because student scores have already been uploaded. To make an editable version of this paper, use the 'Duplicate' button.</em></small></p>

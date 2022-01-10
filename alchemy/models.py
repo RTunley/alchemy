@@ -290,6 +290,7 @@ class Paper(db.Model):
             collection_class=ordering_list('order_number', count_from=1))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('assessment_category.id'), nullable=False)
+    category = db.relationship('AssessmentCategory', back_populates='papers')
 
     def __init__(self, **kwargs):
         super(Paper, self).__init__(**kwargs)
