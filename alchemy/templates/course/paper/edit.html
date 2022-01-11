@@ -16,7 +16,20 @@
         <span data-feather="activity"></span> Profile
       </button>
       <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#paper_edit_modal"><span data-feather="edit-2"></span>Edit Title</a>
+      <div class="btn-group">
+        <a class="btn btn-success dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span data-feather="list"></span>
+          {{ g.paper.category.name }} ( {{ g.paper.category.weight*100 }} %)
+        </a>
+        <div class="dropdown-menu">
+          {% for category in g.course.assessment_categories %}
+            <a class="dropdown-item" href="{{ url_for('course.paper.edit_category', paper_id= g.paper.id) }}">{{ category.name }} ( {{ category.weight*100 }} %)</a>
+          {% endfor %}
+        </div>
+      </div>
     </div>
+    <br>
+    <br>
 
     {% import "course/paper_new_or_edit_macro.html" as paper_edit_modal %}
     {{ paper_edit_modal.render_modal("paper_edit_modal", g.course, g.paper) }}
