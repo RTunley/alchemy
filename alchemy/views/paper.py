@@ -56,8 +56,8 @@ def edit_title():
 @bp_paper.route('/edit_category', methods = ['POST'])
 @auth_manager.require_group
 def edit_category():
-    #new_category_name = flask.request.
-    new_category = models.AssessmentCategory.query.filter(name == new_category_name).first()
+    #new_category_id = flask.request.
+    new_category = models.AssessmentCategory.query.get_or_404(new_category_id)
     g.paper.category = new_category
     db.session.commit()
     return render_edit_paper(g.paper)
