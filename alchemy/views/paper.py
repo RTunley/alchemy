@@ -53,14 +53,15 @@ def edit_title():
     return render_edit_paper(g.paper)
 
 #TODO needs to actually grab the selected category name from the dropdown and save the text in new_category_name
-@bp_paper.route('/edit_category', methods = ['POST'])
+@bp_paper.route('/edit_category', methods = ['Get','POST'])
 @auth_manager.require_group
 def edit_category():
-    #new_category_id = flask.request.
+    new_category_id = int(flask.request.args.get('category_id'))
     new_category = models.AssessmentCategory.query.get_or_404(new_category_id)
     g.paper.category = new_category
     db.session.commit()
     return render_edit_paper(g.paper)
+
 
 @bp_paper.route('/remove')
 @auth_manager.require_group

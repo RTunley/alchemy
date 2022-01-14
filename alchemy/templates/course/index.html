@@ -29,7 +29,9 @@
   <br>
   <div class="profile">
     <div>
-      <h4>Assessment Categories <button class="btn btn-info btn-sm"><a>Edit</a></button></h4>
+      <h4>Assessment Categories <button class="btn btn-info btn-sm">
+        <span data-feather="edit"></span>
+        <a>Edit</a></button></h4>
       <table class="table table-hover text-center">
         <thead>
           <th>Category</th>
@@ -46,7 +48,10 @@
       </table>
     </div>
     <div class="achievement_categories">
-      <h4>Current Assessments <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#paper_create_modal"><a>Add Assessment</a></button></h4>
+      <h4>Current Assessments <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#paper_create_modal">
+        <span data-feather="plus-square"></span>
+        <a>Add Assessment</a></button>
+      </h4>
       <table class="table table-hover text-center">
         <thead>
           <th>Title</th>
@@ -99,7 +104,10 @@
   <br>
   <div class="profile">
     <div class="grade_boundaries">
-      <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Edit</h4>
+      <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">
+        <span data-feather="edit"></span>
+        Edit
+      </h4>
       <table class="table table-hover text-center">
         {% for grade in g.course.grade_levels %}
           <tr>

@@ -23,9 +23,14 @@
         </a>
         <div class="dropdown-menu">
           {% for category in g.course.assessment_categories %}
-            <a class="dropdown-item" href="{{ url_for('course.paper.edit_category', paper_id= g.paper.id) }}">{{ category.name }} ( {{ category.weight*100 }} %)</a>
+            {% if category.id == g.paper.category.id %}
+              <a class="dropdown-item disabled">{{ category.name }} ( {{ category.weight*100 }} %)</a>
+            {% else %}
+              <a class="dropdown-item" href="{{ url_for('course.paper.edit_category', paper_id= g.paper.id, category_id = category.id) }}">{{ category.name }} ( {{ category.weight*100 }} %)</a>
+            {% endif %}
           {% endfor %}
         </div>
+        <!-- url_for('course.library.delete_question', course_id=course_id, question_id=question.id) -->
       </div>
     </div>
     <br>

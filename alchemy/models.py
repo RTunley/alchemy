@@ -47,7 +47,7 @@ class AssessmentCategory(db.Model):
     name = db.Column(db.String())
     weight = db.Column(db.Float)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    papers = db.relationship('Paper', backref='categories')
+    papers = db.relationship('Paper', back_populates='category')
 
 class Clazz(db.Model):
     __tablename__ = 'clazz'

@@ -40,9 +40,9 @@
                 Assessment Category:
               </label>
               <br>
-              <select name="categories" id="categories">
+              <select class="dropdown-menu">
                 {% for category in g.course.assessment_categories %}
-                  <option value="{{ category.id }}">{{ category.name }}</option>
+                  <a class="dropdown-item">{{ category.name }} ( {{ category.weight*100 }} %)</a>
                 {% endfor %}
               </select>
             {% endif %}
