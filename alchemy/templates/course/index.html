@@ -25,11 +25,35 @@
 
   <h1 class="my-3">{{ g.course.name }}</h1>
 
+  {% import "course/assessment_categories_form_macro.html" as categories_form %}
+  <!-- edit grade levels modal form -->
+  <form id="categories-form" class="needs-validation" novalidate>
+    <div class="modal fade" id="categories_modal" tabindex="-1" aria-labelledby="categories_modal_label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Assessment Categories</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>{{ categories_form.render_edit_categories(g.course) }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" onclick='return validate_categories({{ g.course.id }})'>Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
   <h2>Assessment Profile</h2>
   <br>
   <div class="profile">
     <div>
-      <h4>Assessment Categories <button class="btn btn-info btn-sm">
+      <h4>Assessment Categories <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#categories_modal">
         <span data-feather="edit"></span>
         <a>Edit</a></button></h4>
       <table class="table table-hover text-center">
@@ -78,7 +102,7 @@
   {% import "course/grade_levels_form_macro.html" as grades_form %}
   <!-- edit grade levels modal form -->
   <form id="grade-level-form" class="needs-validation" novalidate>
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="grade_level_modal" tabindex="-1" aria-labelledby="grade_level_modal_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -104,7 +128,7 @@
   <br>
   <div class="profile">
     <div class="grade_boundaries">
-      <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">
+      <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#grade_level_modal">
         <span data-feather="edit"></span>
         Edit
       </h4>
