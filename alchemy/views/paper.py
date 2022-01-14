@@ -35,7 +35,8 @@ def index():
     if g.paper is None:
         # Create a new paper
         paper_title = flask.request.form['paper_create_modal_new_title']
-        paper = models.Paper(title = paper_title, course_id = g.course.id)
+        category_id = flask.request.form['new_paper_category']
+        paper = models.Paper(title = paper_title, course_id = g.course.id, category_id = category_id)
         db.session.add(paper)
         db.session.commit()
         g.paper = paper
