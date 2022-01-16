@@ -43,7 +43,7 @@
               <select id='new_paper_category' name='new_paper_category' class="custom-select">
                 <option selected>Choose</option>
                 {% for category in g.course.assessment_categories %}
-                  <option value="{{ category.id }}"selected>{{ category.name }} ({{ category.weight*100 }}%) </option>
+                  <option value="{{ category.id }}"selected>{{ category.name }} ({{ category.weight }}%) </option>
                 {% endfor %}
               </select>
             {% endif %}

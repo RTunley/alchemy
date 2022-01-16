@@ -29,7 +29,7 @@ class Course(db.Model):
         self.grade_levels.sort(key=lambda x: x.lower_bound,  reverse = True)
 
     def order_assessment_categories(self):
-        self.assessment_categories.sort(key=lambda x: x.weighting,  reverse = True)
+        self.assessment_categories.sort(key=lambda x: x.weight,  reverse = True)
 
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),

@@ -56,12 +56,24 @@ def edit_grade_levels():
 def edit_categories():
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
-    category_list = post_data['all_categories']
+    category_list = post_data['categories']
     course = models.Course.query.get_or_404(course_id)
     if course.assessment_categories:
-        for g in course.grade_levels:
-            db.session.delete(g)
+        remaining_category_names = []
+        for category in course.assessment_categories:
+            if len(category.papers) == 0:
+                db.session.delete(category)
+            else:
+                remaining_category_names.append(category.name)
+
+    for i in range(len(category_list)):
+        if i % 2 == 0:
+            if category_list[i] not in remaining_category_names:
+                new_category = models.AssessmentCategory(name = category_list[i], weight = category_list[i+1], course_id = course_id)
+                db.session.add(new_category)
+        else:
+            continue
 
     db.session.commit()
-    course.order_categories()
+    course.order_assessment_categories()
     return flask.render_template('course/index.html')

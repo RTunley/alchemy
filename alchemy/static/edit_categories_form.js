@@ -1,37 +1,37 @@
-// function validate_grade_levels(course_id){
-//   var lower_bounds = []
-//   var grades = []
-//   var grade_levels = []
-//   var i = 0
-//   $('#grade-form-table').find('input').each(function(){
-//     if (i % 2 == 0) {
-//       grades.push(this.value)
-//     } else {
-//       lower_bounds.push(parseInt(this.value))
-//     }
-//     grade_levels.push(this.value)
-//     i++
-//   })
-//   for (i=0; i<grades.length; i++){
-//     var grade_element = document.getElementById('grade_level_'+ i)
-//     var lower_bound_element = document.getElementById('lower_bound_'+ i)
-//     grade_element.classList.remove('is-invalid')
-//     lower_bound_element.classList.remove('is-invalid')
-//   }
-//   if (!validate_form(lower_bounds, grades)) {
-//     return false
-//   }
-//   $.ajax({
-//     type: 'POST',
-//     url: '/course/' + course_id + '/edit_grade_levels',
-//     data: JSON.stringify({
-//       course_id: course_id,
-//       grade_levels: grade_levels,
-//     }),
-//     contentType: 'application/json',
-//   })
-//   return true
-// }
+function validate_categories(course_id){
+  var cat_names = []
+  var weightings = []
+  var categories = []
+  var i = 0
+  $('#category-form-table').find('input').each(function(){
+    if (i % 2 == 0) {
+      cat_names.push(this.value)
+    } else {
+      weightings.push(parseFloat(this.value))
+    }
+    categories.push(this.value)
+    i++
+  })
+  for (i=0; i<cat_names.length; i++){
+    var cat_name_element = document.getElementById('category_'+ i)
+    var weighting_element = document.getElementById('weighting_'+ i)
+    cat_name_element.classList.remove('is-invalid')
+    weighting_element.classList.remove('is-invalid')
+  }
+  // if (!validate_form(cat_names, weightings)) {
+  //   return false
+  // }
+  $.ajax({
+    type: 'POST',
+    url: '/course/' + course_id + '/edit_categories',
+    data: JSON.stringify({
+      course_id: course_id,
+      categories: categories,
+    }),
+    contentType: 'application/json',
+  })
+  return true
+}
 //
 // function validate_form(lower_bounds, grades){
 //   if (!check_lower_bounds(lower_bounds)
