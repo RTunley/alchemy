@@ -50,3 +50,18 @@ def edit_grade_levels():
     db.session.commit()
     course.order_grade_levels()
     return flask.render_template('course/index.html')
+
+@bp_course.route('/edit_categories', methods=['POST'])
+@auth_manager.require_group
+def edit_categories():
+    post_data = flask.request.get_json()
+    course_id = post_data['course_id']
+    category_list = post_data['all_categories']
+    course = models.Course.query.get_or_404(course_id)
+    if course.assessment_categories:
+        for g in course.grade_levels:
+            db.session.delete(g)
+
+    db.session.commit()
+    course.order_categories()
+    return flask.render_template('course/index.html')

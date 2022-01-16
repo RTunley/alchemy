@@ -1,6 +1,6 @@
 {% macro render_edit_categories(course) -%}
 
-<table id="grade-form-table">
+<table id="category-form-table">
   <tr>
     <th>Assessment Category</th>
     <th>Weighting (%)</th>
@@ -18,12 +18,12 @@
         invalid entry
       </label>
       </td>
-      <td><a class="btn btn-link" aria-label="Delete Category" onclick="remove_field_row($(this));">
+      <td><a class="btn btn-link" aria-label="Delete Category" onclick="remove_cat_field_row($(this));">
         <span data-feather="trash-2"></span></a></td>
     </tr>
   {% endfor %}
 </table>
-<a role="button" aria-label="Add Category" class="btn btn-link" onclick="insert_field_row();">Add New Category
+<a role="button" aria-label="Add Category" class="btn btn-link" onclick="insert_cat_field_row();">Add New Category
   <span data-feather="plus-circle"></span></a>
 
 {%- endmacro %}
