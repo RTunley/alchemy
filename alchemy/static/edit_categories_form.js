@@ -1,4 +1,5 @@
 function validate_categories(course_id){
+  console.log("Made it to validate_categories!")
   var cat_names = []
   var weightings = []
   var categories = []

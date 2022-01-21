@@ -54,10 +54,12 @@ def edit_grade_levels():
 @bp_course.route('/edit_categories', methods=['POST'])
 @auth_manager.require_group
 def edit_categories():
+    print("Made it to edit_categories!!")
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
     category_list = post_data['categories']
     course = models.Course.query.get_or_404(course_id)
+    print("Categories:", category_list)
     if course.assessment_categories:
         remaining_category_names = []
         for category in course.assessment_categories:
