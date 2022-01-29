@@ -19,12 +19,12 @@ function validate_categories(course_id){
   for (i=0; i<category_names.length; i++){
     var cat_name_element = document.getElementById('category_'+ i)
     var weighting_element = document.getElementById('weighting_'+ i)
-    // cat_name_element.classList.remove('is-invalid')
-    // weighting_element.classList.remove('is-invalid')
+    cat_name_element.classList.remove('is-invalid')
+    weighting_element.classList.remove('is-invalid')
   }
-  // if (!validate_form(cat_names, weightings)) {
-  //   return false
-  // }
+  if (!validate_form(category_names, weightings)) {
+    return false
+  }
   console.log(categories)
   $.ajax({
     type: 'POST',
@@ -38,74 +38,73 @@ function validate_categories(course_id){
   })
   return true
 }
-//
-// function validate_form(lower_bounds, grades){
-//   if (!check_lower_bounds(lower_bounds)
-//       || !check_highest_bound(lower_bounds)
-//       || !check_lowest_bound(lower_bounds)
-//       || !no_double_grades(grades)) {
-//     return false
-//   }
-//   return true
-// }
-//
-// function no_double_grades(grades_list){
-//   var map = {}
-//   for(var i=0; i<grades_list.length; i++){
-//     if(map[grades_list[i]]){
-//       var input = document.getElementById('grade_level_'+ i)
-//       var feedback = document.getElementById('grade-error-'+i)
-//       feedback.innerHTML = 'Grade levels must have distinct Grades.'
-//       input.classList.add('is-invalid')
-//       return false
-//     }
-//     map[grades_list[i]] = true
-//   }
-//   return true
-// }
-//
-// function check_highest_bound(lower_bounds){
-//   if (lower_bounds[0]>100){
-//     var input = document.getElementById('lower_bound_'+ 0)
-//     input.classList.add('is-invalid')
-//     var feedback = document.getElementById('bound-error-'+'0')
-//     feedback.innerHTML = 'Please provide a lower bound that is less than 100.'
-//     return false
-//   }
-//   return true
-// }
-//
-// function check_lowest_bound(lower_bounds){
-//   if (lower_bounds[lower_bounds.length - 1] != 0){
-//     var index = lower_bounds.length - 1
-//     var input = document.getElementById('lower_bound_'+index)
-//     input.classList.add('is-invalid')
-//     var feedback = document.getElementById('bound-error-'+index)
-//     feedback.innerHTML = 'The lower bound for the lowest grade must be 0.'
-//     return false
-//   }
-//   return true
-// }
-//
-// function check_lower_bounds(lower_bounds){
-//   var i
-//   for (i=0; i<lower_bounds.length; i++) {
-//     if (lower_bounds[i]<0 || lower_bounds[i] <= lower_bounds[i+1]){
-//       var input = document.getElementById('lower_bound_'+i)
-//       input.classList.add('is-invalid')
-//       var feedback = document.getElementById('bound-error-'+i)
-//       feedback.innerHTML = 'Please provide a lower bound that is higher than the next lower bound.'
-//       return false
-//     }
-//   }
-//   return true
-// }
+
+function validate_form(category_names, weightings){
+  if (!check_valid_weightings(weightings)
+      || !check_weightings_sum(weightings)
+      || !no_double_names(category_names)) {
+    return false
+  }
+  return true
+}
+
+function no_double_names(name_list){
+  var map = {}
+  for(var i=0; i<name_list.length; i++){
+    if(map[name_list[i]]){
+      var input = document.getElementById('category_'+ i)
+      var feedback = document.getElementById('category_error_'+i)
+      feedback.innerHTML = 'Assessment Categories must have distinct names.'
+      input.classList.add('is-invalid')
+      return false
+    }
+    map[name_list[i]] = true
+  }
+  return true
+}
+
+function check_weightings_sum(weightings_list){
+  var i
+  var weighting_sum = 0
+  for (i=0; i<weightings_list.length; i++) {
+    weighting_sum += weightings_list[i]
+    if (weighting_sum > 100){
+      var input = document.getElementById('weighting_'+i)
+      console.log("Indexed Inputs: ", input)
+      input.classList.add('is-invalid')
+      var feedback = document.getElementById('weighting_error_'+i)
+      feedback.innerHTML = 'Weightings must sum to 100%'
+      return false
+    }
+  }
+  if (weighting_sum <100){
+    var input = document.getElementById('weighting_'+(weightings_list.length-1))
+    input.classList.add('is-invalid')
+    var feedback = document.getElementById('weighting_error_'+(weightings_list.length-1))
+    feedback.innerHTML = 'Weightings must sum to 100%'
+    return false
+  }
+  return true
+}
+
+function check_valid_weightings(weightings_list){
+  var i
+  for (i=0; i<weightings_list.length; i++) {
+    if ( isNaN(weightings_list[i])){
+      var input = document.getElementById('weighting_'+i)
+      input.classList.add('is-invalid')
+      var feedback = document.getElementById('weighting_error_'+i)
+      feedback.innerHTML = 'Weightings must be a number.'
+      return false
+    }
+  }
+  return true
+}
 
 function new_hidden_id_field(){
   var id_field = document.createElement('INPUT')
   id_field.type = 'integer'
   id_field.value = 0
-  // TODO How to align this with existing form table?
   return id_field
 }
 

@@ -10,12 +10,12 @@
     <tr valign="top">
       <td style="display:none;"><input type="number" id="cat_id_{{ loop.index0 }}" value="{{ category.id }}"></td>
       <td><input type="text" class="form-control" id="category_{{ loop.index0 }}" placeholder="Category" value='{{ category.name }}' required>
-      <label id="category-error-{{ loop.index0 }}" class="invalid-feedback" for="category_{{ loop.index0 }}">
+      <label id="category_error_{{ loop.index0 }}" class="invalid-feedback" for="category_{{ loop.index0 }}">
         invalid entry
       </label>
       </td>
       <td><input type="float" id="weighting_{{ loop.index0 }}" class="form-control" placeholder="Weighting" value='{{ category.weight }}' required>
-      <label id="weighting-error-{{ loop.index0 }}" class="invalid-feedback" for="weighting_{{ loop.index0 }}">
+      <label id="weighting_error_{{ loop.index0 }}" class="invalid-feedback" for="weighting_{{ loop.index0 }}">
         invalid entry
       </label>
       </td>
