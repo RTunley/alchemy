@@ -2,14 +2,13 @@
 
 <table id="category-form-table">
   <tr>
-    <!-- <th style="display:none;"></th> -->
+    <th style="display:none;"></th>
     <th>Assessment Category</th>
     <th>Weighting (%)</th>
-    <!-- <th>ID</th> -->
   </tr>
   {% for category in course.assessment_categories %}
     <tr valign="top">
-      <!-- <td><input type="integer" value="{{ category.id }}"></input></td> -->
+      <td style="display:none;"><input type="number" id="cat_id_{{ loop.index0 }}" value="{{ category.id }}"></td>
       <td><input type="text" class="form-control" id="category_{{ loop.index0 }}" placeholder="Category" value='{{ category.name }}' required>
       <label id="category-error-{{ loop.index0 }}" class="invalid-feedback" for="category_{{ loop.index0 }}">
         invalid entry

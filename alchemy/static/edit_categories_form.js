@@ -1,32 +1,37 @@
 function validate_categories(course_id){
   console.log("Made it to validate_categories!")
-  var cat_names = []
+  var category_ids = []
+  var category_names = []
   var weightings = []
   var categories = []
   var i = 0
   $('#category-form-table').find('input').each(function(){
-    if (i % 2 == 0) {
-      cat_names.push(this.value)
+    if (i % 3 == 0) {
+      category_ids.push(parseInt(this.value))
+    } else if (i % 3 == 1) {
+      category_names.push(this.value)
     } else {
       weightings.push(parseFloat(this.value))
     }
     categories.push(this.value)
     i++
   })
-  for (i=0; i<cat_names.length; i++){
+  for (i=0; i<category_names.length; i++){
     var cat_name_element = document.getElementById('category_'+ i)
     var weighting_element = document.getElementById('weighting_'+ i)
-    cat_name_element.classList.remove('is-invalid')
-    weighting_element.classList.remove('is-invalid')
+    // cat_name_element.classList.remove('is-invalid')
+    // weighting_element.classList.remove('is-invalid')
   }
   // if (!validate_form(cat_names, weightings)) {
   //   return false
   // }
+  console.log(categories)
   $.ajax({
     type: 'POST',
     url: '/course/' + course_id + '/edit_categories',
     data: JSON.stringify({
       course_id: course_id,
+      category_ids: category_ids,
       categories: categories,
     }),
     contentType: 'application/json',
@@ -96,6 +101,15 @@ function validate_categories(course_id){
 //   return true
 // }
 
+function new_hidden_id_field(){
+  var id_field = document.createElement('INPUT')
+  id_field.type = 'integer'
+  id_field.value = 0
+  id_field.style = "display:none"
+  // TODO How to align this with existing form table? 
+  return id_field
+}
+
 function new_category_field(){
   var grade_field = document.createElement('INPUT')
   grade_field.type = 'text'
@@ -136,11 +150,13 @@ function insert_cat_field_row(){
   var cell0 = row.insertCell(0)
   var cell1 = row.insertCell(1)
   var cell2 = row.insertCell(2)
-  cell0.appendChild(new_category_field())
-  cell1.appendChild(new_weighting_field())
+  var cell3 = row.insertCell(3)
+  cell0.appendChild(new_hidden_id_field())
+  cell1.appendChild(new_category_field())
+  cell2.appendChild(new_weighting_field())
   var btn = new_delete_button()
   var span = create_trash_icon()
-  cell2.appendChild(btn)
+  cell3.appendChild(btn)
   btn.appendChild(span)
   feather.replace()
 }

@@ -57,25 +57,31 @@ def edit_categories():
     print("Made it to edit_categories!!")
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
+    category_ids = post_data['category_ids']
     category_list = post_data['categories']
     course = models.Course.query.get_or_404(course_id)
     print("Categories:", category_list)
-    if course.assessment_categories:
-        remaining_category_names = []
-        for category in course.assessment_categories:
-            if len(category.papers) == 0:
-                db.session.delete(category)
-            else:
-                remaining_category_names.append(category.name)
+    existing_ids = [category.id for category in course.assessment_categories]
 
+    ## Delete unwanted categories ##
+    for id in existing_ids:
+        if id not in category_ids:
+            category = models.AssessmentCategory.query.get_or_404(id)
+            db.session.delete(category)
+    ## Edit existing categories ##
     for i in range(len(category_list)):
-        if i % 2 == 0:
-            if category_list[i] not in remaining_category_names:
-                new_category = models.AssessmentCategory(name = category_list[i], weight = category_list[i+1], course_id = course_id)
+        if i % 3 == 0:
+            category_id = int(category_list[i])
+            if category_id == 0:
+                new_category = models.AssessmentCategory(name = category_list[i+1], weight = float(category_list[i+2]), course_id = course_id)
                 db.session.add(new_category)
+            else:
+                for category in course.assessment_categories:
+                    if category.id == category_id:
+                        category.name = category_list[i+1]
+                        category.weight = float(category_list[i+2])
         else:
-            continue
-
+            pass
     db.session.commit()
     course.order_assessment_categories()
     return flask.render_template('course/index.html')
