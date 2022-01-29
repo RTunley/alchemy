@@ -19,10 +19,9 @@
         invalid entry
       </label>
       </td>
-      {% if category.papers|length == 0 %}
-      <td><a class="btn btn-link" aria-label="Delete Category" onclick="remove_cat_field_row($(this));">
+      <td><a class="btn btn-link {{ 'disabled' if category.papers }}" aria-label="Delete Category" onclick="remove_cat_field_row($(this));">
         <span data-feather="trash-2"></span></a></td>
-      {% endif %}
+
     </tr>
   {% endfor %}
 </table>
