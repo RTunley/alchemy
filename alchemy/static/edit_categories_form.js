@@ -105,8 +105,7 @@ function new_hidden_id_field(){
   var id_field = document.createElement('INPUT')
   id_field.type = 'integer'
   id_field.value = 0
-  id_field.style = "display:none"
-  // TODO How to align this with existing form table? 
+  // TODO How to align this with existing form table?
   return id_field
 }
 
@@ -152,6 +151,7 @@ function insert_cat_field_row(){
   var cell2 = row.insertCell(2)
   var cell3 = row.insertCell(3)
   cell0.appendChild(new_hidden_id_field())
+  cell0.style = "display:none"
   cell1.appendChild(new_category_field())
   cell2.appendChild(new_weighting_field())
   var btn = new_delete_button()
