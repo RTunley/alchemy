@@ -29,6 +29,7 @@ def index():
 @bp_course.route('/edit_grade_levels', methods=['POST'])
 @auth_manager.require_group
 def edit_grade_levels():
+    print("Made it to Edit Grade levels python!")
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
     grade_level_list = post_data['grade_levels']

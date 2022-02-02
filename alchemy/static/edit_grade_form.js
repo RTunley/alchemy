@@ -1,4 +1,5 @@
 function validate_grade_levels(course_id){
+  console.log("Made it to validate_grade_levels!")
   var lower_bounds = []
   var grades = []
   var grade_levels = []
