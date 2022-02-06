@@ -29,7 +29,6 @@ def index():
 @bp_course.route('/edit_grade_levels', methods=['POST'])
 @auth_manager.require_group
 def edit_grade_levels():
-    print("Made it to Edit Grade levels python!")
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
     grade_level_list = post_data['grade_levels']
@@ -55,13 +54,11 @@ def edit_grade_levels():
 @bp_course.route('/edit_categories', methods=['POST'])
 @auth_manager.require_group
 def edit_categories():
-    print("Made it to edit_categories!!")
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
     category_ids = post_data['category_ids']
     category_list = post_data['categories']
     course = models.Course.query.get_or_404(course_id)
-    print("Categories:", category_list)
     existing_ids = [category.id for category in course.assessment_categories]
 
     ## Delete unwanted categories ##
@@ -71,6 +68,7 @@ def edit_categories():
             db.session.delete(category)
     ## Edit existing categories ##
     for i in range(len(category_list)):
+        ## category_list contains (id, name, weight) for each category so every third element is a category id ##
         if i % 3 == 0:
             category_id = int(category_list[i])
             if category_id == 0:
@@ -81,8 +79,6 @@ def edit_categories():
                     if category.id == category_id:
                         category.name = category_list[i+1]
                         category.weight = float(category_list[i+2])
-        else:
-            pass
     db.session.commit()
     course.order_assessment_categories()
     return flask.render_template('course/index.html')
