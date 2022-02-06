@@ -9,12 +9,14 @@
     <table class="table table-hover">
       <tr>
         <th>Assessment</th>
-        <th>Total</th>
+        <th>Category</th>
+        <th>Total Marks</th>
         <th>Achievement</th>
       </tr>
       {% for paper in g.course.papers %}
         <tr>
           <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+          <td>{{ paper.category.name }}</td>
           <td>{{ paper.profile.total_points }}</td>
           <td>
             {% if (paper.paper_questions | length) != 0 %}
@@ -98,7 +100,8 @@
     <h2>Edit Cohort</h2>
     <br>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
-    Add Student
+      <span data-feather="plus-square"></span>
+      Add Student
     </button> Add a single student to any class by using this button.
     <!-- Add Student Modal goes here -->
     {% import "course/cohort/add_student_macro.html" as add_student %}

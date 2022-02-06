@@ -14,25 +14,59 @@
   <body>
     <br>
     <h3>Input Results from {{ clazz_paper_profile.paper.title }} for {{ g.clazz.code }}</h3>
-    <h4>Option 1: HTML Grid</h4>
+    <br>
+    {% if clazz_paper_profile.paper.has_mc_questions() %}
+      <h4>Multiple Choice: Input Results</h4>
+      <br>
+      <p>You can input the results of the multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
+      <br>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Student Given Name</th>
+            <th>Student Family Name</th>
+            <th>Edit Results</th>
+            <th>Results Recorded</th>
+          </tr>
+        </thead>
+        {% for student in g.clazz.students %}
+          <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.aws_user.given_name }}</td>
+            <td>{{ student.aws_user.family_name }}</td>
+            <td>
+              <a role="button" class="btn btn-outline-light" aria-label="mc results" onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})">
+                Edit</a>
+            </td>
+            <td> y / n </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+    <div id="mc_input_area">
+      <!-- mc input form injected here -->
+    </div>
+    <br>
+    <h4>Question Results Grid</h4>
     <br>
 
     <table id="results_spreadsheet">
       <thead>
         <tr>
-        <td>Student ID</td>
-        <td>Given Name</td>
-        <td>Family Name</td>
-        {% for paper_question in clazz_paper_profile.paper.paper_questions %}
-          <td>Question {{ paper_question.order_number }}
-            ( / {{ paper_question.question.points | prettify_number }} )
+          <td>Student ID</td>
+          <td>Given Name</td>
+          <td>Family Name</td>
+          {% for paper_question in clazz_paper_profile.paper.paper_questions %}
+            <td>Question {{ paper_question.order_number }}
+              ( / {{ paper_question.question.points | prettify_number }} )
+            </td>
+          {% endfor %}
+          <td>Total (Raw)
+            ( / {{ clazz_paper_profile.paper.profile.total_points | prettify_number }} )
           </td>
-        {% endfor %}
-        <td>Total (Raw)
-          ( / {{ clazz_paper_profile.paper.profile.total_points | prettify_number }} )
-        </td>
-        <td>Total (%)</td>
-        <td>Grade</td>
+          <td>Total (%)</td>
+          <td>Grade</td>
         </tr>
       </thead>
 
@@ -131,6 +165,19 @@
         results_table.setData(data.scores_table_json)
       }
     });
+  }
+
+  function mc_results_form_load(course_id, clazz_id, paper_id, student_id) {
+    // $('#input_mc_modal').modal('show');
+    $.getJSON('/course/' + course_id + '/clazz/' + clazz_id + '/mc_results_input', {
+      clazz_id: clazz_id,
+      paper_id: paper_id,
+      student_id: student_id
+    }, function(data) {
+      $('#mc_input_area').html(data.mc_input_html)
+      $('#input_mc_modal').modal('show')
+      init_page()
+    })
   }
 
 </script>

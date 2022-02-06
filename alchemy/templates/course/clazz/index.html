@@ -13,13 +13,15 @@
   <table class="table table-hover">
     <tr>
       <th>Assessment</th>
-      <th>Total</th>
+      <th>Category</th>
+      <th>Total Marks</th>
       <th>Results</th>
       <th>Achievement</th>
     </tr>
     {% for paper in g.course.papers %}
       <tr>
         <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+        <td>{{ paper.category.name }}</td>
         <td>{{ paper.profile.total_points }}</td>
         <td>
           {% if (paper.paper_questions | length) != 0 %}

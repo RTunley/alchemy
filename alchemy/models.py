@@ -21,10 +21,15 @@ class Course(db.Model):
     tags = db.relationship('Tag', backref='tag_course')
     clazzes = db.relationship('Clazz', backref='course')
     papers = db.relationship('Paper', backref='course')
+    #TODO should the backref on grade_levels be 'course' instead of 'grade_levels'?
     grade_levels = db.relationship('GradeLevel', backref='grade_levels')
+    assessment_categories = db.relationship('AssessmentCategory', backref='assessment_categories')
 
     def order_grade_levels(self):
         self.grade_levels.sort(key=lambda x: x.lower_bound,  reverse = True)
+
+    def order_assessment_categories(self):
+        self.assessment_categories.sort(key=lambda x: x.weight,  reverse = True)
 
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
@@ -38,6 +43,14 @@ class GradeLevel(db.Model):
     lower_bound = db.Column(db.Integer)
     upper_bound = db.Column(db.Integer)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+
+class AssessmentCategory(db.Model):
+    __tablename__ = 'assessment_category'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    weight = db.Column(db.Float)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    papers = db.relationship('Paper', back_populates='category')
 
 class Clazz(db.Model):
     __tablename__ = 'clazz'
@@ -219,6 +232,13 @@ class Question(db.Model):
                     return f'{solution.content}'
         return solution.content
 
+    def get_solution_label(self, solution):
+        for i in range(len(self.all_solutions)):
+            if self.all_solutions[i] == solution:
+                label = string.ascii_uppercase[i]
+                return f'{label}'
+        return ''
+
     def __eq__(self, other):
         return type(self) is type(other) and self.id == other.id
 
@@ -272,6 +292,8 @@ class Paper(db.Model):
             order_by='PaperQuestion.order_number',
             collection_class=ordering_list('order_number', count_from=1))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('assessment_category.id'), nullable=False)
+    category = db.relationship('AssessmentCategory', back_populates='papers')
 
     def __init__(self, **kwargs):
         super(Paper, self).__init__(**kwargs)
@@ -386,7 +408,8 @@ class Paper(db.Model):
             new_tag_profile.calculate_p_percentage(self.profile)
             self.profile.tag_profile_list.append(new_tag_profile)
 
-    def has_all_clazz_scores(self, clazz):
+    # TODO rename function, it mutates
+    def check_clazz_scores(self, clazz):
         clazz_id = clazz.id
         scores = Score.query.filter_by(paper_id = self.id).all()
         clazz_scores = []

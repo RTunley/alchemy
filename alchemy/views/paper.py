@@ -35,7 +35,8 @@ def index():
     if g.paper is None:
         # Create a new paper
         paper_title = flask.request.form['paper_create_modal_new_title']
-        paper = models.Paper(title = paper_title, course_id = g.course.id)
+        category_id = flask.request.form['new_paper_category']
+        paper = models.Paper(title = paper_title, course_id = g.course.id, category_id = category_id)
         db.session.add(paper)
         db.session.commit()
         g.paper = paper
@@ -51,6 +52,17 @@ def edit_title():
     g.paper.title = new_title
     db.session.commit()
     return render_edit_paper(g.paper)
+
+#TODO needs to actually grab the selected category name from the dropdown and save the text in new_category_name
+@bp_paper.route('/edit_category', methods = ['Get','POST'])
+@auth_manager.require_group
+def edit_category():
+    new_category_id = int(flask.request.args.get('category_id'))
+    new_category = models.AssessmentCategory.query.get_or_404(new_category_id)
+    g.paper.category = new_category
+    db.session.commit()
+    return render_edit_paper(g.paper)
+
 
 @bp_paper.route('/remove')
 @auth_manager.require_group

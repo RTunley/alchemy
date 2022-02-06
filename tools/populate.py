@@ -20,18 +20,13 @@ def populate_db():
     course = db_data.add_course(account, 'Physics')
     course_grades = db_data.add_grade_levels(course)
     clazz = db_data.add_clazz(course, 'IGPHY01')
-    question_list = db_data.add_questions_and_tags(course)
-    mech_quiz = db_data.add_paper("Mechanics Quiz", course)
-    db_data.add_questions_to_paper(mech_quiz, question_list)
-    ## One paper with all MC questions and one with all OA to test formatting ##
-    mc_quiz = db_data.add_paper("MC Quiz", course)
-    mc_questions = db_data.get_mc_questions(course)
-    print(mc_questions)
-    db_data.add_questions_to_paper(mc_quiz, mc_questions)
-    oa_quiz = db_data.add_paper("OA Quiz", course)
-    oa_questions = db_data.get_oa_questions(course)
-    print(oa_questions)
-    db_data.add_questions_to_paper(oa_quiz, oa_questions)
+    all_questions = db_data.add_questions_and_tags(course)
+    mc_questions = db_data.get_mc_questions(all_questions)
+    oa_questions = db_data.get_oa_questions(all_questions)
+    papers = db_data.add_papers_and_categories(course)
+    db_data.add_questions_to_test(papers[0], all_questions)
+    db_data.add_questions_to_test(papers[1], mc_questions)
+    db_data.add_questions_to_test(papers[2], oa_questions)
 
     #other courses and classes to test student homepage
     course_eng = db_data.add_course(account, 'English')
@@ -52,7 +47,7 @@ def populate_db():
 
     clazzes = [clazz, clazz_eng, clazz_mus, clazz_math, clazz_pe]
     student_list = db_data.add_students_and_aws_users(clazzes)
-    db_data.add_scores(mech_quiz, student_list)
+    db_data.add_scores(papers[0], student_list)
 
     db_data.add_admin_and_aws_users()
 

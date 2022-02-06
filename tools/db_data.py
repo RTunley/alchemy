@@ -93,23 +93,37 @@ def add_questions_and_tags(course):
     db.session.commit()
     return(questions)
 
-def add_paper(title, course):
-    paper = m.Paper(title = title, course_id = course.id)
-    db.session.add(paper)
+def get_mc_questions(questions):
+    mc_questions = [q for q in questions if q.is_multiple_choice()]
+    return(mc_questions)
+
+def get_oa_questions(questions):
+    oa_questions = [q for q in questions if not q.is_multiple_choice()]
+    return(oa_questions)
+
+def add_papers_and_categories(course):
+    category_1 = m.AssessmentCategory(name = 'Test', weight = 50, course_id = course.id)
+    category_2 = m.AssessmentCategory(name = 'Quiz', weight = 20, course_id = course.id)
+    category_3 = m.AssessmentCategory(name = 'IA', weight = 20, course_id = course.id)
+    categories = [category_1, category_2, category_3]
+    for category in categories:
+        db.session.add(category)
     db.session.commit()
-    return(paper)
 
-def get_mc_questions(course):
-    return [question for question in course.questions if question.is_multiple_choice()]
+    test = m.Paper(title = 'Mechanics Test', course_id = course.id, category_id = category_1.id)
+    mc_quiz = m.Paper(title = 'Multiple Choice Quiz', course_id = course.id, category_id = category_2.id)
+    oa_quiz = m.Paper(title = 'Open Answer Quiz', course_id = course.id, category_id = category_2.id)
+    papers = [test, mc_quiz, oa_quiz]
+    for paper in papers:
+        db.session.add(paper)
+    db.session.commit()
+    return(papers)
 
-def get_oa_questions(course):
-    return [question for question in course.questions if not question.is_multiple_choice()]
-
-def add_questions_to_paper(paper, questions):
+def add_questions_to_test(paper, questions):
     for question in questions:
         pq = paper.new_question(question)
         db.session.add(pq)
-        db.session.commit()
+    db.session.commit()
 
 def add_clazz(course, code):
     clazz = m.Clazz(code = code, course_id = course.id)

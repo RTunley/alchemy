@@ -19,7 +19,10 @@ question_id: the id of the question if editing a question, otherwise an empty st
     <div class="col-md-3 mb-3">
       <label for="{{ form_prefix }}new_tag_field">New Tag</label>
       <input type="text" class="form-control mb-2" id="{{ form_prefix }}new_tag_field">
-      <button class="btn btn-success" id="{{ form_prefix }}newTag" type="button">Add Tag</button>
+      <button class="btn btn-success" id="{{ form_prefix }}newTag" type="button">
+        <span data-feather="plus-square"></span>
+        Add Tag
+      </button>
     </div>
   </div>
   <div class="form-row">

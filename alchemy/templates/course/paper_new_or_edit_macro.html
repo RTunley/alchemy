@@ -34,6 +34,19 @@
               {% endif %}
             </label>
             <input id="{{ modal_id }}_new_title" name="{{ modal_id }}_new_title" type="text" value="" class="form-control" required />
+            <br>
+            {% if not paper %}
+              <label for="new_category">
+                Assessment Category:
+              </label>
+              <br>
+              <select id='new_paper_category' name='new_paper_category' class="custom-select">
+                <option selected>Choose</option>
+                {% for category in g.course.assessment_categories %}
+                  <option value="{{ category.id }}"selected>{{ category.name }} ({{ category.weight }}%) </option>
+                {% endfor %}
+              </select>
+            {% endif %}
           </div>
         </div>
         <div class="modal-footer">
