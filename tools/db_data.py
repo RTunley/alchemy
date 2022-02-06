@@ -109,8 +109,7 @@ def add_questions_to_paper(paper, questions):
     for question in questions:
         pq = paper.new_question(question)
         db.session.add(pq)
-
-    db.session.commit()
+        db.session.commit()
 
 def add_clazz(course, code):
     clazz = m.Clazz(code = code, course_id = course.id)
