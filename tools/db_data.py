@@ -158,8 +158,8 @@ def add_students_and_aws_users(clazzes):
     return student_list
 
 def add_scores(paper, student_list):
-    #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4,3,3,4).
-    score_tuples = [(0,0,0,0,0,0,0), (1,1,1,0,0,1,1), (2,1,1,1,1,1,0), (2,1,2,2,1,0,1), (4,0,3,2,1,1,0), (2,4,2,3,1,0,1), (4,4,3,3,0,1,1)]
+    #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4, 3, 3, 1, 1, 1) --> (4,3,3,1,1,1,4)
+    score_tuples = [(0,0,0,0,0,0,0), (0,1,0,1,0,1,0), (1,1,0,1,1,1,1), (2,2,2,1,0,1,0), (2,3,3,0,1,0,2), (3,2,1,1,1,1,3), (3,3,3,1,1,1,2)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id
