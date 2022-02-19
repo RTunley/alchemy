@@ -51,8 +51,14 @@ def create_attached_tag(course, question, name):
     db.session.commit()
     return test_tag
 
-def create_paper(course):
-    test_paper = m.Paper(title = "A Very Short Quiz", course_id = course.id)
+def create_category(course):
+    test_category = m.AssessmentCategory(name = "Exam", weight = 50, course_id = course.id)
+    db.session.add(test_category)
+    db.session.commit()
+    return test_category
+
+def create_paper(course, category):
+    test_paper = m.Paper(title = "A Very Short Quiz", course_id = course.id, category_id = category.id)
     db.session.add(test_paper)
     db.session.commit()
     return test_paper

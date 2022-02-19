@@ -63,7 +63,6 @@ def edit_category():
     db.session.commit()
     return render_edit_paper(g.paper)
 
-
 @bp_paper.route('/remove')
 @auth_manager.require_group
 def remove():
@@ -253,7 +252,8 @@ def remove_question():
 @auth_manager.require_group
 def duplicate():
     old_paper = g.paper
-    new_paper = models.Paper(title = old_paper.title + ' (duplicate)', course_id = g.course.id)
+    old_paper_category = old_paper.category
+    new_paper = models.Paper(title = old_paper.title + ' (duplicate)', course_id = g.course.id, category_id = old_paper_category.id)
     db.session.add(new_paper)
     db.session.commit()
     for paper_question in old_paper.paper_questions:

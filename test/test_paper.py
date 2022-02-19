@@ -17,7 +17,8 @@ class PaperTestCase(TestCase):
         db.create_all()
         test_account = cto.create_account()
         test_course = cto.create_course(test_account)
-        test_paper = cto.create_paper(test_course)
+        category1 = cto.create_category(test_course)
+        test_paper = cto.create_paper(test_course, category1)
 
     def tearDown(self):
         db.session.remove()

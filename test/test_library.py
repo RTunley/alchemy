@@ -105,7 +105,8 @@ class LibraryTestCase(TestCase):
     def test_delete_question_with_paper(self):
         course = Course.query.first()
         q = cto.create_question1(course)
-        p = cto.create_paper(course)
+        category = cto.create_category(course)
+        p = cto.create_paper(course, category)
         pq = cto.add_question_to_paper(p, q)
         data = {'question_id':q.id}
         response = self.client.get('/course/{}/library/delete_question'.format(course.id), query_string = data)
