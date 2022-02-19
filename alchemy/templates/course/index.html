@@ -13,18 +13,24 @@
   .profile > div{
     margin: 1em;
   }
-  .grade_boundaries{
+  .left_col{
     grid-column:1;
     grid-row:1/2;
   }
-  .achievement_categories{
+  .right_col{
     grid-column:2;
     grid-row:1/2;
+  }
+  .icon_red{
+    stroke:red;
+  }
+  .icon_green{
+    stroke:green;
   }
 </style>
 <main role="main">
 
-  <h1 class="my-3">{{ g.course.name }}</h1>
+  <h1 class="my-3">{{ g.course.name }} - Course Parameters</h1>
 
   {% import "course/assessment_categories_form_macro.html" as categories_form %}
   <!-- edit categories modal form -->
@@ -49,11 +55,9 @@
       </div>
     </div>
   </form>
-
-  <h2>Assessment Profile</h2>
   <br>
   <div class="profile">
-    <div>
+    <div class='left-col'>
       <h4>Assessment Categories <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#categories_modal">
         <span data-feather="edit"></span>
         <a>Edit</a></button></h4>
@@ -72,7 +76,7 @@
         {% endfor %}
       </table>
     </div>
-    <div class="achievement_categories">
+    <div class="right-col">
       <h4>Current Assessments <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#paper_create_modal">
         <span data-feather="plus-square"></span>
         <a>Add Assessment</a></button>
@@ -81,18 +85,24 @@
         <thead>
           <th>Title</th>
           <th>Category</th>
+          <th>Marks Uploaded</th>
         </thead>
         {% for paper in g.course.papers %}
         <tr>
-          <th>
+          <td>
             <div align="left">
               <a class="btn btn-link {{ 'disabled' if paper.scores }}" aria-label="Delete paper" href="{{ url_for('course.paper.remove', paper_id=paper.id) }}">
                 <span data-feather="trash-2"></span>
               </a>
               <a href="{{ url_for('course.paper.index', paper_id=paper.id) }}">{{ paper.title }}</a>
             </div>
-          </th>
-          <th>{{ paper.category.name }}</th>
+          </td>
+          <td>{{ paper.category.name }}</td>
+          {% if paper.has_all_scores() %}
+            <td><i class="icon_green" data-feather="check-circle"></i></td>
+          {% else %}
+            <td><i class="icon_red" data-feather="x-circle"></i></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </table>
@@ -123,12 +133,9 @@
       </div>
     </div>
   </form>
-
-  <h2>Achievement Profile</h2>
-  <p>This is where school can set the grade boundaries or other achievment categories for the data analytics.</p>
   <br>
   <div class="profile">
-    <div class="grade_boundaries">
+    <div class="left_col">
       <h4>Grade Boundaries <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#grade_level_modal">
         <span data-feather="edit"></span>
         Edit
@@ -140,6 +147,31 @@
             <td>{{ grade.lower_bound }}%</td>
           </tr>
         {% endfor %}
+      </table>
+    </div>
+    <div class="right-col">
+      <h4>Reporting <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#">
+        <span data-feather="plus-square"></span>
+        Take New Snapshot
+      </h4>
+      <table class="table table-hover text-center">
+        <thead>
+          <th>Snapshot Name</th>
+          <th>Assessment Inclusions</th>
+          <th>Reports Deployed</th>
+        </thead>
+        <tr>
+          <td>Semester 1 Report</td>
+          <td>Mechanics Test, MC Quiz</td>
+          <td>
+            <!-- 3 options: 
+            - Not all papers have marks uploaded: red, disabled
+            - All papers have marks uploaded, reports have not been deployed: green, enabled
+            - reports have been deployed: green, disabled -->
+            <button class="btn btn-danger btn-sm disabled">Deploy Reports</button>
+          </td>
+          <td><span data-feather="edit"></span><td>
+        </tr>
       </table>
     </div>
   </div>
