@@ -1,10 +1,14 @@
 ## Temporary place for designing the Snapshot functionality ##
 
 class Snapshot(object):
-    def __init__(self, name, course, paper_list):
-        self.name = name
+    def __init__(self, course, name, paper_list):
         self.course = course
+        self.name = name
         self.papers = paper_list
+
+def new_snapshot(course, name, paper_list):
+    new_snapshot = Snapshot(course, name, paper_list)
+    
 
 # def take_snapshot(name, paper_list):
 
@@ -18,7 +22,7 @@ class Snapshot(object):
     # 4) Prepare other values / data sets for use in analysing cohort/clazzes (graphs, report sections, etc)
 
     # Front End
-    # 
+    #
     # 1) Update table on Course indexing
     #
     # 2) Make new columns in cohort / clazz student lists w/ grades and report buttons

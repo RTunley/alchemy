@@ -133,6 +133,7 @@
       </div>
     </div>
   </form>
+
   <br>
   <div class="profile">
     <div class="left_col">
@@ -150,7 +151,31 @@
       </table>
     </div>
     <div class="right-col">
-      <h4>Reporting <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#">
+      {% import "course/new_snapshot_macro.html" as new_snapshot %}
+      <!-- edit new snapshot modal form -->
+      <form id="new_snapshot_form" class="needs-validation" novalidate>
+        <div class="modal fade" id="new_snapshot_modal" tabindex="-1" aria-labelledby="new_snapshot_modal_label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">New Snapshot: {{ g.course.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>{{ new_snapshot.render_modal(g.course) }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <h4>Reporting <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#new_snapshot_modal">
         <span data-feather="plus-square"></span>
         Take New Snapshot
       </h4>
@@ -164,7 +189,7 @@
           <td>Semester 1 Report</td>
           <td>Mechanics Test, MC Quiz</td>
           <td>
-            <!-- 3 options: 
+            <!-- 3 options:
             - Not all papers have marks uploaded: red, disabled
             - All papers have marks uploaded, reports have not been deployed: green, enabled
             - reports have been deployed: green, disabled -->
