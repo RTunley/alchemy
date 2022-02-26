@@ -48,8 +48,13 @@ class PaperScoreTally(object):
 
     @staticmethod
     def from_student(student, paper):
-        scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
-        ## TODO How to ensure the scores are in the same order as paper_question.order_number?
+        # get the scores for the student on this paper, ordered by each question's order number
+        scores = db.session.query(models.Score
+            ).filter(models.PaperQuestion.question_id == models.Score.question_id,
+                     models.PaperQuestion.paper_id == models.Score.paper_id
+            ).filter_by(student_id = student.id
+            ).order_by(models.PaperQuestion.order_number
+            ).all()
         paper_score_tally = PaperScoreTally(student, paper, total_score(scores))
         paper_score_tally.scores = scores
         return paper_score_tally

@@ -13,33 +13,36 @@
   </head>
   <body>
     <br>
-    <h3>Input Results from {{ clazz_paper_profile.paper.title }} for {{ g.clazz.code }}</h3>
+    <h3>Student Results: {{ clazz_paper_profile.paper.title }} ({{ g.clazz.code }})</h3>
     <br>
     {% if clazz_paper_profile.paper.has_mc_questions() %}
-      <h4>Multiple Choice: Input Results</h4>
+      <h4>Multiple Choice Questions</h4>
       <br>
-      <p>You can input the results of the multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
+      <p>Record the results for multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
       <br>
-      <table class="table table-hover">
+      <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>Student ID</th>
-            <th>Student Given Name</th>
-            <th>Student Family Name</th>
-            <th>Edit Results</th>
-            <th>Results Recorded</th>
+            <th>Given Name</th>
+            <th>Family Name</th>
+            <th>Edit results</th>
+            <th>All results recorded?</th>
           </tr>
         </thead>
         {% for student in g.clazz.students %}
           <tr>
-            <td>{{ student.id }}</td>
-            <td>{{ student.aws_user.given_name }}</td>
-            <td>{{ student.aws_user.family_name }}</td>
-            <td>
-              <a role="button" class="btn btn-outline-light" aria-label="mc results" onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})">
-                Edit</a>
-            </td>
-            <td> y / n </td>
+            <td class="align-middle">{{ student.id }}</td>
+            <td class="align-middle">{{ student.aws_user.given_name }}</td>
+            <td class="align-middle">{{ student.aws_user.family_name }}</td>
+            <td class="align-middle">
+              <a role="button"
+                  aria-label="Edit question"
+                  onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})"
+                  class="btn btn-link">
+                <span data-feather="edit"></span>
+              </a>
+            <td class="align-middle">{{ 'Yes' if student.has_results_for_all_mc_questions(clazz_paper_profile.paper) else '--' }}</td>
           </tr>
         {% endfor %}
       </table>
@@ -48,7 +51,7 @@
       <!-- mc input form injected here -->
     </div>
     <br>
-    <h4>Question Results Grid</h4>
+    <h4>All Question Results</h4>
     <br>
 
     <table id="results_spreadsheet">
@@ -168,13 +171,13 @@
   }
 
   function mc_results_form_load(course_id, clazz_id, paper_id, student_id) {
-    // $('#input_mc_modal').modal('show');
     $.getJSON('/course/' + course_id + '/clazz/' + clazz_id + '/mc_results_input', {
       clazz_id: clazz_id,
       paper_id: paper_id,
       student_id: student_id
     }, function(data) {
       $('#mc_input_area').html(data.mc_input_html)
+      mc_result_input_reload()
       $('#input_mc_modal').modal('show')
       init_page()
     })

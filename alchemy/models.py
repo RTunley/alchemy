@@ -57,7 +57,8 @@ class Clazz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
-    students = db.relationship('Student', secondary=clazzes_students, back_populates='clazzes')
+    students = db.relationship('Student', secondary=clazzes_students, back_populates='clazzes',
+        order_by='Student.id')
 
 class Student(db.Model):
     __tablename__ = 'student'
@@ -66,6 +67,16 @@ class Student(db.Model):
     aws_user = db.relationship('AwsUser')
     clazzes = db.relationship('Clazz', secondary=clazzes_students, back_populates='students')
     scores = db.relationship('Score', backref='student')
+
+    def has_results_for_all_mc_questions(self, paper):
+        # get all scores for all mc questions for this student on this paper, and count them
+        count_mc_scores_with_unrecorded_solutions = db.session.query(Score
+            ).filter(Question.id == Score.question_id,
+                     Question.correct_solution_index != None,    # is a MC question
+                     Score.selected_solution_id == None   # no selection recorded
+            ).filter_by(student_id = self.id, paper_id = paper.id
+            ).count()
+        return count_mc_scores_with_unrecorded_solutions == 0
 
     @staticmethod
     def create(**properties):
@@ -173,6 +184,13 @@ class PaperQuestion(db.Model):
     order_number = db.Column(db.Integer)
     question = db.relationship('Question', back_populates='papers')
     paper = db.relationship('Paper', back_populates='paper_questions')
+
+    def selected_solution_id(self, student_id):
+        score = Score.query.filter_by(paper_id = self.paper_id, question_id = self.question_id,
+                student_id = student_id).first()
+        if score:
+            return score.selected_solution_id
+        return -1
 
 class Question(db.Model):
     __tablename__ = 'question'
@@ -446,6 +464,9 @@ class Score(db.Model):
     paper_id = db.Column(db.Integer, db.ForeignKey('paper.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+
+    # null if an open-answer question, or the selected solution hasn't been entered into db
+    selected_solution_id = db.Column(db.Integer, db.ForeignKey('solution.id'), nullable=True)
 
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),
