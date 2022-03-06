@@ -150,35 +150,19 @@
         {% endfor %}
       </table>
     </div>
+
     <div class="right-col">
-      {% import "course/new_snapshot_macro.html" as new_snapshot %}
+      {% import "course/edit_snapshot_macro.html" as edit_snapshot %}
       <!-- edit new snapshot modal form -->
       <form id="new_snapshot_form" class="needs-validation" novalidate>
         <div class="modal fade" id="new_snapshot_modal" tabindex="-1" aria-labelledby="new_snapshot_modal_label" aria-hidden="true">
           <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">New Snapshot: {{ g.course.name }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <p>{{ new_snapshot.render_modal(g.course) }}</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-              </div>
-            </div>
+            <p>{{ edit_snapshot.render_modal(g.course) }}</p>
           </div>
         </div>
       </form>
 
-      <h4>Reporting <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#new_snapshot_modal">
-        <span data-feather="plus-square"></span>
-        Take New Snapshot
-      </h4>
+      <h4>Reporting</h4>
       <table class="table table-hover text-center">
         <thead>
           <th>Snapshot Name</th>
@@ -186,16 +170,17 @@
           <th>Reports Deployed</th>
         </thead>
         <tr>
-          <td>Semester 1 Report</td>
-          <td>Mechanics Test, MC Quiz</td>
+          <td>{Snapshot Name}</td>
+          <td>Default: None</td>
           <td>
             <!-- 3 options:
             - Not all papers have marks uploaded: red, disabled
-            - All papers have marks uploaded, reports have not been deployed: green, enabled
-            - reports have been deployed: green, disabled -->
-            <button class="btn btn-danger btn-sm disabled">Deploy Reports</button>
+            - All papers have marks uploaded, reports are ready: green, enabled
+            - reports have been published: green, disabled -->
+            <button class="btn btn-danger btn-sm disabled">Reports Ready</button>
           </td>
-          <td><span data-feather="edit"></span><td>
+          <!-- If reports have been published, this button will be disabled. -->
+          <td valign="middle"><button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button><td>
         </tr>
       </table>
     </div>
