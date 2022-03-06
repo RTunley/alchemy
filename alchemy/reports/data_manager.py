@@ -413,8 +413,6 @@ def make_comparison_charts(statprofile_list):
     sd_list = []
     iqr_list = []
     labels = []
-    # print("Here is the statprofile list! :")
-    # print(statprofile_list) Statprofile list is empty
     for statprofile in statprofile_list:
         means.append(statprofile.norm_mean)
         medians.append(statprofile.norm_fivenumsumm[2])
