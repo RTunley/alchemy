@@ -33,6 +33,7 @@ class Checkpoint:
                 return True
 
 ## Snapshots are instantiated by school admin, not individual courses. ##
+#Snapshot reports are like your typical report card - they contain a brief summary of the student achievement in each course they taking, and will contain links to the more detailed checkpoint reports for each course. ##
 class Snapshot:
     def __init__(self, name, course_list):
         self.name = name
@@ -51,7 +52,7 @@ class Snapshot:
         if self.check_if_ready():
             self.is_published = True
 
-    #Snapshot reports are like your typical report card - they contain a brief summary of the student achievement in each course they taking, and will contain links to the more detailed checkpoint reports for each course. ##
+
 
 ## Endpoints ##
 
@@ -66,25 +67,65 @@ def new_snapshot(name, course_list):
         course.checkpoints.append(new_checkpoint)
         new_snapshot.checkpoints.append(new_checkpoint)
 
+
 ## Called on clazz.index and cohort.index for admin, teachers, and students
-def student_checkpoint_report(student, paper_list):
-    ## Calculate necessary quantities for student checkpoint report, organize into pythonic objects like with previous reports. Then, send these objects to the HTML templates for student_checkpoint_report ##
-    pass
+def student_checkpoint_report(student, checkpoint):
+    if checkpoint.check_if_ready():
+        checkpoint_profile = make_checkpoint_profile(student, checkpoint)
+        return flask.render_template('student_checkpoint_report', checkpoint_profile = checkpoint_profile)
+    ## - checkpoint_profile contains all the detailed data needed for the checkpoint_report
+    ## make_checkpoint_profile probably in reports.data_manager
+    ## - Send checkpoint_profile to the HTML templates for student_checkpoint_report ##
+    else:
+        pass
 
 ## Called on clazz.index but only for admin and teachers
-def clazz_checkpoint_report(clazz, paper_list):
-    ## Calculate necessary quantities for clazz checkpoint report, organize into pythonic objects like with previous reports. Then, send these objects to the HTML templates for clazz_checkpoint_report ##
-    pass
+def clazz_checkpoint_report(clazz, checkpoint):
+    if checkpoint.check_if_ready():
+        student_checkpoint_profiles = []
+        for student in clazz:
+            checkpoint_profile = make_checkpoint_profile(student, checkpoint)
+            student_checkpoint_profiles.append(checkpoint_profile)
+
+        clazz_checkpoint_profile = make_group_checkpoint_profile(student_checkpoint_profiles)
+        return flask.render_template('clazz_checkpoint_report', checkpoint_profiles = student_checkpoint_profiles)
+    ## - Calculate all student_checkpoint_profiles
+    ## - use these as inputs for clazz_checkpoint_profile (most likely)
+    ## - send this objects to the HTML template for clazz_checkpoint_report ##
+    else:
+        pass
 
 ## Called on cohort.index, only for admin (maybe teachers)
-def cohort_checkpoint_report(course, paper_list):
-    ## Calculate necessary quantities for cohort checkpoint report, organize into pythonic objects like with previous reports. Then, send these objects to the HTML templates for cohort_checkpoint_report ##
-    pass
+def cohort_checkpoint_report(course, checkpoint):
+    if checkpoint.check_if_ready():
+        student_checkpoint_profiles = []
+        for clazz in course.clazzes:
+            for student in clazz.students:
+                checkpoint_profile = make_checkpoint_profile(student, checkpoint)
+                student_checkpoint_profiles.append(checkpoint_profile)
+
+        cohort_checkpoint_profile = make_group_checkpoint_profile(student_checkpoint_profiles)
+        return flask.render_template('cohort_checkpoint_report', checkpoint_profiles = student_checkpoint_profiles)
+    ## - Calculate all student_checkpoint_profiles
+    ## - use these as inputs for cohort_checkpoint_profile (most likely)
+    ## - send this to the HTML template for cohort_checkpoint_report ##
+    else:
+        pass
 
 ## Called on student.index - for students, teachers, and admin
-def student_snapshot_report(student, data_objects):
-    ## Requires some sort of list of data_objects, each of which would come from a course that the student is taking. These data_objects contain quantities like their average score and grade from that course ##
-    pass
+def student_snapshot_report(student, snapshot):
+    if snapshot.check_if_ready():
+        checkpoint_summary_list = []
+        for clazz in student.clazzes:
+            checkpoint_summary = make_checkpoint_summary(student, clazz.course, snapshot)
+            checkpoint_summary_list.append(checkpoint_summary)
+        return flask.render_template('student_snapshot_report', checkpoint_summaries = checkpoint_summary_list)
+        ## - Requires 'student_checkpoint_summary', each of which would come from a course that the student is taking
+        ## make_checkpoint_summary probably located in reports.data_manager
+        ## - These summaries contain quantities like their average score and grade from that course ##
+        ## - Send these data_objects to template for student_snapshot_report
+    else:
+        pass
 
 
 ## Sequence ##
