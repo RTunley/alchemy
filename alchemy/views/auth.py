@@ -20,10 +20,10 @@ def redirect_to_user_home():
 
     g.current_user = flask_jwt_extended.get_current_user()
     if g.current_user.group == 'admin':
-        # TODO instead of just returning the first available account, should find
-        # the right account depending on the user.
-        first_account = models.Account.query.first()
-        response = flask.redirect(flask.url_for('account.index', account_id = first_account.id))
+        # TODO instead of just returning the first available department, should find
+        # the right department depending on the user.
+        first_department = models.Department.query.first()
+        response = flask.redirect(flask.url_for('department.index', department_id = first_department.id))
         return response
     elif g.current_user.group == 'student':
         student = models.Student.query.get(g.current_user.id)

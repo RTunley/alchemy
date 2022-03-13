@@ -16,8 +16,8 @@ def populate_db():
         db.create_all()
     print('Populating test data...')
 
-    account = db_data.add_account()
-    course = db_data.add_course(account, 'Physics')
+    sci_department = db_data.add_department("Science")
+    course = db_data.add_course(sci_department, 'IGCSE Physics')
     course_grades = db_data.add_grade_levels(course)
     clazz = db_data.add_clazz(course, 'IGPHY01')
     all_questions = db_data.add_questions_and_tags(course)
@@ -29,23 +29,24 @@ def populate_db():
     db_data.add_questions_to_test(papers[2], oa_questions)
 
     #other courses and classes to test student homepage
-    course_eng = db_data.add_course(account, 'English')
-    grades_eng = db_data.add_grade_levels(course_eng)
-    clazz_eng = db_data.add_clazz(course_eng, 'IGENG01')
+    course_chem = db_data.add_course(sci_department, 'IGCSE Chemistry')
+    grades_chem = db_data.add_grade_levels(course_chem)
+    clazz_chem = db_data.add_clazz(course_chem, 'IGCHEM01')
 
-    course_mus = db_data.add_course(account, 'Music')
-    grades_mus = db_data.add_grade_levels(course_mus)
-    clazz_mus = db_data.add_clazz(course_mus, 'IGMUS01')
-
-    course_math = db_data.add_course(account, 'Mathematics')
+    math_department = db_data.add_department("Mathematics")
+    course_math = db_data.add_course(math_department, 'IGCSE Mathematics')
     grades_math = db_data.add_grade_levels(course_math)
     clazz_math = db_data.add_clazz(course_math, 'IGMAT01')
 
-    course_pe = db_data.add_course(account, 'Physical Education')
-    grades_pe = db_data.add_grade_levels(course_pe)
-    clazz_pe = db_data.add_clazz(course_pe, 'IGPHED01')
+    hum_department = db_data.add_department("Humanities")
+    course_mus = db_data.add_course(hum_department, 'IGCSE Music')
+    grades_mus = db_data.add_grade_levels(course_mus)
+    clazz_mus = db_data.add_clazz(course_mus, 'IGMUS01')
+    course_eng = db_data.add_course(hum_department, 'IGCSE English')
+    grades_eng = db_data.add_grade_levels(course_eng)
+    clazz_eng = db_data.add_clazz(course_eng, 'IGMUS01')
 
-    clazzes = [clazz, clazz_eng, clazz_mus, clazz_math, clazz_pe]
+    clazzes = [clazz, clazz_chem, clazz_math, clazz_mus, clazz_eng]
     student_list = db_data.add_students_and_aws_users(clazzes)
     db_data.add_scores(papers[0], student_list)
 

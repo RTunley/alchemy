@@ -47,7 +47,7 @@ from alchemy import models
 from alchemy import auth_manager
 auth_manager.init_app(application)
 
-from alchemy.views import auth, account, course, clazz, paper, library, cohort, student
+from alchemy.views import auth, department, course, clazz, paper, library, cohort, student
 
 course.bp_course.register_blueprint(clazz.bp_clazz, url_prefix='/clazz/<clazz_id>')
 course.bp_course.register_blueprint(paper.bp_paper, url_prefix='/paper/<paper_id>')
@@ -55,7 +55,7 @@ course.bp_course.register_blueprint(library.bp_library, url_prefix='/library')
 course.bp_course.register_blueprint(cohort.bp_cohort, url_prefix='/cohort')
 application.register_blueprint(student.bp_student, url_prefix='/student/<student_id>')
 application.register_blueprint(course.bp_course, url_prefix='/course/<course_id>')
-application.register_blueprint(account.bp_account, url_prefix='/account/<account_id>')
+application.register_blueprint(department.bp_department, url_prefix='/department/<department_id>')
 application.register_blueprint(auth.bp_auth, url_prefix='/auth')
 
 # Create any tables not already in the db

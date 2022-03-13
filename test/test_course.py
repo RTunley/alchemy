@@ -5,7 +5,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, GradeLevel
+from alchemy.models import Department, Course, GradeLevel
 import test.create_test_objects as cto
 
 class CourseTestCase(TestCase):
@@ -15,8 +15,8 @@ class CourseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = cto.create_account()
-        test_course = cto.create_course(test_account)
+        test_department  = cto.create_department()
+        test_course = cto.create_course(test_department)
         grade_levels = cto.create_grade_levels(test_course)
 
     def tearDown(self):

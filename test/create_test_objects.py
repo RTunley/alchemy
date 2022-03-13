@@ -1,14 +1,14 @@
 from alchemy import models as m
 from alchemy import db
 
-def create_account():
-    test_account = m.Account(name = "Test School")
-    db.session.add(test_account)
+def create_department():
+    test_department = m.Department(name = "Test Department")
+    db.session.add(test_department)
     db.session.commit()
-    return test_account
+    return test_department
 
-def create_course(account):
-    test_course = m.Course(name = "Test Course", account = account)
+def create_course(department):
+    test_course = m.Course(name = "Test Course", department = department)
     db.session.add(test_course)
     db.session.commit()
     return test_course

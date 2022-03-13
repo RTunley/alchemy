@@ -6,17 +6,17 @@ import base64, string
 
 ## Database Models ##
 
-class Account(db.Model):
-    __tablename__ = 'account'
+class Department(db.Model):
+    __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    courses = db.relationship('Course', backref='account')
+    courses = db.relationship('Course', backref='department')
 
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
     questions = db.relationship('Question', backref = 'q_course')
     tags = db.relationship('Tag', backref='tag_course')
     clazzes = db.relationship('Clazz', backref='course')
