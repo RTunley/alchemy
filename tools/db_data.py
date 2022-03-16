@@ -1,8 +1,14 @@
 from alchemy import models as m
 from alchemy import db
 
-def add_department(name):
-    department = m.Department(name = name)
+def add_school(name):
+    school = m.School(name = name)
+    db.session.add(school)
+    db.session.commit()
+    return school
+
+def add_department(school, name):
+    department = m.Department(name = name, school = school)
     db.session.add(department)
     db.session.commit()
     return(department)

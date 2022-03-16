@@ -16,7 +16,9 @@ def populate_db():
         db.create_all()
     print('Populating test data...')
 
-    sci_department = db_data.add_department("Science")
+    school = db_data.add_school("School of Rock")
+
+    sci_department = db_data.add_department(school, "Science")
     course = db_data.add_course(sci_department, 'IGCSE Physics')
     course_grades = db_data.add_grade_levels(course)
     clazz = db_data.add_clazz(course, 'IGPHY01')
@@ -33,12 +35,12 @@ def populate_db():
     grades_chem = db_data.add_grade_levels(course_chem)
     clazz_chem = db_data.add_clazz(course_chem, 'IGCHEM01')
 
-    math_department = db_data.add_department("Mathematics")
+    math_department = db_data.add_department(school, "Mathematics")
     course_math = db_data.add_course(math_department, 'IGCSE Mathematics')
     grades_math = db_data.add_grade_levels(course_math)
     clazz_math = db_data.add_clazz(course_math, 'IGMAT01')
 
-    hum_department = db_data.add_department("Humanities")
+    hum_department = db_data.add_department(school, "Humanities")
     course_mus = db_data.add_course(hum_department, 'IGCSE Music')
     grades_mus = db_data.add_grade_levels(course_mus)
     clazz_mus = db_data.add_clazz(course_mus, 'IGMUS01')

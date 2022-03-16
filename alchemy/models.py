@@ -6,10 +6,17 @@ import base64, string
 
 ## Database Models ##
 
+class School(db.Model):
+    __tablename__ = 'school'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    departments = db.relationship('Department', backref='school')
+
 class Department(db.Model):
     __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
     courses = db.relationship('Course', backref='department')
 
 class Course(db.Model):
