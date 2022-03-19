@@ -137,11 +137,10 @@ def mc_result_input_submit():
             continue
 
         # Update the score for this question on this paper
-        scores = models.Score.query.filter_by(paper_id = paper_id, question_id = question.id, student_id = student_id)
-        if not scores:
-            print(f'No score found for paper {paper_id} / question {question_id} / student { student_id }')
-            continue
-        score = scores.first()
+        score = models.Score.query.filter_by(paper_id = paper_id, question_id = question.id, student_id = student_id).first()
+        if not score:
+            score = models.Score(value = question.points, paper_id = paper_id, question_id = question.id, student_id = student_id)
+            db.session.add(score)
         if correct_solution.id == solution.id:
             score.value = question.points
         else:

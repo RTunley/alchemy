@@ -49,12 +49,29 @@ class PaperScoreTally(object):
     @staticmethod
     def from_student(student, paper):
         # get the scores for the student on this paper, ordered by each question's order number
-        scores = db.session.query(models.Score
+        known_scores = db.session.query(models.Score
             ).filter(models.PaperQuestion.question_id == models.Score.question_id,
                      models.PaperQuestion.paper_id == models.Score.paper_id
-            ).filter_by(student_id = student.id
+            ).filter_by(student_id = student.id, paper_id = paper.id
             ).order_by(models.PaperQuestion.order_number
             ).all()
+        # get the questions for this paper
+        paper_questions = models.PaperQuestion.query.filter_by(paper_id = paper.id
+            ).order_by(models.PaperQuestion.order_number
+            ).all()
+
+        scores = []
+        for paper_question in paper_questions:
+            score = None
+            for known_score in known_scores:
+                if known_score.question_id == paper_question.question_id:
+                    score = known_score
+                    break
+            if not score:
+                # no score has been recorded yet for this student, so make a blank score
+                score = models.Score(value = None, paper_id = paper.id, question_id = paper_question.question_id, student_id = student.id)
+            scores.append(score)
+
         paper_score_tally = PaperScoreTally(student, paper, total_score(scores))
         paper_score_tally.scores = scores
         return paper_score_tally
@@ -255,7 +272,7 @@ def all_students_in_course(course):
     return(all_students)
 
 def total_score(score_list):
-    return sum(score.value for score in score_list)
+    return sum(score.value for score in score_list if score.value)
 
 def calc_percentage(numerator, denominator):
     percentage = round(numerator/denominator*100, 2)
