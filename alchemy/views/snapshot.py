@@ -25,7 +25,7 @@ class Checkpoint:
             self.papers.append(paper)
 
     ## Snapshot reports will all be published together, but teachers will not finish all their marking and data entry at the same time --> need an easy way for individual courses to signal their 'readiness' for publishing.
-    def check_if_ready(self):
+    def is_ready(self):
         for paper in self.papers:
             if not paper.has_all_scores():
                 return False
@@ -41,7 +41,7 @@ class Snapshot:
         self.checkpoints = []
         self.is_published = False
 
-    def check_if_ready(self):
+    def is_ready(self):
         for checkpoint in self.checkpoints:
             if not checkpoint.check_if_ready():
                 return False
@@ -51,7 +51,6 @@ class Snapshot:
     def publish(self):
         if self.check_if_ready():
             self.is_published = True
-
 
 
 ## Endpoints ##
@@ -70,7 +69,7 @@ def new_snapshot(name, course_list):
 
 ## Called on clazz.index and cohort.index for admin, teachers, and students
 def student_checkpoint_report(student, checkpoint):
-    if checkpoint.check_if_ready():
+    if checkpoint.is_ready():
         checkpoint_profile = make_checkpoint_profile(student, checkpoint)
         return flask.render_template('student_checkpoint_report', checkpoint_profile = checkpoint_profile)
     ## - checkpoint_profile contains all the detailed data needed for the checkpoint_report
@@ -126,7 +125,6 @@ def student_snapshot_report(student, snapshot):
         ## - Send these data_objects to template for student_snapshot_report
     else:
         pass
-
 
 ## Sequence ##
 
