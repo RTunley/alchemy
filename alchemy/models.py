@@ -76,14 +76,17 @@ class Student(db.Model):
     scores = db.relationship('Score', backref='student')
 
     def has_results_for_all_mc_questions(self, paper):
-        # get all scores for all mc questions for this student on this paper, and count them
-        count_mc_scores_with_unrecorded_solutions = db.session.query(Score
-            ).filter(Question.id == Score.question_id,
-                     Question.correct_solution_index != None,    # is a MC question
-                     Score.selected_solution_id == None   # no selection recorded
+        count_paper_mc_questions = db.session.query(PaperQuestion
+            ).filter(PaperQuestion.question_id == Question.id,
+                     Question.correct_solution_index != None
+            ).filter_by(paper_id = paper.id
+            ).count()
+        count_student_mc_scores = db.session.query(Score
+            ).filter(Score.question_id == Question.id,
+                     Question.correct_solution_index != None
             ).filter_by(student_id = self.id, paper_id = paper.id
             ).count()
-        return count_mc_scores_with_unrecorded_solutions == 0
+        return count_paper_mc_questions == count_student_mc_scores
 
     @staticmethod
     def create(**properties):

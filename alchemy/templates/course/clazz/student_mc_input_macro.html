@@ -3,7 +3,7 @@
 {% macro render_mc_results(clazz, paper, student) -%}
 <form>
   <div class="modal fade" id="input_mc_modal" tabindex="-1" aria-labelledby="input_mc_modal_label" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="input_mc_modal_label">{{ student.aws_user.family_name }}, {{ student.aws_user.given_name }}: Multiple Choice</h5>
@@ -15,12 +15,14 @@
         <p>Click on the student's selections for each question, then click 'Save' to record the results. Correct answers are shown in green.</p>
         <table id="mc_result_selection_table" class="table table-hover">
           <tr>
-            <th class="align-middle text-center">Question</th>
+            <th class="align-middle text-center" width="5%">Question</th>
+            <th class="align-middle text-center" width="50%"></th>
             <th class="align-middle text-center">Options</th>
           </tr>
           {% for paper_question in paper.get_mc_paper_questions() %}
             <tr>
               <td class="align-middle text-center">{{ paper_question.order_number }}</td>
+              <td class="align-middle">{{ paper_question.question.content[0:64] }}...</td>
               <td class="align-middle text-center">
                 {% for solution in paper_question.question.all_solutions %}
                   {% set is_selected_solution = (solution.id == paper_question.selected_solution_id(student.id)) %}
