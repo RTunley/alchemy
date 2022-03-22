@@ -12,7 +12,7 @@
       <a class="nav-link {{ 'active' if request.endpoint == 'school.snapshots' }}" href="{{ url_for('school.snapshots', school_id=g.school.id) }}">Reporting</a>
     </li>
   </ul>
-
+  <br>
   {% block school_tab_content %}
   {% endblock school_tab_content %}
 

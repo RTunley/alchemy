@@ -19,12 +19,12 @@ def bp_school_url_defaults(endpoint, values):
 def index():
     return flask.render_template('school/index.html')
 
-@bp_school.route('/')
+@bp_school.route('/departments')
 @auth_manager.require_group
 def departments():
     return flask.render_template('school/departments.html')
 
-@bp_school.route('/')
+@bp_school.route('/snapshots')
 @auth_manager.require_group
 def snapshots():
     return flask.render_template('school/snapshots.html')
