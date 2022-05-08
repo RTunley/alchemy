@@ -6,7 +6,7 @@
 
   <list>
     {% for department in g.school.departments %}
-      <li>{{ department.name }}
+      <li><a href="{{url_for('department.index', department_id = department.id)}}">{{ department.name }}</a>
     {% endfor %}
   </list>
 
