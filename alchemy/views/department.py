@@ -7,6 +7,7 @@ bp_department = flask.Blueprint('department', __name__)
 @bp_department.url_value_preprocessor
 def bp_department_endpoints(endpoint, values):
     g.department = models.Department.query.get_or_404(values.pop('department_id'))
+    g.school = g.department.school
     g.html_title = f'Department - {g.department.name}'
 
 @bp_department.url_defaults

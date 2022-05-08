@@ -3,11 +3,21 @@
 {% block school_tab_content %}
 
 <h3>Departments</h3>
+<br>
 
-  <list>
+  <div class="row row-cols-1 row-cols-md-3">
     {% for department in g.school.departments %}
-      <li><a href="{{url_for('department.index', department_id = department.id)}}">{{ department.name }}</a>
+      <div class="col mb-4">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{{url_for('department.index', department_id = department.id)}}">{{ department.name }}</a>
+            </h5>
+            <p class="card-text">Head: Some Teacher</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </list>
+  </div>
 
 {% endblock school_tab_content %}
