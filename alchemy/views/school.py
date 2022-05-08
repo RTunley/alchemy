@@ -28,3 +28,19 @@ def departments():
 @auth_manager.require_group
 def snapshots():
     return flask.render_template('school/snapshots.html')
+
+@bp_school.route('/new_snapshot')
+@auth_manager.require_group
+def new_snapshot(name):
+    courses = get_snapshot_courses(g.school)
+    new_snapshot = models.Snapshot(name, courses)
+    return new_snapshot
+
+
+## Default for now is all courses, but in future need some way to group courses so that snapshots can be taken for some courses but not others ##
+def get_snapshot_courses(school):
+    snapshot_courses = []
+    for department in school.departments:
+        for course in department.courses:
+            snapshot_courses.append(course)
+    return snapshot_courses

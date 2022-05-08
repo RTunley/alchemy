@@ -42,11 +42,14 @@ class Snapshot:
         self.is_published = False
 
     def is_ready(self):
-        for checkpoint in self.checkpoints:
-            if not checkpoint.check_if_ready():
-                return False
-            else:
-                return True
+        if not self.checkpoints:
+            return False
+        else:
+            for checkpoint in self.checkpoints:
+                if not checkpoint.check_if_ready():
+                    return False
+                else:
+                    return True
 
     def publish(self):
         if self.check_if_ready():
@@ -135,3 +138,10 @@ def student_snapshot_report(student, snapshot):
 ## 3) Course-level admin assign papers to the checkpoint.papers attribute for each course. A Checkpoint's readiness to be included in a Snapshot will automatically signalled once all scores are uploaded from all clazzes in a course.
 
 ## 4) Once all checkpoints from all courses are ready, Snapshot.check_if_ready() will return true. After this point, Snapshot.publish() can be called to make all checkpoint reports and snapshot reports available for viewing.
+
+
+## Plan
+## Snapshots
+## 1) Implement snapshots in models
+## 2) create a get_course_list function and a new_snapshot endpoint in school.py
+## 3) Write some html for viewing and calling the endpoint into school/snapshots.html

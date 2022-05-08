@@ -11,6 +11,7 @@ class School(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     departments = db.relationship('Department', backref='school')
+    snapshots = db.relationship('Snapshot', backref='school')
 
 class Department(db.Model):
     __tablename__ = 'department'
@@ -481,6 +482,28 @@ class Score(db.Model):
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint(paper_id, question_id, student_id),
     )
+
+class Snapshot(db.Model):
+    __tablename__ = 'snapshot'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
+
+    def make_checkpoints(self, course_list):
+        self.courses = course_list
+        for course in self.courses:
+            new_checkpoint = None
+            self.checkpoints.append(new_checkpoint)
+
+    def is_ready(self):
+        if not self.checkpoints:
+            return False
+        else:
+            for checkpoint in self.checkpoints:
+                if not checkpoint.check_if_ready():
+                    return False
+                else:
+                    return True
 
 class JwtBlocklist(db.Model):
     __tablename__ = 'jwt_blocklist'

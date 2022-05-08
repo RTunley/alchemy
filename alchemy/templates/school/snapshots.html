@@ -3,7 +3,50 @@
 {% block school_tab_content %}
 
 <h3>Reporting</h3>
+<br>
+{% if not g.school.snapshots %}
+  <h5>There are no reports to view</h5>
+{% else %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Report</th>
+        <th scope="col">Ready</th>
+        <th scope="col">Published</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for snapshot in g.school.snapshots %}
+        <tr>
+          <td>{{ snapshot.name }}</td>
+          <td>Yes / No</td>
+          <td>Yes / No</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+<br>
+<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add_snapshot_modal">
+  <span data-feather="plus-square"></span>
+  <a>Add New Report</a></button>
+<!-- Add Snapshot Modal here -->
+{% import "school/new_snapshot_macro.html" as add_snapshot %}
+<div class="modal fade" id="add_snapshot_modal" tabindex="-1" aria-labelledby="add_snapshot_modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add_snapshot_modal_label">Add New Report</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ add_snapshot.render_add_snapshot(g.school) }}</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-<p>new_snapshot() will be run from here</p>
 
 {% endblock school_tab_content %}
