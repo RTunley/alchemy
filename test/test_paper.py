@@ -5,7 +5,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion
+from alchemy.models import Department, Course, Question, Tag, Paper, PaperQuestion
 import test.create_test_objects as cto
 
 class PaperTestCase(TestCase):
@@ -15,8 +15,8 @@ class PaperTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = cto.create_account()
-        test_course = cto.create_course(test_account)
+        test_department = cto.create_department()
+        test_course = cto.create_course(test_department)
         category1 = cto.create_category(test_course)
         test_paper = cto.create_paper(test_course, category1)
 

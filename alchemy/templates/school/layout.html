@@ -1,0 +1,21 @@
+{% include "school/layout_top.html" %}
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.index' }}" href="{{ url_for('school.index', school_id=g.school.id) }}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.departments' }}" href="{{ url_for('school.departments') }}">Departments</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.snapshots' }}" href="{{ url_for('school.snapshots', school_id=g.school.id) }}">Reporting</a>
+    </li>
+  </ul>
+  <br>
+  {% block school_tab_content %}
+  {% endblock school_tab_content %}
+
+</div>
+
+{% include "school/layout_bottom.html" %}

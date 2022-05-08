@@ -1,8 +1,9 @@
 <!-- Input MC Modal -->
 
-{% macro render_mc_results(paper, student) -%}
+{% macro render_mc_results(clazz, paper, student) -%}
+<form>
   <div class="modal fade" id="input_mc_modal" tabindex="-1" aria-labelledby="input_mc_modal_label" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="input_mc_modal_label">{{ student.aws_user.family_name }}, {{ student.aws_user.given_name }}: Multiple Choice</h5>
@@ -12,31 +13,51 @@
       </div>
       <div class="modal-body">
         <p>Click on the student's selections for each question, then click 'Save' to record the results. Correct answers are shown in green.</p>
-        <table class="table table-hover">
+        <table id="mc_result_selection_table" class="table table-hover">
           <tr>
-            <th class="text-align-center">Question</th>
-            <th class="text-align-center">Options</th>
+            <th class="align-middle text-center" width="5%">Question</th>
+            <th class="align-middle text-center" width="50%"></th>
+            <th class="align-middle text-center">Options</th>
           </tr>
           {% for paper_question in paper.get_mc_paper_questions() %}
             <tr>
-              <td class="text-align-center">{{ paper_question.order_number }}</td>
-              <td class="text-align-center">
+              <td class="align-middle text-center">{{ paper_question.order_number }}</td>
+              <td class="align-middle">{{ paper_question.question.content[0:64] }}...</td>
+              <td class="align-middle text-center">
                 {% for solution in paper_question.question.all_solutions %}
-                  {% if solution == paper_question.question.get_solution() %}
-                    <button type="button" class="btn btn-success">{{ paper_question.question.get_solution_label(solution) }}</button>
-                  {% else %}
-                    <button type="button" class="btn btn-info">{{ paper_question.question.get_solution_label(solution) }}</button>
-                  {% endif %}
+                  {% set is_selected_solution = (solution.id == paper_question.selected_solution_id(student.id)) %}
+                  {% set is_correct_solution = (solution == paper_question.question.get_solution()) %}
+                  <button
+                        type="button"
+                        class="btn {{ 'btn-success' if is_correct_solution else 'btn-light' }}"
+                        style="border: solid 5px {{ 'orange' if is_selected_solution else 'transparent' }}"
+                        onclick="mc_result_input_select($(this))"
+                        data-alchemy_mc_question_id="{{ paper_question.question_id }}"
+                        data-alchemy_mc_solution_id="{{ solution.id }}"
+                        data-alchemy_mc_solution_correct="{{ is_correct_solution }}">
+                    {{ paper_question.question.get_solution_label(solution) }}
+                  </button>
                 {% endfor %}
+                &nbsp;
+                <span style="visibility: {{ 'visible' if paper_question.selected_solution_id(student.id) == paper_question.question.get_solution().id else 'hidden' }}; color: green;"
+                    id="mc_result_input_tick_{{ paper_question.question_id }}"
+                    data-feather="check-circle"></span>
               </td>
             </tr>
           {% endfor %}
         </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
+          <button
+              id="mc_result_input_cancel"
+              type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button
+              id="mc_result_input_save"
+              class="btn btn-primary"
+              onclick='mc_result_input_submit({{ clazz.course_id }}, {{ clazz.id }}, {{ paper.id }}, {{ student.id }})'>Save Changes</button>
+
       </div>
     </div>
   </div>
-
+</form>
 {%- endmacro %}

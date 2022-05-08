@@ -4,7 +4,7 @@ from alchemy import application as app
 from alchemy import db
 from flask_testing import TestCase
 import unittest
-from alchemy.models import Account, Course, Question, Tag, Paper, PaperQuestion, Clazz, Student
+from alchemy.models import Department, Course, Question, Tag, Paper, PaperQuestion, Clazz, Student
 import test.create_test_objects as cto
 import csv
 import io
@@ -24,8 +24,8 @@ class CohortTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        test_account = cto.create_account()
-        test_course = cto.create_course(test_account)
+        test_department  = cto.create_department()
+        test_course = cto.create_course(test_department )
         grade_levels = cto.create_grade_levels(test_course)
         test_clazz = cto.add_clazz(test_course)
         student_list = cto.add_students_and_aws_users(test_course, test_clazz)

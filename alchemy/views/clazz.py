@@ -105,10 +105,10 @@ def mc_results_input():
 
     mc_input_macro = '''
           {% import "course/clazz/student_mc_input_macro.html" as mc_input %}
-          {{ mc_input.render_mc_results(paper, student) }}
+          {{ mc_input.render_mc_results(clazz, paper, student) }}
     '''
 
-    return flask.jsonify(mc_input_html = flask.render_template_string(mc_input_macro, paper = paper, student = student))
+    return flask.jsonify(mc_input_html = flask.render_template_string(mc_input_macro, clazz = clazz, paper = paper, student = student))
 
 @bp_clazz.route('/paper_report/<int:paper_id>/')
 @auth_manager.require_group
@@ -118,3 +118,34 @@ def paper_report(paper_id):
     section_selections = section_selection_string.split(',')
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper, section_selections)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
+
+@bp_clazz.route('/mc_result_input_submit', methods=['POST'])
+@auth_manager.require_group
+def mc_result_input_submit():
+    post_data = flask.request.get_json()
+    clazz_id = post_data['clazz_id']
+    paper_id = post_data['paper_id']
+    student_id = post_data['student_id']
+    mc_result_selection = post_data['mc_result_selection']
+
+    for question_id, solution_id in mc_result_selection.items():
+        question = models.Question.query.get_or_404(question_id)
+        solution = models.Solution.query.get_or_404(solution_id)
+        correct_solution = question.get_solution()
+        if not correct_solution:
+            print(f'No solution found for question {question_id}')
+            continue
+
+        # Update the score for this question on this paper
+        score = models.Score.query.filter_by(paper_id = paper_id, question_id = question.id, student_id = student_id).first()
+        if not score:
+            score = models.Score(value = question.points, paper_id = paper_id, question_id = question.id, student_id = student_id)
+            db.session.add(score)
+        if correct_solution.id == solution.id:
+            score.value = question.points
+        else:
+            score.value = 0
+        score.selected_solution_id = solution.id
+
+    db.session.commit()
+    return flask.redirect(flask.url_for('course.clazz.paper_results', paper_id = paper_id))
