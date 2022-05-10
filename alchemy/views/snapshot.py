@@ -142,6 +142,6 @@ def student_snapshot_report(student, snapshot):
 
 ## Plan
 ## Snapshots
-## 1) Implement snapshots in models
+## 1) Implement snapshots in models *CHECK*
 ## 2) create a get_course_list function and a new_snapshot endpoint in school.py
 ## 3) Write some html for viewing and calling the endpoint into school/snapshots.html
