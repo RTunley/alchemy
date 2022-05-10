@@ -1,0 +1,21 @@
+{% macro render_modal(school) -%}
+
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">New Reporting Event</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <label for="new_snapshot_name">
+        Name:
+      </label>
+      <input id="new_snapshot_name" name="new_snapshot_name" type="text" placeholder="Example: Semester 1 Reports" class="form-control" required />
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary">Save</button>
+  </div>
+
+{%- endmacro %}

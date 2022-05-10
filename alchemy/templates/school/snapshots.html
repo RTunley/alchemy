@@ -2,15 +2,17 @@
 
 {% block school_tab_content %}
 
-  <h3>Reporting</h3>
+  <h3>Reporting Events</h3>
+  <br>
+  <p>Reporting Events are when a collection of Reports will be created and published for all courses. You can find the existing ones below, or create a new one.</p>
   <br>
   {% if not g.school.snapshots %}
-    <h5>There are no reports to view</h5>
+    <h5 color='red'>There are no Reporting Events to view.</h5>
   {% else %}
     <table class="table table-hover">
       <thead>
         <tr>
-          <th scope="col">Report</th>
+          <th scope="col">Event</th>
           <th scope="col">Ready</th>
           <th scope="col">Published</th>
         </tr>
@@ -27,29 +29,15 @@
     </table>
   {% endif %}
   <br>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  New Reporting Event
+  </button>
     <!-- Add Snapshot Modal here -->
+  {% import "school/new_snapshot_macro.html" as new_snapshot %}
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
+      <p>{{ new_snapshot.render_modal(g.school) }}</p>
     </div>
   </div>
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Launch demo modal
-  </button>
-
 
 {% endblock school_tab_content %}
