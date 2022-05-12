@@ -31,9 +31,15 @@ def snapshots():
 
 @bp_school.route('/new_snapshot')
 @auth_manager.require_group
-def new_snapshot(name):
+def new_snapshot():
+    post_data = flask.request.get_json()
+    school_id = post_data['school_id']
+    school = models.School.query.get_or_404(school_id)
+    new_snapshot_name = post_data['snapshot_name']
     courses = get_snapshot_courses(g.school)
-    new_snapshot = models.Snapshot(name, courses)
+    new_snapshot = models.Snapshot(new_snapshot_name, courses)
+    db.session.add(new_snapshot)
+    db.session.commit()
     return new_snapshot
 
 

@@ -2,6 +2,8 @@
 
 {% block school_tab_content %}
 
+<script src="{{ url_for('static', filename='new_snapshot.js') }}"></script>
+
   <h3>Reporting Events</h3>
   <br>
   <p>Reporting Events are when a collection of Reports will be created and published for all courses. You can find the existing ones below, or create a new one.</p>
@@ -36,7 +38,7 @@
   {% import "school/new_snapshot_macro.html" as new_snapshot %}
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <p>{{ new_snapshot.render_modal(g.school) }}</p>
+      <p>{{ new_snapshot.render_modal() }}</p>
     </div>
   </div>
 
