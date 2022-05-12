@@ -13,9 +13,5 @@
       </label>
       <input id="snapshot_name_input" name="snapshot_name_input" type="text" placeholder="Example: Semester 1 Reports" class="form-control" required />
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button type="button" class="btn btn-primary" onclick='return validate_new_snapshot({{ g.school.id }})'>Save</button>
-  </div>
 
 {%- endmacro %}

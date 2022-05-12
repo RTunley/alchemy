@@ -1,6 +1,6 @@
 import flask
 from flask import g
-from alchemy import models, auth_manager
+from alchemy import models, auth_manager, db
 
 bp_school = flask.Blueprint('school', __name__)
 
@@ -29,24 +29,23 @@ def departments():
 def snapshots():
     return flask.render_template('school/snapshots.html')
 
-@bp_school.route('/new_snapshot')
+@bp_school.route('/new_snapshot', methods = ['POST'])
 @auth_manager.require_group
 def new_snapshot():
     post_data = flask.request.get_json()
     school_id = post_data['school_id']
     school = models.School.query.get_or_404(school_id)
     new_snapshot_name = post_data['snapshot_name']
-    courses = get_snapshot_courses(g.school)
-    new_snapshot = models.Snapshot(new_snapshot_name, courses)
+    #courses = get_snapshot_courses(g.school)
+    new_snapshot = models.Snapshot(name = new_snapshot_name, school_id = school_id)
     db.session.add(new_snapshot)
     db.session.commit()
-    return new_snapshot
-
+    return flask.render_template('school/snapshots.html')
 
 ## Default for now is all courses, but in future need some way to group courses so that snapshots can be taken for some courses but not others ##
-def get_snapshot_courses(school):
-    snapshot_courses = []
-    for department in school.departments:
-        for course in department.courses:
-            snapshot_courses.append(course)
-    return snapshot_courses
+# def get_snapshot_courses(school):
+#     snapshot_courses = []
+#     for department in school.departments:
+#         for course in department.courses:
+#             snapshot_courses.append(course)
+#     return snapshot_courses
