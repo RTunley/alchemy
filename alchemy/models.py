@@ -489,11 +489,11 @@ class Snapshot(db.Model):
     name = db.Column(db.String(50), nullable=False)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
 
-    def make_checkpoints(self, course_list):
+    def add_courses(self, course_list):
         self.courses = course_list
-        for course in self.courses:
-            new_checkpoint = None
-            self.checkpoints.append(new_checkpoint)
+        # for course in self.courses:
+        #     new_checkpoint = None
+        #     self.checkpoints.append(new_checkpoint)
 
     def is_ready(self):
         if not self.checkpoints:

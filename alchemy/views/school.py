@@ -38,14 +38,18 @@ def new_snapshot():
     new_snapshot_name = post_data['snapshot_name']
     #courses = get_snapshot_courses(g.school)
     new_snapshot = models.Snapshot(name = new_snapshot_name, school_id = school_id)
+    courses = get_snapshot_courses(school)
+    print("From fn: ", courses)
+    new_snapshot.add_courses(courses)
+    print("From Snapshot: ", new_snapshot.courses)
     db.session.add(new_snapshot)
     db.session.commit()
     return flask.render_template('school/snapshots.html')
 
 ## Default for now is all courses, but in future need some way to group courses so that snapshots can be taken for some courses but not others ##
-# def get_snapshot_courses(school):
-#     snapshot_courses = []
-#     for department in school.departments:
-#         for course in department.courses:
-#             snapshot_courses.append(course)
-#     return snapshot_courses
+def get_snapshot_courses(school):
+    snapshot_courses = []
+    for department in school.departments:
+        for course in department.courses:
+            snapshot_courses.append(course)
+    return snapshot_courses
