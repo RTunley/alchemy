@@ -25,9 +25,6 @@
             <td>{{ snapshot.name }}</td>
             <td>Yes / No</td>
             <td>Yes / No</td>
-            <td>
-              <p>{{ snapshot.courses[0].name }}</p>
-            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -39,14 +36,16 @@
   </button>
     <!-- Add Snapshot Modal here -->
   {% import "school/new_snapshot_macro.html" as new_snapshot %}
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <p>{{ new_snapshot.render_modal() }}</p>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick='return validate_new_snapshot({{ g.school.id }})'>Save</button>
+  <form id="new-snapshot-form" class="needs-validation" novalidate>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <p>{{ new_snapshot.render_modal() }}</p>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" onclick='return validate_new_snapshot({{ g.school.id }})'>Save</button>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 
 {% endblock school_tab_content %}
