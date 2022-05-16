@@ -1,0 +1,21 @@
+{% include "layout_start.html" %}
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.index' }}" href="">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.departments' }}" href="">Courses</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'school.snapshots' }}" href="">Next</a>
+    </li>
+  </ul>
+  <br>
+  {% block department_tab_content %}
+  {% endblock department_tab_content %}
+
+</div>
+
+{% include "layout_end.html" %}
