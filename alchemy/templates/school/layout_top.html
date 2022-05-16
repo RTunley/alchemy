@@ -23,11 +23,12 @@
       </style>
   </head>
   <body>
+
     <div class="p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
       <div class="row justify-content-md-center">
         <div class="col d-flex align-items-baseline">
           <h6 class="mt-2 mr-3">
-            Alchemy - School of Rock
+            <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}</a>
           </h6>
 
         <div class="col-md-auto d-flex align-items-baseline">
@@ -44,5 +45,3 @@
         </div>
       </div>
     </div>
-    <br>
-    <br>

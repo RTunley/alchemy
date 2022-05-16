@@ -44,7 +44,7 @@
         <div class="row justify-content-md-center">
           <div class="col d-flex align-items-baseline">
             <h6 class="mt-2 mr-3">
-              Alchemy{% if 'department' in g %}: {{ g.department.name }}{% endif %}
+              <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}</a>
             </h6>
 
             {% if 'department' in g %}
@@ -67,7 +67,6 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ g.current_user.username }}</a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{{ url_for('department.index') }}">Department home</a>
                   <a class="dropdown-item" href="{{ url_for('auth.sign_out') }}">Sign out</a>
                 </div>
               </li>
