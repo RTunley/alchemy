@@ -56,19 +56,6 @@
                 <span>&#8594;</span><a href = "{{ url_for('course.index', course_id = g.course.id) }}"> {{ g.course.name }}</a>
               {% endif %}
             </h6>
-
-            {% if 'department' in g %}
-              <ul class="nav nav-pills">
-                <li class="nav-item dropdown mr-2">
-                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
-                  <div class="dropdown-menu">
-                    {% for course in g.department.courses %}
-                    <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
-                    {% endfor %}
-                  </div>
-                </li>
-              </ul>
-            {% endif %}
           </div>
 
           <div class="col-md-auto d-flex align-items-baseline">

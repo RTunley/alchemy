@@ -6,7 +6,7 @@
       <a class="nav-link {{ 'active' if request.endpoint == 'department.index' }}" href="">Home</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {{ 'active' if request.endpoint == 'department.courses' }}" href="">Courses</a>
+      <a class="nav-link {{ 'active' if request.endpoint == 'department.courses' }}" href="{{ url_for('department.courses') }}">Courses</a>
     </li>
     <li class="nav-item">
       <a class="nav-link {{ 'active' if request.endpoint == 'department.next' }}" href="">Next</a>
@@ -15,7 +15,6 @@
   <br>
   {% block department_tab_content %}
   {% endblock department_tab_content %}
-
 </div>
 
 {% include "layout_end.html" %}

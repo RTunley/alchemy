@@ -1,0 +1,23 @@
+{% extends "department/layout.html" %}
+
+{% block department_tab_content %}
+
+<h3>IGCSE Courses</h3>
+<br>
+
+  <div class="row row-cols-1 row-cols-md-3">
+    {% for course in g.department.courses %}
+      <div class="col mb-4">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{{url_for('course.index', course_id = course.id)}}">{{ course.name }}</a>
+            </h5>
+            <p class="card-text">Course Details</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock department_tab_content %}
