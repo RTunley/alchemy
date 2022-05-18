@@ -45,15 +45,15 @@
           <div class="col d-flex align-items-baseline">
             <h6 class="mt-2 mr-3">
               {% if g.school %}
-                <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}:</a>
+                <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}</a>
               {% else %}
                 <b>Alchemy</b>
               {% endif %}
               {% if g.department %}
-                <a href:"{{ url_for('department.index', department_id = g.department.id) }}">{{ g.department.name }}:</a>
+                <span>&#8594;</span><a href = "{{ url_for('department.index', department_id = g.department.id) }}"> {{ g.department.name }}</a>
               {% endif %}
               {% if g.course %}
-                <a href:"{{ url_for('course.index', course_id = g.course.id) }}">{{ g.course.name }}:</a>
+                <span>&#8594;</span><a href = "{{ url_for('course.index', course_id = g.course.id) }}"> {{ g.course.name }}</a>
               {% endif %}
             </h6>
 
