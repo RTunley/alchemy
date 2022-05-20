@@ -16,4 +16,28 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   </body>
+  
+<script>
+  (function () {
+    init_page();
+  }())
+
+  function init_page() {
+    // Show Bootstrap feather icons
+    feather.replace();
+
+    {% if show_editing_controls %}
+    // Set up draggable table rows
+    $('#open_answer_questions_table').sortable({
+      opacity: 0.5,
+      update: paper_reorder_questions,
+    });
+    $('#mcq_solution_table').sortable({
+      opacity: 0.5,
+      update: paper_reorder_questions,
+    });
+    {% endif %}
+  }
+</script>
+
 </html>

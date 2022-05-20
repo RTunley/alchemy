@@ -68,26 +68,6 @@
 <script src="{{ url_for('static', filename='mcq_solution_editing.js') }}"></script>
 <!-- Other common JavaScript files -->
 <script type="text/javascript">
-  (function () {
-    init_page();
-  }())
-
-  function init_page() {
-    // Show Bootstrap feather icons
-    feather.replace();
-
-    {% if show_editing_controls %}
-    // Set up draggable table rows
-    $('#open_answer_questions_table').sortable({
-      opacity: 0.5,
-      update: paper_reorder_questions,
-    });
-    $('#mcq_solution_table').sortable({
-      opacity: 0.5,
-      update: paper_reorder_questions,
-    });
-    {% endif %}
-  }
 
   function paper_reorder_questions(event, ui) {
     var tbody_id = ui.item.attr('id').startsWith('open_answer')
