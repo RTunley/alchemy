@@ -1,11 +1,23 @@
 {% include "layout_start.html" %}
 
+<style>
+  .align_center{
+  text-align: center;
+  }
+
+</style>
+
 <div class="container">
-
-  <h1 class="my-3">Welcome to Alchemy!</h1>
-
-  <a class="btn btn-primary" href="{{ url_for('auth.sign_in') }}" role="button">Sign in</a>
-
+  <h1 class="my-3 align_center">Welcome to...</h1>
+  <p class = "align_center">
+    <img src="{{ url_for('static', filename='branding/alch_white.png') }}">
+  </p>
+  <p class='align_center'>
+    <img style="width: 25%; height: auto;" src="{{ url_for('static', filename='branding/alchemy_edit_10.png') }}">
+  </p>
+  <p class="align_center">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('auth.sign_in') }}" role="button">Enter the Lab...</a>
+  </p>
 </div>
 
 {% include "layout_end.html" %}
