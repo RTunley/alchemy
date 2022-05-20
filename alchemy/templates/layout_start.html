@@ -22,7 +22,7 @@
               {% if g.school %}
                 <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}</a>
               {% else %}
-                <b>Alchemy</b>
+                <b style="text-align: center;">Welcome to...</b>
               {% endif %}
               {% if g.department %}
                 <span>&#8594;</span><a href = "{{ url_for('department.index', department_id = g.department.id) }}"> {{ g.department.name }}</a>
