@@ -29,6 +29,8 @@ def add_image(form_field):
     return new_image
 
 def build_multiple_choice_solution(mcq_choices, correct_solution_label):
+    if not mcq_choices or not correct_solution_label:
+        return [], -1
     mcq_choices_result = []
     correct_solution_index = -1
     for i in range(len(mcq_choices)):

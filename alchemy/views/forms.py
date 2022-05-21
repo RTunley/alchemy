@@ -11,7 +11,7 @@ def build_course_tag_string(course):
 
 class NewQuestionForm(FlaskForm):
     content = TextAreaField('Question Content', validators = [DataRequired(),])
-    solution = TextAreaField('Question Solution')
+    solution = TextAreaField('Question Solution', id='new_question_solution')
     points = FloatField('Points', validators = [InputRequired(), NumberRange(min = 1, max = 50)])
     hidden_mcq_choices = HiddenField(id='new_question_hidden_mcq_choices')
     hidden_correct_mcq_choice_label = HiddenField(id='new_question_hidden_correct_mcq_choice_label')
@@ -29,7 +29,7 @@ class NewQuestionForm(FlaskForm):
 
 class EditQuestionForm(FlaskForm):
     content = TextAreaField('Question Content', validators = [DataRequired(),])
-    solution = TextAreaField('Question Solution')
+    solution = TextAreaField('Question Solution', id='edit_question_solution')
     points = FloatField('Points', validators = [InputRequired(), NumberRange(min = 1, max = 50)])
     hidden_mcq_choices = HiddenField(id='edit_question_hidden_mcq_choices')
     hidden_correct_mcq_choice_label = HiddenField(id='edit_question_hidden_correct_mcq_choice_label')
