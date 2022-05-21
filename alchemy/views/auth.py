@@ -14,8 +14,10 @@ def redirect_to_user_home():
             flask.abort(401)
     else:
         print('Warning: authentication is disabled! This should only happen if you are testing stuff!')
-        student = models.Student.query.first()
-        response = flask.redirect(flask.url_for('student.index', student_id = student.id))
+        # student = models.Student.query.first()
+        # response = flask.redirect(flask.url_for('student.index', student_id = student.id))
+        school = models.School.query.first()
+        response = flask.redirect(flask.url_for('school.index', school_id = school.id))
         return response
 
     g.current_user = flask_jwt_extended.get_current_user()

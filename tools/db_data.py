@@ -1,5 +1,6 @@
 from alchemy import models as m
 from alchemy import db
+import random
 
 def add_school(name):
     school = m.School(name = name)
@@ -163,13 +164,12 @@ def add_students_and_aws_users(clazzes):
     return student_list
 
 def add_scores(paper, student_list):
-    #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4, 3, 3, 1, 1, 1) --> (4,3,3,1,1,1,4)
-    score_tuples = [(0,0,0,0,0,0,0), (0,1,0,1,0,1,0), (1,1,0,1,1,1,1), (2,2,2,1,0,1,0), (2,3,3,0,1,0,2), (3,2,1,1,1,1,3), (3,3,3,1,1,1,2)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id
             student_id = student_list[i].id
-            new_score = m.Score(value = score_tuples[i][j], paper_id = paper.id, question_id = question_id, student_id = student_id)
+            max_points = paper.paper_questions[j].question.points
+            new_score_value = random.randint(0, max_points)
+            new_score = m.Score(value = new_score_value, paper_id = paper.id, question_id = question_id, student_id = student_id)
             db.session.add(new_score)
-
     db.session.commit()
