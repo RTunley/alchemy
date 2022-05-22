@@ -58,8 +58,11 @@ class QuestionOverviewSection(CohortReportSection):
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
+        self.question_group_statprofiles = data_manager.make_question_group_statprofiles(all_students, self.paper)
+        self.oa_vs_mc_center_plot, self.oa_vs_mc_spread_plot = data_manager.make_comparison_charts(self.question_group_statprofiles)
         self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
+
 
 class TagDetailsSection(CohortReportSection):
     def __init__(self, **section_kwargs):

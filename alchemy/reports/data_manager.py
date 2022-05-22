@@ -262,6 +262,13 @@ class StatProfile(object):
         statprofile.object = paper_question
         return statprofile
 
+    # Used for comparing MCQ acievement and OA achievement - not associated with particular objects, but need labels to distringuish them.
+    @staticmethod
+    def from_question_group(values_list, total, label):
+        statprofile = StatProfile(values_list, total)
+        statprofile.label = label
+        return statprofile
+
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
 
 def all_students_in_course(course):
@@ -372,15 +379,39 @@ def make_question_statprofile_list(student_list, paper):
     student_ids = [student.id for student in student_list]
     question_statprofile_list = []
     for pq in paper.paper_questions:
-        all_scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
-        group_scores = []
-        for score in all_scores:
-            if score.student_id in student_ids:
-                group_scores.append(score)
-        raw_totals = [score.value for score in group_scores]
-        question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
-        question_statprofile_list.append(question_statprofile)
+        if not pq.question.is_multiple_choice():
+            all_scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
+            group_scores = []
+            for score in all_scores:
+                if score.student_id in student_ids:
+                    group_scores.append(score)
+            raw_totals = [score.value for score in group_scores]
+            question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
+            question_statprofile_list.append(question_statprofile)
     return question_statprofile_list
+
+def make_question_group_statprofiles(student_list, paper):
+    student_ids = []
+    mcq_ids = []
+    mcq_raw_totals = []
+    oaq_raw_totals = []
+    for pq in paper.paper_questions:
+        if pq.question.is_multiple_choice():
+            mcq_ids.append(pq.question.id)
+    for student in student_list:
+        mcq_raw = 0
+        oaq_raw = 0
+        student_scores = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id).all()
+        for score in student_scores:
+            if score.question_id in mcq_ids:
+                mcq_raw += score.value
+            else:
+                oaq_raw += score.value
+        mcq_raw_totals.append(mcq_raw)
+        oaq_raw_totals.append(oaq_raw)
+    mcq_statprofile = StatProfile.from_question_group(mcq_raw_totals, paper.profile.total_mc_points, "Multiple Choice")
+    oaq_statprofile = StatProfile.from_question_group(oaq_raw_totals, paper.profile.total_oa_points, "Open Answer")
+    return [mcq_statprofile, oaq_statprofile]
 
 def make_student_statsumm_list(student, paper):
     question_statsumm_list = []
@@ -444,8 +475,10 @@ def make_comparison_charts(statprofile_list):
         iqr_list.append(statprofile.norm_iqr)
         if isinstance(statprofile.object, models.Tag):
             labels.append(statprofile.object.name)
-        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
+        elif isinstance(statprofile.object, models.PaperQuestion):
             labels.append(statprofile.object.order_number)
+        else:
+            labels.append(statprofile.label)
 
     for statprofile in statprofile_list:
         if isinstance(statprofile.object, models.Tag):
@@ -456,12 +489,19 @@ def make_comparison_charts(statprofile_list):
             spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
             return (center_bar_plot, spread_bar_plot)
 
-        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
-            center_title = 'Question Comparison: Central Tendency'
-            spread_title = 'Question Comparison: Spread'
+        elif isinstance(statprofile.object, models.PaperQuestion):
+            center_title = 'Open Answer Question Comparison: Central Tendency'
+            spread_title = 'Open Answer Question Comparison: Spread'
             x_axis = 'Question Number'
             center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
             spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+            return (center_bar_plot, spread_bar_plot)
+
+        else:
+            center_title = 'Multiple Choice vs Open Answer: Central Tendency'
+            spread_title = 'Multiple Choice vs Open Answer: Spread'
+            center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, None)
+            spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, None)
             return (center_bar_plot, spread_bar_plot)
 
 def make_achievement_plots(statprofile_list):
