@@ -397,13 +397,15 @@ def make_grade_batch_list(student_tally_list, course):
 
     return grade_batch_list
 
-def make_mcq_batch_list(paper, student_list):
+def make_mcq_tallies(paper, student_list):
     mcq_tally_list = []
     for pq in paper.paper_questions:
         if pq.question.is_multiple_choice():
             mcq_tally = McqTally(pq, student_list)
             mcq_tally_list.append(mcq_tally)
+    return mcq_tally_list
 
+def make_mcq_batch_list(mcq_tally_list):
     mcq_batch_list = []
     batch_bounds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
     for i in range(len(batch_bounds)-1):

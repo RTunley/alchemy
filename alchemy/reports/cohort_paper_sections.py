@@ -60,9 +60,10 @@ class QuestionOverviewSection(CohortReportSection):
         all_students = data_manager.all_students_in_course(self.paper.course)
         self.question_group_statprofiles = data_manager.make_question_group_statprofiles(all_students, self.paper)
         self.oa_vs_mc_center_plot, self.oa_vs_mc_spread_plot = data_manager.make_comparison_charts(self.question_group_statprofiles)
+        mcq_tallies = data_manager.make_mcq_tallies(self.paper, all_students)
+        self.mcq_tallies = sorted(mcq_tallies, key=lambda x: x.num_correct_percent, reverse=True)
         self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
-
 
 class TagDetailsSection(CohortReportSection):
     def __init__(self, **section_kwargs):
@@ -79,6 +80,7 @@ class QuestionDetailsSection(CohortReportSection):
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
-        self.mcq_batch_list = data_manager.make_mcq_batch_list(self.paper, all_students)
+        mcq_tallies = data_manager.make_mcq_tallies(self.paper, all_students)
+        self.mcq_batch_list = data_manager.make_mcq_batch_list(mcq_tallies)
         self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)

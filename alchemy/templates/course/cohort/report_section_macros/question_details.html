@@ -13,17 +13,18 @@
     </div>
     <div id="mcq-success-contents" class="collapse" aria-labelledby="mcq-success-table" data-parent="#mcq-success-table">
       <div class="card-body">
+        <p>Multiple Choice Questions are ranked here by the percentage of students who answered it correctly.</p>
         <table style="text-align:center" class="table table-hover table-bordered">
           <tr>
             {% for batch in question_details_section.mcq_batch_list %}
               <!-- TODO Boundaries for green / red colouring are currently hard coded -
               eventually be chosen by school? -->
               {% if batch.lower_bound >= 70 %}
-                <th class="table-success">>{{ batch.upper_bound }} %</th>
+                <th class="table-success"><{{ batch.upper_bound }} %</th>
               {% elif batch.upper_bound <= 40 %}
-                <th class="table-danger">>{{ batch.upper_bound }} %</th>
+                <th class="table-danger"><{{ batch.upper_bound }} %</th>
               {% else %}
-                <th class="table-info">>{{ batch.upper_bound }} %</th>
+                <th class="table-info"><{{ batch.upper_bound }} %</th>
               {% endif %}
             {% endfor %}
           </tr>
@@ -42,11 +43,6 @@
     </div>
   </div>
 </div>
-
-
-
-
-
 <br>
 <p>Click on an open-answer question below to access more detail about its achievement.</p>
 {% for statprofile in question_details_section.statprofiles %}
@@ -101,7 +97,9 @@
                   {{ statprofile.norm_fivenumsumm[4] }} %</td>
               </tr>
           </table>
-          <img src="data:image/png;base64, {{ question_details_section.plots[loop.index0] }}" alt="graph">
+          <center>
+            <img src="data:image/png;base64, {{ question_details_section.plots[loop.index0] }}" alt="graph">
+          </center>
           <br>
           <br>
         </div>
