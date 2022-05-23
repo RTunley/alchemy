@@ -79,5 +79,6 @@ class QuestionDetailsSection(CohortReportSection):
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
+        self.mcq_batch_list = data_manager.make_mcq_batch_list(self.paper, all_students)
         self.statprofiles = data_manager.make_question_statprofile_list(all_students, self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)

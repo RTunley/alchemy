@@ -100,6 +100,30 @@ class PaperMultiScoreTally(object):
         cohort_student_totals = total_student_scores_for_cohort(paper)
         return PaperMultiScoreTally(paper, cohort_student_totals)
 
+class McqTally(object):
+    def __init__(self, mc_paper_question, student_list):
+        self.paper_question = mc_paper_question
+        self.num_correct_raw = 0
+        self.num_correct_percent = 0
+        self.student_ids = []
+        self.get_student_ids(student_list)
+        self.build_self(mc_paper_question)
+
+    def get_student_ids(self, student_list):
+        for student in student_list:
+            self.student_ids.append(student.id)
+
+    def build_self(self, mc_paper_question):
+        all_scores = models.Score.query.filter_by(question_id = self.paper_question.question.id, paper_id = self.paper_question.paper.id).all()
+        scores = []
+        for score in all_scores:
+            if score.student_id in self.student_ids:
+                scores.append(score)
+        for score in scores:
+            if score.value > 0:
+                self.num_correct_raw += 1
+        self.num_correct_percent = calc_percentage(self.num_correct_raw, len(scores))
+
 class GradeBatch(object):
     def __init__(self, grade_level):
         self.grade_level = grade_level
@@ -107,6 +131,16 @@ class GradeBatch(object):
 
     def order_tallies(self):
         self.student_tallies.sort(key=lambda x: x.percent_total, reverse=True)
+
+class McqBatch(object):
+    def __init__(self, lower_bound, upper_bound):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+        self.mcq_tallies = []
+
+    def order_tallies(self):
+        self.mcq_tallies.sort(key=lambda x: x.num_correct_percent, reverse = True)
+
 
 class AdjacentGrades(object):
     def __init__(self, grade_list, percentage, grade, paper_total):
@@ -362,6 +396,29 @@ def make_grade_batch_list(student_tally_list, course):
         grade_batch_list.append(grade_batch)
 
     return grade_batch_list
+
+def make_mcq_batch_list(paper, student_list):
+    mcq_tally_list = []
+    for pq in paper.paper_questions:
+        if pq.question.is_multiple_choice():
+            mcq_tally = McqTally(pq, student_list)
+            mcq_tally_list.append(mcq_tally)
+
+    mcq_batch_list = []
+    batch_bounds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    for i in range(len(batch_bounds)-1):
+        new_batch = McqBatch(batch_bounds[i], batch_bounds[i+1])
+        for mcq_tally in mcq_tally_list:
+            if new_batch.upper_bound != 100:
+                if mcq_tally.num_correct_percent < new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
+                    new_batch.mcq_tallies.append(mcq_tally)
+            else:
+                if mcq_tally.num_correct_percent <= new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
+                    new_batch.mcq_tallies.append(mcq_tally)
+        new_batch.order_tallies()
+        mcq_batch_list.append(new_batch)
+
+    return mcq_batch_list
 
 def make_tag_statprofile_list(student_list, paper):
     tag_statprofile_list = []
