@@ -1,7 +1,50 @@
 {% macro render_section(question_details_section) -%}
 
 <h2>Question Details</h2>
-<p>Click on a question below to access more detail about its achievement.</p>
+<br>
+<div class="accordion" id="mcq-success-table">
+  <div class="card">
+    <div class="card-header" id="mcq-success-table">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#mcq-success-contents" aria-expanded="false" aria-controls="collapseTwo">
+          <h4><b>Multiple Choice Question Achievement</b></h4>
+        </button>
+      </h2>
+    </div>
+    <div id="mcq-success-contents" class="collapse" aria-labelledby="mcq-success-table" data-parent="#mcq-success-table">
+      <div class="card-body">
+        <p>Multiple Choice Questions are ranked here by the percentage of students who answered it correctly.</p>
+        <table style="text-align:center" class="table table-hover table-bordered">
+          <tr>
+            {% for batch in question_details_section.mcq_batch_list %}
+              <!-- TODO Boundaries for green / red colouring are currently hard coded -
+              eventually be chosen by school? -->
+              {% if batch.lower_bound >= 70 %}
+                <th class="table-success"><{{ batch.upper_bound }} %</th>
+              {% elif batch.upper_bound <= 40 %}
+                <th class="table-danger"><{{ batch.upper_bound }} %</th>
+              {% else %}
+                <th class="table-info"><{{ batch.upper_bound }} %</th>
+              {% endif %}
+            {% endfor %}
+          </tr>
+          <tr>
+            {% for batch in question_details_section.mcq_batch_list %}
+              <td>
+                {% for tally in batch.mcq_tallies %}
+                  <p>Q{{ tally.paper_question.order_number }} : {{ tally.num_correct_percent }}%</p>
+                  <br>
+                {% endfor %}
+              </td>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<p>Click on an open-answer question below to access more detail about its achievement.</p>
 {% for statprofile in question_details_section.statprofiles %}
   <div class="accordion" id="question-{{ statprofile.object.order_number }}-header">
     <div class="card">
