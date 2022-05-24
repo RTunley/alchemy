@@ -100,7 +100,7 @@ class PaperMultiScoreTally(object):
         cohort_student_totals = total_student_scores_for_cohort(paper)
         return PaperMultiScoreTally(paper, cohort_student_totals)
 
-class McqTally(object):
+class McqGroupTally(object):
     def __init__(self, mc_paper_question, student_list):
         self.paper_question = mc_paper_question
         self.num_correct_raw = 0
@@ -136,10 +136,10 @@ class McqBatch(object):
     def __init__(self, lower_bound, upper_bound):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
-        self.mcq_tallies = []
+        self.mcq_group_tallies = []
 
     def order_tallies(self):
-        self.mcq_tallies.sort(key=lambda x: x.num_correct_percent, reverse = True)
+        self.mcq_group_tallies.sort(key=lambda x: x.num_correct_percent, reverse = True)
 
 
 class AdjacentGrades(object):
@@ -397,11 +397,11 @@ def make_grade_batch_list(student_tally_list, course):
 
     return grade_batch_list
 
-def make_mcq_tallies(paper, student_list):
+def make_mcq_group_tallies(paper, student_list):
     mcq_tally_list = []
     for pq in paper.paper_questions:
         if pq.question.is_multiple_choice():
-            mcq_tally = McqTally(pq, student_list)
+            mcq_tally = McqGroupTally(pq, student_list)
             mcq_tally_list.append(mcq_tally)
     return mcq_tally_list
 
@@ -413,10 +413,10 @@ def make_mcq_batch_list(mcq_tally_list):
         for mcq_tally in mcq_tally_list:
             if new_batch.upper_bound != 100:
                 if mcq_tally.num_correct_percent < new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
-                    new_batch.mcq_tallies.append(mcq_tally)
+                    new_batch.mcq_group_tallies.append(mcq_tally)
             else:
                 if mcq_tally.num_correct_percent <= new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
-                    new_batch.mcq_tallies.append(mcq_tally)
+                    new_batch.mcq_group_tallies.append(mcq_tally)
         new_batch.order_tallies()
         mcq_batch_list.append(new_batch)
 
@@ -475,10 +475,12 @@ def make_question_group_statprofiles(student_list, paper):
 def make_student_statsumm_list(student, paper):
     question_statsumm_list = []
     for paper_question in paper.paper_questions:
-        student_score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id, question_id = paper_question.question.id).first()
-        question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
-        question_statsumm_list.append(question_statsumm)
+        if not paper_question.question.is_multiple_choice():
+            student_score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id, question_id = paper_question.question.id).first()
+            question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
+            question_statsumm_list.append(question_statsumm)
     return question_statsumm_list
+
 
 def make_student_course_profiles(course, student_list):
     student_profiles = []
@@ -574,3 +576,20 @@ def make_achievement_plots(statprofile_list):
         tag_plot_list.append(plot_data)
 
     return tag_plot_list
+
+def make_student_question_chart(paper, scores):
+    oa_scores = []
+    labels = []
+    oa_question_ids = []
+    for pq in paper.paper_questions:
+        if not pq.question.is_multiple_choice():
+            oa_question_ids.append(pq.question.id)
+            labels.append(pq.order_number)
+    for score in scores:
+        if score.question_id in oa_question_ids:
+            oa_scores.append(score)
+    percent_scores = calc_percent_scores(oa_scores)
+    title = "Open Answer Question Achievement"
+    x_axis = 'Question Number'
+    plot_data = plots.create_bar_chart(title, percent_scores, None, labels, x_axis)
+    return plot_data

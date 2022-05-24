@@ -1,0 +1,10 @@
+{% macro render_section(question_details_section) -%}
+
+<h2><b>Question Details</b></h2>
+<br>
+<center>
+  <img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_details_section.oa_question_chart }}" alt="graph">
+</center>
+<br>
+
+{%- endmacro %}

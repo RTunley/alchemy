@@ -53,8 +53,8 @@ class QuestionOverviewSection(ClazzReportSection):
     def build_self(self):
         self.question_group_statprofiles = data_manager.make_question_group_statprofiles(self.clazz.students, self.paper)
         self.oa_vs_mc_center_plot, self.oa_vs_mc_spread_plot = data_manager.make_comparison_charts(self.question_group_statprofiles)
-        mcq_tallies = data_manager.make_mcq_tallies(self.paper, self.clazz.students)
-        self.mcq_tallies = sorted(mcq_tallies, key=lambda x: x.num_correct_percent, reverse=True)
+        mcq_group_tallies = data_manager.make_mcq_group_tallies(self.paper, self.clazz.students)
+        self.mcq_group_tallies = sorted(mcq_group_tallies, key=lambda x: x.num_correct_percent, reverse=True)
         self.statprofiles = data_manager.make_question_statprofile_list(self.clazz.students, self.paper)
         self.center_bar_plot, self.spread_bar_plot = data_manager.make_comparison_charts(self.statprofiles)
 
@@ -71,7 +71,7 @@ class QuestionDetailsSection(ClazzReportSection):
         super().__init__('course/clazz/report_section_macros/question_details.html', **section_kwargs)
 
     def build_self(self):
-        mcq_tallies = data_manager.make_mcq_tallies(self.paper, self.clazz.students)
-        self.mcq_batch_list = data_manager.make_mcq_batch_list(mcq_tallies)
+        mcq_group_tallies = data_manager.make_mcq_group_tallies(self.paper, self.clazz.students)
+        self.mcq_batch_list = data_manager.make_mcq_batch_list(mcq_group_tallies)
         self.statprofiles = data_manager.make_question_statprofile_list(self.clazz.students, self.paper)
         self.plots = data_manager.make_achievement_plots(self.statprofiles)

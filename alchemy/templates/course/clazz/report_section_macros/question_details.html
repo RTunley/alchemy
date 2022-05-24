@@ -31,7 +31,7 @@
           <tr>
             {% for batch in question_details_section.mcq_batch_list %}
               <td>
-                {% for tally in batch.mcq_tallies %}
+                {% for tally in batch.mcq_group_tallies %}
                   <p>Q{{ tally.paper_question.order_number }} : {{ tally.num_correct_percent }}%</p>
                   <br>
                 {% endfor %}

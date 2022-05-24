@@ -1,32 +1,63 @@
 {% macro render_section(highlights_section) -%}
 
 <br>
-<h2>Strengths and Areas for Improvement</h2>
+<h2>Strengths</h2>
 <br>
 <table class="table table-hover">
   <thead>
-    <th style="text-align:center">Strengths</th>
-    <th style="text-align:center">Areas for Improvement</th>
+    <th style="text-align:center">Questions</th>
+    <th style="text-align:center">Tags</th>
   </thead>
   {% if highlights_section.question_highlights.has_strengths and highlights_section.question_highlights.has_weaknesses %}
   <tr>
     <td>
-      <p>The Question(s) where you achieved the highest were:</p>
+      <p>The Open Answer Question(s) where you achieved the highest were:</p>
       {% for statsumm in highlights_section.question_highlights.strengths %}
         <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
       {% endfor %}
       <br>
+    </td>
+    <td>
       <p>The areas where you experienced the most success were:</p>
       {% for statsumm in highlights_section.tag_highlights.strengths %}
         <p><b>{{ statsumm.object.tag.name }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }}).</p>
       {% endfor %}
     </td>
+  </tr>
+  {% elif highlights_section.question_highlights.has_strengths %}
+    <tr>
+      <td><p>Well done! You have addressed all questions and topics at the highest level. :)</p>
+      </td>
+      <td><p>There is insufficient data in your results to identify your weaknesses!</p>
+      </td>
+    </tr>
+  {% else  %}
+    <tr>
+      <td><p>Unfortunately, there is insufficient data in your results to identify your strengths.</p>
+      <p>The good news is that small improvements will make big differences! Don't give up!</p>
+      </td>
+      <td><p>All questions and topics have been addressed at the lowest level, so no recommendations are available.</p>
+      </td>
+    </tr>
+  {% endif %}
+</table>
+<br>
+<h2>Areas for Improvement</h2>
+<br>
+<table class="table table-hover">
+  <thead>
+    <th style="text-align:center">Questions</th>
+    <th style="text-align:center">Tags</th>
+  </thead>
+  {% if highlights_section.question_highlights.has_strengths and highlights_section.question_highlights.has_weaknesses %}
+  <tr>
     <td>
-      <p>The Question(s) where you may require further revision are:</p>
+      <p>The Open Answer Question(s) where you may require further revision are:</p>
       {% for statsumm in highlights_section.question_highlights.weaknesses %}
         <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
       {% endfor %}
       <br>
+    <td>
       <p>The areas which may require more attention are:</p>
       {% for statsumm in highlights_section.tag_highlights.weaknesses %}
         <p><b>{{ statsumm.object.tag.name }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }}).</p>
@@ -37,7 +68,7 @@
     <tr>
       <td><p>Well done! You have addressed all questions and topics at the highest level. :)</p>
       </td>
-      <td><p>There is insufficient data in your results to identify your weaknesses!</p>
+      <td><p>Wowsers! There is insufficient data in your results to identify your weaknesses!</p>
       </td>
     </tr>
   {% else  %}

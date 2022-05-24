@@ -11,13 +11,16 @@ class StudentPaperReport(object):
         self.build_self(section_types)
 
     def build_self(self, section_types):
-        self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievment Report"
+        self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievement Report"
         self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.paper.title}"
 
         for section_type in section_types:
+            print("Section Type: ", section_type)
             section_class = getattr(student_paper_sections, section_type)
             section = section_class(student = self.student, paper = self.paper, clazz = self.clazz)
             self.sections.append(section)
+        print(self.sections)
+
 
 class ClazzPaperReport(object):
     def __init__(self, clazz, paper, section_types):
@@ -29,7 +32,7 @@ class ClazzPaperReport(object):
         self.build_self(section_types)
 
     def build_self(self, section_types):
-        self.title = f"{self.clazz.code} - Achievment Report"
+        self.title = f"{self.clazz.code} - Achievement Report"
         self.subtitle = f"{self.clazz.course.name}: {self.paper.title}"
 
         for section_type in section_types:
@@ -47,7 +50,7 @@ class CohortPaperReport(object):
         self.build_self(section_types)
 
     def build_self(self, section_types):
-        self.title = f"{self.paper.course.name} - Cohort Achievment Report"
+        self.title = f"{self.paper.course.name} - Cohort Achievement Report"
         self.subtitle = f"Assessment: {self.paper.title}"
         self.clazzes = [clazz for clazz in self.paper.course.clazzes]
 

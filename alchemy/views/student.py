@@ -18,7 +18,7 @@ def filter_shuffle(seq):
 @bp_student.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     g.student = models.Student.query.get_or_404(values.pop('student_id'))
-    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection'
+    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,QuestionDetailsSection'
 
 @bp_student.url_defaults
 def url_defaults(endpoint, values):
@@ -46,6 +46,7 @@ def paper_report(clazz_id=0, paper_id=0):
     paper = models.Paper.query.get_or_404(paper_id)
     clazz = models.Clazz.query.get_or_404(clazz_id)
     section_selection_string = flask.request.args.get('section_selection_string_get')
+    print("In student.py, paper_report: ", section_selection_string)
     section_selections = section_selection_string.split(',')
     student_report = report_types.StudentPaperReport(g.student, clazz, paper, section_selections)
     return flask.render_template('student/paper_report.html', student_report = student_report)
