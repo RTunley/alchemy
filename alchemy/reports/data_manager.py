@@ -213,9 +213,10 @@ class QuestionHighlightSets(object):
 
     def build_self(self, student, paper):
         student_statsumm_list = make_student_statsumm_list(student, paper)
-        student_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
-        max_percentage = student_statsumm_list[0].percent_score
-        min_percentage = student_statsumm_list[-1].percent_score
+        oa_statsumm_list = only_oa_statsumms(student_statsumm_list)
+        oa_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+        max_percentage = oa_statsumm_list[0].percent_score
+        min_percentage = oa_statsumm_list[-1].percent_score
         if min_percentage == 100:
             self.has_strengths = True
         elif max_percentage == 0:
@@ -223,7 +224,7 @@ class QuestionHighlightSets(object):
         else:
             self.has_weaknesses = True
             self.has_strengths = True
-        for statsumm in student_statsumm_list:
+        for statsumm in oa_statsumm_list:
             if statsumm.percent_score == max_percentage:
                 self.strengths.append(statsumm)
 
@@ -475,11 +476,17 @@ def make_question_group_statprofiles(student_list, paper):
 def make_student_statsumm_list(student, paper):
     question_statsumm_list = []
     for paper_question in paper.paper_questions:
-        if not paper_question.question.is_multiple_choice():
-            student_score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id, question_id = paper_question.question.id).first()
-            question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
-            question_statsumm_list.append(question_statsumm)
+        student_score = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id, question_id = paper_question.question.id).first()
+        question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
+        question_statsumm_list.append(question_statsumm)
     return question_statsumm_list
+
+def only_mc_statsumms(statsumm_list):
+    mc_statsumms = []
+    for statsumm in statsumm_list:
+        if statsumm.object.question.is_multiple_choice():
+            mc_statsumms.append(statsumm)
+    return mc_statsumms
 
 def only_oa_statsumms(statsumm_list):
     oa_statsumms = []

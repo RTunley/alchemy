@@ -15,7 +15,6 @@ class StudentPaperReport(object):
         self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.paper.title}"
 
         for section_type in section_types:
-            print("Section Type: ", section_type)
             section_class = getattr(student_paper_sections, section_type)
             section = section_class(student = self.student, paper = self.paper, clazz = self.clazz)
             self.sections.append(section)
