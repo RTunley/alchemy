@@ -54,12 +54,12 @@ def set_question_properties_from_form(question, form):
         question.image = add_image(form.image)
 
     mcq_choices = json.loads(form.hidden_mcq_choices.data) if form.hidden_mcq_choices.data else []
-    print(mcq_choices)
+    # print(mcq_choices)
     # Update solution. Simplify by just replacing properties instead of updating them.
     new_mcq_choices, correct_solution_index = build_multiple_choice_solution(
             mcq_choices,
             form.hidden_correct_mcq_choice_label.data)
-    print(new_mcq_choices)
+    # print(new_mcq_choices)
     if not new_mcq_choices:
         # this is an open answer question rather than multiple choice
         new_mcq_choices = [models.Solution(content=form.solution.data)]

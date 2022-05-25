@@ -1,20 +1,30 @@
-{% macro render_section(overview_section) -%}
+{% macro render_section(tag_details_section) -%}
 
 <h2><b>Tag Details</b></h2>
 <br>
-<p>Your overall achievment on this assessment is:</p>
-<table style="text-align:center" class="table table-hover">
-  <thead>
-    <th>Achievement</th>
-    <th>As %</th>
-    <th>Grade Level</th>
-  </thead>
-  <tr>
-    <td style="text-align: center">{{ overview_section.tally.raw_total }} / {{ overview_section.tally.paper_total }}</td>
-    <td style="text-align: center">{{ overview_section.tally.percent_total }}% </td>
-    <td style="text-align: center">{{ overview_section.tally.grade }}</td>
-  </tr>
-</table>
-<br>
+<p>Your performance across all open answer questions can be seen in the table and graph below.</p>
+<center>
+  <table>
+    <tr>
+      <td style="vertical-align:top; width: 30%;">
+        <table style="text-align:center" class="table table-hover">
+          <tr>
+            <th>Tag</th>
+            <th>Achievement (%)</th>
+          </tr>
+          {% for statsumm in tag_details_section.tag_statsumms %}
+            <tr>
+              <td>{{ statsumm.object.name }}</td>
+              <td>{{ statsumm.percent_score }} %</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td>
+      <td>&nbsp &nbsp &nbsp</td>
+      <td><img style="width: 100%; height: auto;" src="data:image/png;base64, {{ tag_details_section.tag_chart }}" alt="graph"></td>
+    </tr>
+  </table>
+  <br>
+</center>
 
 {%- endmacro %}

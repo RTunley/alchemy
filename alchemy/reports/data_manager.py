@@ -1,6 +1,7 @@
 import numpy as np
 import sqlalchemy
 from alchemy import models, db
+from alchemy.views import profile
 from alchemy.reports import plots
 
 ## Data organisation classes
@@ -192,8 +193,8 @@ class StatSummary(object):
         self.grade = determine_grade(self.percent_score, paper.course)
 
     @staticmethod
-    def from_tag(paper, tag_profile, score):
-        tag_statsumm = StatSummary(paper, score, tag_profile.allocated_points)
+    def from_tag(paper, tag_profile, tag_score):
+        tag_statsumm = StatSummary(paper, tag_score, tag_profile.allocated_points)
         tag_statsumm.object = tag_profile
         return tag_statsumm
 
@@ -435,6 +436,17 @@ def make_tag_statprofile_list(student_list, paper):
         tag_statprofile_list.append(tag_statprofile)
     return tag_statprofile_list
 
+def make_tag_statsumm_list(student, paper):
+    scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+    tag_statsumm_list = []
+    for tag_profile in paper.profile.tag_profile_list:
+        tag_score = get_tag_score(student, tag_profile.name, paper, scores)
+        tag_statsumm = StatSummary.from_tag(paper, tag_profile, tag_score)
+        tag_statsumm_list.append(tag_statsumm)
+    tag_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+
+    return tag_statsumm_list
+
 def make_question_statprofile_list(student_list, paper):
     student_ids = [student.id for student in student_list]
     question_statprofile_list = []
@@ -541,8 +553,6 @@ def make_comparison_charts(statprofile_list):
     sd_list = []
     iqr_list = []
     labels = []
-    # print("Here is the statprofile list! :")
-    # print(statprofile_list) Statprofile list is empty
     for statprofile in statprofile_list:
         means.append(statprofile.norm_mean)
         medians.append(statprofile.norm_fivenumsumm[2])
@@ -591,19 +601,21 @@ def make_achievement_plots(statprofile_list):
 
     return tag_plot_list
 
-def make_student_question_chart(paper, scores):
-    oa_scores = []
+def make_student_statsumm_chart(statsumm_list):
     labels = []
-    oa_question_ids = []
-    for pq in paper.paper_questions:
-        if not pq.question.is_multiple_choice():
-            oa_question_ids.append(pq.question.id)
-            labels.append(pq.order_number)
-    for score in scores:
-        if score.question_id in oa_question_ids:
-            oa_scores.append(score)
-    percent_scores = calc_percent_scores(oa_scores)
-    title = "Open Answer Question Achievement"
-    x_axis = 'Question Number'
-    plot_data = plots.create_bar_chart(title, percent_scores, None, labels, x_axis)
+    values = []
+    for statsumm in statsumm_list:
+        if isinstance(statsumm.object, profile.TagProfile):
+            title = "Tag Achievement"
+            x_axis = 'Tag'
+            labels.append(statsumm.object.name)
+            values.append(statsumm.percent_score)
+
+        elif isinstance(statsumm.object, models.PaperQuestion):
+            title = "Open Answer Question Achievement"
+            x_axis = 'Question Number'
+            labels.append(statsumm.object.order_number)
+            values.append(statsumm.percent_score)
+
+    plot_data = plots.create_bar_chart(title, values, None, labels, None)
     return plot_data

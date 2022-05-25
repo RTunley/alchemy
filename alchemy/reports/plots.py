@@ -30,7 +30,7 @@ def create_bar_chart(title, data, label, x_labels, xaxis_label):
     width = 0.25
 
     fig, ax1 = plt.subplots()
-    ax1.bar(x - width/2, data, width = width, label = label, edgecolor= 'black')
+    ax1.bar(x, data, width = width, label = label, edgecolor= 'black')
     ax1.set_title(title)
     ax1.set_xticks(x)
     ax1.set_xticklabels(x_labels)

@@ -18,8 +18,6 @@ class StudentPaperReport(object):
             section_class = getattr(student_paper_sections, section_type)
             section = section_class(student = self.student, paper = self.paper, clazz = self.clazz)
             self.sections.append(section)
-        print(self.sections)
-
 
 class ClazzPaperReport(object):
     def __init__(self, clazz, paper, section_types):

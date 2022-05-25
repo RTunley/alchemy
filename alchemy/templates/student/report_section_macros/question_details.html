@@ -4,28 +4,30 @@
 <br>
 <h4>Multiple Choice Questions</h4>
 <p>The following table shows the Multiple Choice Questions that you answered correctly and incorrectly.</p>
-<table style="width: 40%; text-align:center" class="table table-hover table-bordered">
-  <tr>
-    <th class="table-success">Correct!</th>
-    <th class="table-danger">Needs More Work</th>
-  </tr>
-  <tr>
-    <td>
-      {% for statsumm in question_details_section.mc_statsumms %}
-        {% if statsumm.percent_score == 100 %}
-          <p> Q{{ statsumm.object.order_number }} <span data-feather="check-circle"></span> </p>
-        {% endif %}
-      {% endfor %}
-    </td>
-    <td>
-      {% for statsumm in question_details_section.mc_statsumms %}
-        {% if statsumm.percent_score != 100 %}
-          <p> Q{{ statsumm.object.order_number }} <span data-feather="x-circle"></span> </p>
-        {% endif %}
-      {% endfor %}
-    </td>
-  </tr>
-</table>
+<center>
+  <table style="width: 40%; text-align:center" class="table table-hover table-bordered">
+    <tr>
+      <th class="table-success">Well Done!</th>
+      <th class="table-danger">Next Time!</th>
+    </tr>
+    <tr>
+      <td>
+        {% for statsumm in question_details_section.mc_statsumms %}
+          {% if statsumm.percent_score == 100 %}
+            <p> Q{{ statsumm.object.order_number }} <span data-feather="check-circle"></span> </p>
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        {% for statsumm in question_details_section.mc_statsumms %}
+          {% if statsumm.percent_score != 100 %}
+            <p> Q{{ statsumm.object.order_number }} <span data-feather="x-circle"></span> </p>
+          {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+  </table>
+</center>
 <br>
 <br>
 <h4>Open Answer Questions</h4>
@@ -52,7 +54,6 @@
     </tr>
   </table>
   <br>
-
 </center>
 <br>
 
