@@ -481,6 +481,13 @@ def make_student_statsumm_list(student, paper):
             question_statsumm_list.append(question_statsumm)
     return question_statsumm_list
 
+def only_oa_statsumms(statsumm_list):
+    oa_statsumms = []
+    for statsumm in statsumm_list:
+        if not statsumm.object.question.is_multiple_choice():
+            oa_statsumms.append(statsumm)
+    oa_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
+    return oa_statsumms
 
 def make_student_course_profiles(course, student_list):
     student_profiles = []

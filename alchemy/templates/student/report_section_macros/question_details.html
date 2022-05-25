@@ -3,7 +3,28 @@
 <h2><b>Question Details</b></h2>
 <br>
 <center>
-  <img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_details_section.oa_question_chart }}" alt="graph">
+  <table>
+    <tr>
+      <td style="vertical-align:top; width: 30%;">
+        <table style="text-align:center" class="table table-hover">
+          <tr>
+            <th>Question Number</th>
+            <th>Achievement (%)</th>
+          </tr>
+          {% for statsumm in question_details_section.oa_statsumms %}
+            <tr>
+              <td>{{ statsumm.object.order_number }}</td>
+              <td>{{ statsumm.percent_score }} %</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td>
+      <td>&nbsp &nbsp &nbsp</td>
+      <td><img style="width: 100%; height: auto;" src="data:image/png;base64, {{ question_details_section.oa_question_chart }}" alt="graph"></td>
+    </tr>
+  </table>
+  <br>
+
 </center>
 <br>
 

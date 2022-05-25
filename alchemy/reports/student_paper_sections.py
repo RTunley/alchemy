@@ -64,4 +64,6 @@ class QuestionDetailsSection(StudentReportSection):
 
     def build_self(self):
         raw_scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
+        question_statsumms = data_manager.make_student_statsumm_list(self.student, self.paper)
+        self.oa_statsumms = data_manager.only_oa_statsumms(question_statsumms)
         self.oa_question_chart = data_manager.make_student_question_chart(self.paper, raw_scores)
