@@ -18,6 +18,7 @@ def filter_shuffle(seq):
 @bp_student.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     g.student = models.Student.query.get_or_404(values.pop('student_id'))
+    g.school = models.School.query.first()
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
 
 @bp_student.url_defaults
@@ -29,6 +30,12 @@ def url_defaults(endpoint, values):
 @auth_manager.require_group
 def index():
     return flask.render_template('student/index.html')
+
+@bp_student.route('/courses')
+@auth_manager.require_group
+def courses():
+    return flask.render_template('student/courses.html')
+
 
 @bp_student.route('/course-view/<int:course_id>')
 @auth_manager.require_group

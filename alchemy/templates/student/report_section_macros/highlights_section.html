@@ -2,6 +2,7 @@
 
 <br>
 <h2>Strengths</h2>
+{{ highlights_section.tag_highlights.strengths[0].object.name }}
 <br>
 <table class="table table-hover">
   <thead>
@@ -45,6 +46,7 @@
 </table>
 <br>
 <h2>Areas for Improvement</h2>
+{{ highlights_section.tag_highlights.weaknesses[0].object.name }}
 <br>
 <table class="table table-hover">
   <thead>
@@ -61,6 +63,7 @@
         {% endfor %}
       {% endif %}
       <br>
+    </td>
     <td>
       <p>The areas which may require more attention are:</p>
       {% for statsumm in highlights_section.tag_highlights.weaknesses %}
@@ -80,7 +83,7 @@
       <td><p>Unfortunately, there is insufficient data in your results to identify your strengths.</p>
       <p>The good news is that small improvements will make big differences! Don't give up!</p>
       </td>
-      <td><p>All questions and topics have been addressed at the lowest level, so no recommendations are available.</p>
+      <td><p>No recommendations are available.</p>
       </td>
     </tr>
   {% endif %}

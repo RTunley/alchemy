@@ -1,4 +1,6 @@
-{% include "student/student_layout_start.html" %}
+{% extends "student/layout.html" %}
+
+{% block student_tab_content %}
 
 <div class='container'>
   <h2>Your Profile: {{ g.clazz.course.name }} - {{ g.clazz.code }}</h2>
@@ -50,4 +52,4 @@
   </table>
 </div>
 
-{% include "student/student_layout_end.html" %}
+{% endblock student_tab_content %}

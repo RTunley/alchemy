@@ -24,6 +24,9 @@
               {% else %}
                 <b style="text-align: center;">Welcome to...</b>
               {% endif %}
+              {% if g.student %}
+                <span>&#8594;</span><a href = "{{ url_for('student.index', student_id = g.student.id) }}"> {{ g.student.aws_user.given_name }}</a>
+              {% endif %}
               {% if g.department %}
                 <span>&#8594;</span><a href = "{{ url_for('department.index', department_id = g.department.id) }}"> {{ g.department.name }}</a>
               {% endif %}
