@@ -63,6 +63,8 @@ class QuestionDetailsSection(StudentReportSection):
 
     def build_self(self):
         question_statsumms = data_manager.make_student_statsumm_list(self.student, self.paper)
-        self.oa_statsumms = data_manager.only_oa_statsumms(question_statsumms)
-        self.mc_statsumms = data_manager.only_mc_statsumms(question_statsumms)
-        self.oa_question_chart = data_manager.make_student_statsumm_chart(self.oa_statsumms)
+        if self.paper.has_mc_questions():
+            self.mc_statsumms = data_manager.only_mc_statsumms(question_statsumms)
+        if self.paper.has_oa_questions():
+            self.oa_statsumms = data_manager.only_oa_statsumms(question_statsumms)
+            self.oa_question_chart = data_manager.make_student_statsumm_chart(self.oa_statsumms)

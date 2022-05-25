@@ -150,18 +150,26 @@ def add_admin_and_aws_users():
     db.session.commit()
     return admin_list
 
-def add_students_and_aws_users(clazzes):
-    student_list = []
-    user_tuples = [('Robin', 'Student'), ('Bea', 'Student'), ('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack')]
-    for user_tuple in user_tuples:
+def add_students_and_aws_users(clazzes1, clazzes2):
+    student_list1 = []
+    student_list2 = []
+    user_tuples1 = [('Robin', 'Student'), ('Bea', 'Student'), ('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack')]
+    user_tuples2 = [('Periwinkle', 'Dawnbringer'), ('Matti', 'Winklevoss'), ('Janelle', 'Skywalker'), ('Hoang Nguyen', 'Plikowski'), ('Sunshine', 'Mellowdove'), ('Cheeseburger', 'Fluff'), ('Kenny', 'Loggins')]
+    for user_tuple in user_tuples1:
         given, family = user_tuple
         email = f'{given}.{family}@example.com'
-        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes)
-        student_list.append(student)
+        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes1)
+        student_list1.append(student)
+        db.session.add(student)
+    for user_tuple in user_tuples2:
+        given, family = user_tuple
+        email = f'{given}.{family}@example.com'
+        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes2)
+        student_list2.append(student)
         db.session.add(student)
 
     db.session.commit()
-    return student_list
+    return (student_list1, student_list2)
 
 def add_scores(paper, student_list):
     for i in range(len(student_list)):

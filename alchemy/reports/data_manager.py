@@ -214,23 +214,24 @@ class QuestionHighlightSets(object):
 
     def build_self(self, student, paper):
         student_statsumm_list = make_student_statsumm_list(student, paper)
-        oa_statsumm_list = only_oa_statsumms(student_statsumm_list)
-        oa_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
-        max_percentage = oa_statsumm_list[0].percent_score
-        min_percentage = oa_statsumm_list[-1].percent_score
-        if min_percentage == 100:
-            self.has_strengths = True
-        elif max_percentage == 0:
-            self.has_weaknesses = True
-        else:
-            self.has_weaknesses = True
-            self.has_strengths = True
-        for statsumm in oa_statsumm_list:
-            if statsumm.percent_score == max_percentage:
-                self.strengths.append(statsumm)
+        if paper.has_oa_questions():
+            oa_statsumm_list = only_oa_statsumms(student_statsumm_list)
+            oa_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+            max_percentage = oa_statsumm_list[0].percent_score
+            min_percentage = oa_statsumm_list[-1].percent_score
+            if min_percentage == 100:
+                self.has_strengths = True
+            elif max_percentage == 0:
+                self.has_weaknesses = True
+            else:
+                self.has_weaknesses = True
+                self.has_strengths = True
+            for statsumm in oa_statsumm_list:
+                if statsumm.percent_score == max_percentage:
+                    self.strengths.append(statsumm)
 
-            elif statsumm.percent_score == min_percentage:
-                self.weaknesses.append(statsumm)
+                elif statsumm.percent_score == min_percentage:
+                    self.weaknesses.append(statsumm)
 
 class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
@@ -481,8 +482,14 @@ def make_question_group_statprofiles(student_list, paper):
                 oaq_raw += score.value
         mcq_raw_totals.append(mcq_raw)
         oaq_raw_totals.append(oaq_raw)
-    mcq_statprofile = StatProfile.from_question_group(mcq_raw_totals, paper.profile.total_mc_points, "Multiple Choice")
-    oaq_statprofile = StatProfile.from_question_group(oaq_raw_totals, paper.profile.total_oa_points, "Open Answer")
+    if paper.has_mc_questions():
+        mcq_statprofile = StatProfile.from_question_group(mcq_raw_totals, paper.profile.total_mc_points, "Multiple Choice")
+    else:
+        mcq_statprofile = None
+    if paper.has_oa_questions():
+        oaq_statprofile = StatProfile.from_question_group(oaq_raw_totals, paper.profile.total_oa_points, "Open Answer")
+    else:
+        oaq_statprofile = None
     return [mcq_statprofile, oaq_statprofile]
 
 def make_student_statsumm_list(student, paper):
