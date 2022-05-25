@@ -11,10 +11,12 @@
   {% if highlights_section.question_highlights.has_strengths and highlights_section.question_highlights.has_weaknesses %}
   <tr>
     <td>
-      <p>The Open Answer Question(s) where you achieved the highest were:</p>
-      {% for statsumm in highlights_section.question_highlights.strengths %}
-        <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
-      {% endfor %}
+      {% if highlights_section.paper.has_oa_questions() %}
+        <p>The Open Answer Question(s) where you achieved the highest were:</p>
+        {% for statsumm in highlights_section.question_highlights.strengths %}
+          <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
+        {% endfor %}
+      {% endif %}
       <br>
     </td>
     <td>
@@ -36,7 +38,7 @@
       <td><p>Unfortunately, there is insufficient data in your results to identify your strengths.</p>
       <p>The good news is that small improvements will make big differences! Don't give up!</p>
       </td>
-      <td><p>All questions and topics have been addressed at the lowest level, so no recommendations are available.</p>
+      <td><p>No recommendations are available.</p>
       </td>
     </tr>
   {% endif %}
@@ -52,10 +54,12 @@
   {% if highlights_section.question_highlights.has_strengths and highlights_section.question_highlights.has_weaknesses %}
   <tr>
     <td>
-      <p>The Open Answer Question(s) where you may require further revision are:</p>
-      {% for statsumm in highlights_section.question_highlights.weaknesses %}
-        <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
-      {% endfor %}
+      {% if highlights_section.paper.has_oa_questions() %}
+        <p>The Open Answer Question(s) where you may require further revision are:</p>
+        {% for statsumm in highlights_section.question_highlights.weaknesses %}
+          <p><b>Question {{ statsumm.object.order_number }}</b>, with {{ statsumm.raw_score }} out of {{ statsumm.total }} marks available. ({{ statsumm.percent_score }} %, Grade Level: {{ statsumm.grade }})</p>
+        {% endfor %}
+      {% endif %}
       <br>
     <td>
       <p>The areas which may require more attention are:</p>
