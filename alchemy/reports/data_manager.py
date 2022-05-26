@@ -245,11 +245,7 @@ class TagHighlightSets(object):
         student_tag_statsumms = []
         for profile in paper.profile.tag_profile_list:
             student_tag_score = get_tag_score(student, profile.tag.name, paper, scores)
-            # print("Tag Profile: ", profile.name)
-            # print("student_tag_score!:", student_tag_score)
             tag_statsumm = StatSummary.from_tag(paper, profile, student_tag_score)
-            print("Statsumm:", tag_statsumm.object.name)
-            print("% Score: ", tag_statsumm.percent_score)
             student_tag_statsumms.append(tag_statsumm)
 
         student_tag_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
@@ -265,11 +261,9 @@ class TagHighlightSets(object):
         for statsumm in student_tag_statsumms:
             if statsumm.percent_score == student_tag_statsumms[0].percent_score:
                 self.strengths.append(statsumm)
-                print("Strengths!!", self.strengths)
 
             elif statsumm.percent_score == student_tag_statsumms[-1].percent_score:
                 self.weaknesses.append(statsumm)
-                print("Weaknesses!!", self.weaknesses)
 
 class StatProfile(object):
     def __init__(self, values_list, total):
