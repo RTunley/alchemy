@@ -236,7 +236,9 @@ class QuestionHighlightSets(object):
 class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
         self.strengths = []
+        self.has_strengths = False
         self.weaknesses = []
+        self.has_weaknesses = False
         self.build_self(student, paper, scores)
 
     def build_self(self, student, paper, scores):
@@ -251,10 +253,19 @@ class TagHighlightSets(object):
             student_tag_statsumms.append(tag_statsumm)
 
         student_tag_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
+        max_percentage = student_tag_statsumms[0].percent_score
+        min_percentage = student_tag_statsumms[-1].percent_score
+        if min_percentage == 100:
+            self.has_strengths = True
+        elif max_percentage == 0:
+            self.has_weaknesses = True
+        else:
+            self.has_weaknesses = True
+            self.has_strengths = True
         for statsumm in student_tag_statsumms:
             if statsumm.percent_score == student_tag_statsumms[0].percent_score:
                 self.strengths.append(statsumm)
-                print("Strenghts!!", self.strengths)
+                print("Strengths!!", self.strengths)
 
             elif statsumm.percent_score == student_tag_statsumms[-1].percent_score:
                 self.weaknesses.append(statsumm)
