@@ -1,5 +1,6 @@
 from alchemy import models as m
 from alchemy import db
+import random
 
 def add_school(name):
     school = m.School(name = name)
@@ -149,27 +150,34 @@ def add_admin_and_aws_users():
     db.session.commit()
     return admin_list
 
-def add_students_and_aws_users(clazzes):
-    student_list = []
-    user_tuples = [('Robin', 'Student'), ('Bea', 'Student'), ('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack')]
-    for user_tuple in user_tuples:
+def add_students_and_aws_users(clazzes1, clazzes2):
+    student_list1 = []
+    student_list2 = []
+    user_tuples1 = [('Robin', 'Student'), ('Bea', 'Student'), ('Jimmy', 'Knuckle'), ('AyAyRon', 'Dinglebop'), ('Beefy', 'Taco'), ('Chaneese', 'Spankle'), ('Bobbins', 'Wiremack')]
+    user_tuples2 = [('Periwinkle', 'Dawnbringer'), ('Matti', 'Winklevoss'), ('Janelle', 'Skywalker'), ('Hoang Nguyen', 'Plikowski'), ('Sunshine', 'Mellowdove'), ('Cheeseburger', 'Fluff'), ('Kenny', 'Loggins')]
+    for user_tuple in user_tuples1:
         given, family = user_tuple
         email = f'{given}.{family}@example.com'
-        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes)
-        student_list.append(student)
+        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes1)
+        student_list1.append(student)
+        db.session.add(student)
+    for user_tuple in user_tuples2:
+        given, family = user_tuple
+        email = f'{given}.{family}@example.com'
+        student = m.Student.create(given_name=given, family_name=family, email=email, clazzes=clazzes2)
+        student_list2.append(student)
         db.session.add(student)
 
     db.session.commit()
-    return student_list
+    return (student_list1, student_list2)
 
 def add_scores(paper, student_list):
-    #total points on mechanics quiz is 14 so need a selection of 8 score_tuples than cover several grades. Total avilable points are (4,4, 3, 3, 1, 1, 1) --> (4,3,3,1,1,1,4)
-    score_tuples = [(0,0,0,0,0,0,0), (0,1,0,1,0,1,0), (1,1,0,1,1,1,1), (2,2,2,1,0,1,0), (2,3,3,0,1,0,2), (3,2,1,1,1,1,3), (3,3,3,1,1,1,2)]
     for i in range(len(student_list)):
         for j in range(len(paper.paper_questions)):
             question_id = paper.paper_questions[j].question.id
             student_id = student_list[i].id
-            new_score = m.Score(value = score_tuples[i][j], paper_id = paper.id, question_id = question_id, student_id = student_id)
+            max_points = paper.paper_questions[j].question.points
+            new_score_value = random.randint(0, max_points)
+            new_score = m.Score(value = new_score_value, paper_id = paper.id, question_id = question_id, student_id = student_id)
             db.session.add(new_score)
-
     db.session.commit()

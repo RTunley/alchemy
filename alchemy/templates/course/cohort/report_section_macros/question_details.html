@@ -1,66 +1,115 @@
 {% macro render_section(question_details_section) -%}
 
 <h2>Question Details</h2>
-<p>Click on a question below to access more detail about its achievement.</p>
-{% for statprofile in question_details_section.statprofiles %}
-  <div class="accordion" id="question-{{ statprofile.object.order_number }}-header">
+<br>
+{% if question_details_section.paper.has_mc_questions() %}
+  <div class="accordion" id="mcq-success-table">
     <div class="card">
-      <div class="card-header" id="question-{{ statprofile.object.order_number }}-header">
+      <div class="card-header" id="mcq-success-table">
         <h2 class="mb-0">
-          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#question-{{ statprofile.object.order_number }}-details" aria-expanded="false" aria-controls="collapseTwo">
-            <h4><b>Question {{ statprofile.object.order_number }}</b>: {{ statprofile.total }} Marks Available</h4>
+          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#mcq-success-contents" aria-expanded="false" aria-controls="collapseTwo">
+            <h4><b>Multiple Choice Question Achievement</b></h4>
           </button>
         </h2>
       </div>
-      <div id="question-{{ statprofile.object.order_number }}-details" class="collapse" aria-labelledby="{{ statprofile.object.name }}-header" data-parent="#question-{{ statprofile.object.order_number }}-header">
+      <div id="mcq-success-contents" class="collapse" aria-labelledby="mcq-success-table" data-parent="#mcq-success-table">
         <div class="card-body">
-          <h4>Question content:</h4>
-          <p>{{ statprofile.object.question.content }}</p>
-          <br>
-          <h4>Question Solution</h4>
-          <p>{{ statprofile.object.question.get_solution().content }}</p>
-          <br>
-          <p>Mean achievment on this assessment for Question {{ statprofile.object.order_number }} is:</p>
-          <table style="text-align:center" class="table table-hover">
+          <p>Multiple Choice Questions are ranked here by the percentage of students who answered it correctly.</p>
+          <table style="text-align:center" class="table table-hover table-bordered">
             <tr>
-              <th>Raw</th>
-              <th>As %</th>
+              {% for batch in question_details_section.mcq_batch_list %}
+                <!-- TODO Boundaries for green / red colouring are currently hard coded -
+                eventually be chosen by school? -->
+                {% if batch.lower_bound >= 70 %}
+                  <th class="table-success"><{{ batch.upper_bound }} %</th>
+                {% elif batch.upper_bound <= 40 %}
+                  <th class="table-danger"><{{ batch.upper_bound }} %</th>
+                {% else %}
+                  <th class="table-info"><{{ batch.upper_bound }} %</th>
+                {% endif %}
+              {% endfor %}
             </tr>
             <tr>
-              <td>{{ statprofile.raw_mean }} +/- {{ statprofile.raw_sd }}</td>
-              <td>{{ statprofile.norm_mean }} +/- {{ statprofile.norm_sd }} %</td>
+              {% for batch in question_details_section.mcq_batch_list %}
+                <td>
+                  {% for tally in batch.mcq_group_tallies %}
+                    <p>Q{{ tally.paper_question.order_number }} : {{ tally.num_correct_percent }}%</p>
+                    <br>
+                  {% endfor %}
+                </td>
+              {% endfor %}
             </tr>
           </table>
-          <br>
-          <p>The median achievement was {{ statprofile.norm_fivenumsumm[2] }} %, with the following five number summary (Raw | Percentage):</p>
-          <table style="text-align:center" class="table table-hover">
-              <tr>
-                <th>Minimum</th>
-                <th>First Quartile (Q1)</th>
-                <th>Median</th>
-                <th>Third Quartile (Q3)</th>
-                <th>Maximum</th>
-              </tr>
-              <tr>
-                <td style="text-align: center">{{ statprofile.raw_fivenumsumm[0] }} |
-                  {{ statprofile.norm_fivenumsumm[0] }} %</td>
-                <td style="text-align: center">{{ statprofile.raw_fivenumsumm[1] }} |
-                  {{ statprofile.norm_fivenumsumm[1] }} %</td>
-                <td style="text-align: center">{{ statprofile.raw_fivenumsumm[2] }} |
-                  {{ statprofile.norm_fivenumsumm[2] }} %</td>
-                <td style="text-align: center">{{ statprofile.raw_fivenumsumm[3] }} |
-                  {{ statprofile.norm_fivenumsumm[3] }} %</td>
-                <td style="text-align: center">{{ statprofile.raw_fivenumsumm[4] }} |
-                  {{ statprofile.norm_fivenumsumm[4] }} %</td>
-              </tr>
-          </table>
-          <img src="data:image/png;base64, {{ question_details_section.plots[loop.index0] }}" alt="graph">
-          <br>
-          <br>
         </div>
       </div>
     </div>
   </div>
-{% endfor %}
+{% endif %}
+<br>
+{% if question_details_section.paper.has_oa_questions() %}
+  <p>Click on an open-answer question below to access more detail about its achievement.</p>
+  {% for statprofile in question_details_section.statprofiles %}
+    <div class="accordion" id="question-{{ statprofile.object.order_number }}-header">
+      <div class="card">
+        <div class="card-header" id="question-{{ statprofile.object.order_number }}-header">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#question-{{ statprofile.object.order_number }}-details" aria-expanded="false" aria-controls="collapseTwo">
+              <h4><b>Question {{ statprofile.object.order_number }}</b>: {{ statprofile.total }} Marks Available</h4>
+            </button>
+          </h2>
+        </div>
+        <div id="question-{{ statprofile.object.order_number }}-details" class="collapse" aria-labelledby="{{ statprofile.object.name }}-header" data-parent="#question-{{ statprofile.object.order_number }}-header">
+          <div class="card-body">
+            <h4>Question content:</h4>
+            <p>{{ statprofile.object.question.content }}</p>
+            <br>
+            <h4>Question Solution</h4>
+            <p>{{ statprofile.object.question.get_solution().content }}</p>
+            <br>
+            <p>Mean achievment on this assessment for Question {{ statprofile.object.order_number }} is:</p>
+            <table style="text-align:center" class="table table-hover">
+              <tr>
+                <th>Raw</th>
+                <th>As %</th>
+              </tr>
+              <tr>
+                <td>{{ statprofile.raw_mean }} +/- {{ statprofile.raw_sd }}</td>
+                <td>{{ statprofile.norm_mean }} +/- {{ statprofile.norm_sd }} %</td>
+              </tr>
+            </table>
+            <br>
+            <p>The median achievement was {{ statprofile.norm_fivenumsumm[2] }} %, with the following five number summary (Raw | Percentage):</p>
+            <table style="text-align:center" class="table table-hover">
+                <tr>
+                  <th>Minimum</th>
+                  <th>First Quartile (Q1)</th>
+                  <th>Median</th>
+                  <th>Third Quartile (Q3)</th>
+                  <th>Maximum</th>
+                </tr>
+                <tr>
+                  <td style="text-align: center">{{ statprofile.raw_fivenumsumm[0] }} |
+                    {{ statprofile.norm_fivenumsumm[0] }} %</td>
+                  <td style="text-align: center">{{ statprofile.raw_fivenumsumm[1] }} |
+                    {{ statprofile.norm_fivenumsumm[1] }} %</td>
+                  <td style="text-align: center">{{ statprofile.raw_fivenumsumm[2] }} |
+                    {{ statprofile.norm_fivenumsumm[2] }} %</td>
+                  <td style="text-align: center">{{ statprofile.raw_fivenumsumm[3] }} |
+                    {{ statprofile.norm_fivenumsumm[3] }} %</td>
+                  <td style="text-align: center">{{ statprofile.raw_fivenumsumm[4] }} |
+                    {{ statprofile.norm_fivenumsumm[4] }} %</td>
+                </tr>
+            </table>
+            <center>
+              <img src="data:image/png;base64, {{ question_details_section.plots[loop.index0] }}" alt="graph">
+            </center>
+            <br>
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
 <br>
 {%- endmacro %}

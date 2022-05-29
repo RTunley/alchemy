@@ -1,6 +1,7 @@
 import numpy as np
 import sqlalchemy
 from alchemy import models, db
+from alchemy.views import profile
 from alchemy.reports import plots
 
 ## Data organisation classes
@@ -100,6 +101,30 @@ class PaperMultiScoreTally(object):
         cohort_student_totals = total_student_scores_for_cohort(paper)
         return PaperMultiScoreTally(paper, cohort_student_totals)
 
+class McqGroupTally(object):
+    def __init__(self, mc_paper_question, student_list):
+        self.paper_question = mc_paper_question
+        self.num_correct_raw = 0
+        self.num_correct_percent = 0
+        self.student_ids = []
+        self.get_student_ids(student_list)
+        self.build_self(mc_paper_question)
+
+    def get_student_ids(self, student_list):
+        for student in student_list:
+            self.student_ids.append(student.id)
+
+    def build_self(self, mc_paper_question):
+        all_scores = models.Score.query.filter_by(question_id = self.paper_question.question.id, paper_id = self.paper_question.paper.id).all()
+        scores = []
+        for score in all_scores:
+            if score.student_id in self.student_ids:
+                scores.append(score)
+        for score in scores:
+            if score.value > 0:
+                self.num_correct_raw += 1
+        self.num_correct_percent = calc_percentage(self.num_correct_raw, len(scores))
+
 class GradeBatch(object):
     def __init__(self, grade_level):
         self.grade_level = grade_level
@@ -107,6 +132,16 @@ class GradeBatch(object):
 
     def order_tallies(self):
         self.student_tallies.sort(key=lambda x: x.percent_total, reverse=True)
+
+class McqBatch(object):
+    def __init__(self, lower_bound, upper_bound):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+        self.mcq_group_tallies = []
+
+    def order_tallies(self):
+        self.mcq_group_tallies.sort(key=lambda x: x.num_correct_percent, reverse = True)
+
 
 class AdjacentGrades(object):
     def __init__(self, grade_list, percentage, grade, paper_total):
@@ -158,8 +193,8 @@ class StatSummary(object):
         self.grade = determine_grade(self.percent_score, paper.course)
 
     @staticmethod
-    def from_tag(paper, tag_profile, score):
-        tag_statsumm = StatSummary(paper, score, tag_profile.allocated_points)
+    def from_tag(paper, tag_profile, tag_score):
+        tag_statsumm = StatSummary(paper, tag_score, tag_profile.allocated_points)
         tag_statsumm.object = tag_profile
         return tag_statsumm
 
@@ -179,27 +214,31 @@ class QuestionHighlightSets(object):
 
     def build_self(self, student, paper):
         student_statsumm_list = make_student_statsumm_list(student, paper)
-        student_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
-        max_percentage = student_statsumm_list[0].percent_score
-        min_percentage = student_statsumm_list[-1].percent_score
-        if min_percentage == 100:
-            self.has_strengths = True
-        elif max_percentage == 0:
-            self.has_weaknesses = True
-        else:
-            self.has_weaknesses = True
-            self.has_strengths = True
-        for statsumm in student_statsumm_list:
-            if statsumm.percent_score == max_percentage:
-                self.strengths.append(statsumm)
+        if paper.has_oa_questions():
+            oa_statsumm_list = only_oa_statsumms(student_statsumm_list)
+            oa_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+            max_percentage = oa_statsumm_list[0].percent_score
+            min_percentage = oa_statsumm_list[-1].percent_score
+            if min_percentage == 100:
+                self.has_strengths = True
+            elif max_percentage == 0:
+                self.has_weaknesses = True
+            else:
+                self.has_weaknesses = True
+                self.has_strengths = True
+            for statsumm in oa_statsumm_list:
+                if statsumm.percent_score == max_percentage:
+                    self.strengths.append(statsumm)
 
-            elif statsumm.percent_score == min_percentage:
-                self.weaknesses.append(statsumm)
+                elif statsumm.percent_score == min_percentage:
+                    self.weaknesses.append(statsumm)
 
 class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
         self.strengths = []
+        self.has_strengths = False
         self.weaknesses = []
+        self.has_weaknesses = False
         self.build_self(student, paper, scores)
 
     def build_self(self, student, paper, scores):
@@ -210,6 +249,15 @@ class TagHighlightSets(object):
             student_tag_statsumms.append(tag_statsumm)
 
         student_tag_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
+        max_percentage = student_tag_statsumms[0].percent_score
+        min_percentage = student_tag_statsumms[-1].percent_score
+        if min_percentage == 100:
+            self.has_strengths = True
+        elif max_percentage == 0:
+            self.has_weaknesses = True
+        else:
+            self.has_weaknesses = True
+            self.has_strengths = True
         for statsumm in student_tag_statsumms:
             if statsumm.percent_score == student_tag_statsumms[0].percent_score:
                 self.strengths.append(statsumm)
@@ -260,6 +308,13 @@ class StatProfile(object):
     def from_question(values_list, total, paper_question):
         statprofile = StatProfile(values_list, total)
         statprofile.object = paper_question
+        return statprofile
+
+    # Used for comparing MCQ acievement and OA achievement - not associated with particular objects, but need labels to distringuish them.
+    @staticmethod
+    def from_question_group(values_list, total, label):
+        statprofile = StatProfile(values_list, total)
+        statprofile.label = label
         return statprofile
 
 ## A selection of functions that will required for multuple report sections, and probably used to build profiles as well.
@@ -356,6 +411,31 @@ def make_grade_batch_list(student_tally_list, course):
 
     return grade_batch_list
 
+def make_mcq_group_tallies(paper, student_list):
+    mcq_tally_list = []
+    for pq in paper.paper_questions:
+        if pq.question.is_multiple_choice():
+            mcq_tally = McqGroupTally(pq, student_list)
+            mcq_tally_list.append(mcq_tally)
+    return mcq_tally_list
+
+def make_mcq_batch_list(mcq_tally_list):
+    mcq_batch_list = []
+    batch_bounds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    for i in range(len(batch_bounds)-1):
+        new_batch = McqBatch(batch_bounds[i], batch_bounds[i+1])
+        for mcq_tally in mcq_tally_list:
+            if new_batch.upper_bound != 100:
+                if mcq_tally.num_correct_percent < new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
+                    new_batch.mcq_group_tallies.append(mcq_tally)
+            else:
+                if mcq_tally.num_correct_percent <= new_batch.upper_bound and mcq_tally.num_correct_percent >= new_batch.lower_bound:
+                    new_batch.mcq_group_tallies.append(mcq_tally)
+        new_batch.order_tallies()
+        mcq_batch_list.append(new_batch)
+
+    return mcq_batch_list
+
 def make_tag_statprofile_list(student_list, paper):
     tag_statprofile_list = []
     for tag_profile in paper.profile.tag_profile_list:
@@ -368,19 +448,60 @@ def make_tag_statprofile_list(student_list, paper):
         tag_statprofile_list.append(tag_statprofile)
     return tag_statprofile_list
 
+def make_tag_statsumm_list(student, paper):
+    scores = models.Score.query.filter_by(student_id = student.id, paper_id = paper.id).all()
+    tag_statsumm_list = []
+    for tag_profile in paper.profile.tag_profile_list:
+        tag_score = get_tag_score(student, tag_profile.name, paper, scores)
+        tag_statsumm = StatSummary.from_tag(paper, tag_profile, tag_score)
+        tag_statsumm_list.append(tag_statsumm)
+    tag_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+
+    return tag_statsumm_list
+
 def make_question_statprofile_list(student_list, paper):
     student_ids = [student.id for student in student_list]
     question_statprofile_list = []
     for pq in paper.paper_questions:
-        all_scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
-        group_scores = []
-        for score in all_scores:
-            if score.student_id in student_ids:
-                group_scores.append(score)
-        raw_totals = [score.value for score in group_scores]
-        question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
-        question_statprofile_list.append(question_statprofile)
+        if not pq.question.is_multiple_choice():
+            all_scores = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id).all()
+            group_scores = []
+            for score in all_scores:
+                if score.student_id in student_ids:
+                    group_scores.append(score)
+            raw_totals = [score.value for score in group_scores]
+            question_statprofile = StatProfile.from_question(raw_totals, pq.question.points, pq)
+            question_statprofile_list.append(question_statprofile)
     return question_statprofile_list
+
+def make_question_group_statprofiles(student_list, paper):
+    student_ids = []
+    mcq_ids = []
+    mcq_raw_totals = []
+    oaq_raw_totals = []
+    for pq in paper.paper_questions:
+        if pq.question.is_multiple_choice():
+            mcq_ids.append(pq.question.id)
+    for student in student_list:
+        mcq_raw = 0
+        oaq_raw = 0
+        student_scores = models.Score.query.filter_by(paper_id = paper.id, student_id = student.id).all()
+        for score in student_scores:
+            if score.question_id in mcq_ids:
+                mcq_raw += score.value
+            else:
+                oaq_raw += score.value
+        mcq_raw_totals.append(mcq_raw)
+        oaq_raw_totals.append(oaq_raw)
+    if paper.has_mc_questions():
+        mcq_statprofile = StatProfile.from_question_group(mcq_raw_totals, paper.profile.total_mc_points, "Multiple Choice")
+    else:
+        mcq_statprofile = None
+    if paper.has_oa_questions():
+        oaq_statprofile = StatProfile.from_question_group(oaq_raw_totals, paper.profile.total_oa_points, "Open Answer")
+    else:
+        oaq_statprofile = None
+    return [mcq_statprofile, oaq_statprofile]
 
 def make_student_statsumm_list(student, paper):
     question_statsumm_list = []
@@ -389,6 +510,21 @@ def make_student_statsumm_list(student, paper):
         question_statsumm = StatSummary.from_paperquestion(paper, paper_question, student_score.value)
         question_statsumm_list.append(question_statsumm)
     return question_statsumm_list
+
+def only_mc_statsumms(statsumm_list):
+    mc_statsumms = []
+    for statsumm in statsumm_list:
+        if statsumm.object.question.is_multiple_choice():
+            mc_statsumms.append(statsumm)
+    return mc_statsumms
+
+def only_oa_statsumms(statsumm_list):
+    oa_statsumms = []
+    for statsumm in statsumm_list:
+        if not statsumm.object.question.is_multiple_choice():
+            oa_statsumms.append(statsumm)
+    oa_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
+    return oa_statsumms
 
 def make_student_course_profiles(course, student_list):
     student_profiles = []
@@ -435,8 +571,6 @@ def make_comparison_charts(statprofile_list):
     sd_list = []
     iqr_list = []
     labels = []
-    # print("Here is the statprofile list! :")
-    # print(statprofile_list) Statprofile list is empty
     for statprofile in statprofile_list:
         means.append(statprofile.norm_mean)
         medians.append(statprofile.norm_fivenumsumm[2])
@@ -444,8 +578,10 @@ def make_comparison_charts(statprofile_list):
         iqr_list.append(statprofile.norm_iqr)
         if isinstance(statprofile.object, models.Tag):
             labels.append(statprofile.object.name)
-        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
+        elif isinstance(statprofile.object, models.PaperQuestion):
             labels.append(statprofile.object.order_number)
+        else:
+            labels.append(statprofile.label)
 
     for statprofile in statprofile_list:
         if isinstance(statprofile.object, models.Tag):
@@ -456,12 +592,19 @@ def make_comparison_charts(statprofile_list):
             spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
             return (center_bar_plot, spread_bar_plot)
 
-        elif isinstance(statprofile_list[0].object, models.PaperQuestion):
-            center_title = 'Question Comparison: Central Tendency'
-            spread_title = 'Question Comparison: Spread'
+        elif isinstance(statprofile.object, models.PaperQuestion):
+            center_title = 'Open Answer Question Comparison: Central Tendency'
+            spread_title = 'Open Answer Question Comparison: Spread'
             x_axis = 'Question Number'
             center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
             spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+            return (center_bar_plot, spread_bar_plot)
+
+        else:
+            center_title = 'Multiple Choice vs Open Answer: Central Tendency'
+            spread_title = 'Multiple Choice vs Open Answer: Spread'
+            center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, None)
+            spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, None)
             return (center_bar_plot, spread_bar_plot)
 
 def make_achievement_plots(statprofile_list):
@@ -475,3 +618,22 @@ def make_achievement_plots(statprofile_list):
         tag_plot_list.append(plot_data)
 
     return tag_plot_list
+
+def make_student_statsumm_chart(statsumm_list):
+    labels = []
+    values = []
+    for statsumm in statsumm_list:
+        if isinstance(statsumm.object, profile.TagProfile):
+            title = "Tag Achievement"
+            x_axis = 'Tag'
+            labels.append(statsumm.object.name)
+            values.append(statsumm.percent_score)
+
+        elif isinstance(statsumm.object, models.PaperQuestion):
+            title = "Open Answer Question Achievement"
+            x_axis = 'Question Number'
+            labels.append(statsumm.object.order_number)
+            values.append(statsumm.percent_score)
+
+    plot_data = plots.create_bar_chart(title, values, None, labels, None)
+    return plot_data

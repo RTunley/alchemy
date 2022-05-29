@@ -6,9 +6,9 @@
   <head>
     <meta charset="utf-8">
     <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
-<script src="https://jsuites.net/v4/jsuites.js"></script>
-<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
     <title></title>
   </head>
   <body>
@@ -57,7 +57,7 @@
     <table id="results_spreadsheet">
       <thead>
         <tr>
-          <td>Student ID</td>
+          <td>ID</td>
           <td>Given Name</td>
           <td>Family Name</td>
           {% for paper_question in clazz_paper_profile.paper.paper_questions %}
@@ -92,7 +92,9 @@
   </body>
 
   <br>
-  <input id="save_scores_button" class="btn btn-primary" type="button" value="Save" onclick="update_student_data()" disabled>
+  <p style="text-align: center;">
+    <input id="save_scores_button" class="btn btn-primary btn-lg btn-block" type="button" value="Save Results" onclick="update_student_data()" disabled>
+  </p>
   <br>
 </main>
 
@@ -116,7 +118,7 @@
     },
     updateTable: function(instance, cell, x, y, source, value, id) {
       // Ideally the known readonly columns would not be hardcoded here
-      if (x < 3 || x > get_results_table_column_count() - 3) {
+      if (x < 3 || x > get_results_table_column_count() - 4) {
           cell.classList.add('readonly');
       }
     },

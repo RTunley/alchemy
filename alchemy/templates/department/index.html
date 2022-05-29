@@ -1,15 +1,11 @@
-{% include "layout_start.html" %}
+{% extends "department/layout.html" %}
 
-<div class="container">
+{% block department_tab_content %}
+  <div class="container">
 
-  <h1>{{g.school.name}} - {{ g.department.name }} Department</h1>
+    <p>This is the department homepage - But there's nothing interesting here yet.</p>
 
-  <p>This is the department homepage - But there's nothing interesting here yet.</p>
+    <p>Access all courses in this department through the Courses tab above.</p>
 
-  <p>Access the available courses in the top right hand corner!</p>
-
-  <p>Return to <a href="{{url_for('school.index', school_id = g.school.id)}}">{{g.school.name}}</a>
-
-</div>
-
-{% include "layout_end.html" %}
+  </div>
+{% endblock department_tab_content %}

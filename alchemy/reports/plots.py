@@ -23,6 +23,25 @@ def create_pie_chart(plot_title, slices, labels):
     plot_data = urllib.parse.quote(base64.b64encode(img.read()).decode())
     return plot_data
 
+def create_bar_chart(title, data, label, x_labels, xaxis_label):
+
+    img = io.BytesIO()
+    x = np.arange(len(x_labels))
+    width = 0.25
+
+    fig, ax1 = plt.subplots()
+    ax1.bar(x, data, width = width, label = label, edgecolor= 'black')
+    ax1.set_title(title)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(x_labels)
+    ax1.set_xlabel(xaxis_label)
+    ax1.set_ylabel('Achievement (%)')
+
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plot_data = urllib.parse.quote(base64.b64encode(img.read()).decode())
+    return plot_data
+
 def create_comparative_bar_chart(title, data_1, label_1, data_2, label_2, x_labels, xaxis_label):
 
     img = io.BytesIO()
