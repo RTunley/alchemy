@@ -35,7 +35,7 @@
         <ul style="list-style-type:none;">
           {% for mcq_choice in mc_paper_question.question.all_solutions %}
             {% if mcq_choice == mc_paper_question.question.get_solution() %}
-              <li><p style="border: 1px solid green; border-collapse: collapse;">{{ mc_paper_question.question.describe_solution(mcq_choice) }}</p></li>
+              <li><p style="border: 1px solid green; border-collapse: collapse; padding: 12px;">{{ mc_paper_question.question.describe_solution(mcq_choice) }}</p></li>
             {% else %}
               <li>{{ mc_paper_question.question.describe_solution(mcq_choice) }}</li>
             {% endif %}
@@ -54,7 +54,7 @@
           </p>
         {% endif %}
         <h3>Solution</h3>
-        <p style="border: 1px solid green; border-collapse: collapse;">{{ oa_paper_question.question.get_solution().content }}</p>
+        <p style="border: 1px solid green; border-collapse: collapse; padding: 12px;">{{ oa_paper_question.question.get_solution().content }}</p>
         <b>[Total: {{ oa_paper_question.question.points | prettify_number }} Marks]</b>
         <br>
         <br>

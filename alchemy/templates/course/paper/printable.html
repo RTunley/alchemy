@@ -43,7 +43,7 @@
           {% endfor %}
         </ul>
       {% endfor %}
-      <center><b>End of Multiple Choice Section<b></center>
+      <center><b>End of Multiple Choice Section</b></center>
       <br>
       <center><h2>Section 2: Open Answer Questions</h2></center>
       <center><h3>({{ g.paper.get_oa_paper_questions()|length }} Questions)</h3></center>
@@ -51,7 +51,7 @@
       <br>
       {% for oa_paper_question in g.paper.get_oa_paper_questions() %}
         <h3>Question {{ oa_paper_question.order_number }}</h3>
-        <b>[{{ oa_paper_question.question.points | prettify_number }} Marks]</b>
+        <p><b>[{{ oa_paper_question.question.points | prettify_number }} Marks]</b></p>
         <p>{{ oa_paper_question.question.content }}</p>
         {% if oa_paper_question.question.image %}
           <p class="aligncenter">
@@ -67,7 +67,7 @@
           <br>
           <br>
       {% endfor %}
-      <center><b>End of Assessment<b></center>
+      <center><b>End of Assessment</b></center>
     {% endif %}
     <!-- Format 2:  Multiple Choice Questions Only -->
     {% if g.paper.has_mc_questions() and not g.paper.has_oa_questions() %}
@@ -103,7 +103,7 @@
           {% endfor %}
         </ul>
       {% endfor %}
-      <center><b>End of Assessment<b></center>
+      <center><b>End of Assessment</b></center>
     {% endif %}
     <!-- Format 3 - Open Answer Questions Only -->
     {% if g.paper.has_oa_questions() and not g.paper.has_mc_questions() %}
@@ -127,7 +127,7 @@
           <br>
           <br>
       {% endfor %}
-      <center><b>End of Assessment<b></center>
+      <center><b>End of Assessment</b></center>
     {% endif %}
   </body>
 

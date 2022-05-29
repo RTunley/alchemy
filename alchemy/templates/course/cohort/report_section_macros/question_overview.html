@@ -42,7 +42,7 @@
             </tr>
             {% for statprofile in question_overview_section.question_group_statprofiles|sort(attribute='norm_sd', reverse=True) %}
               <tr>
-                <td>{{ statprofile.object.order_number }}</td>
+                <td>{{ statprofile.label }}</td>
                 <td>{{ statprofile.norm_sd }} %</td>
                 <td>{{ statprofile.norm_iqr }} %</td>
               </tr>
