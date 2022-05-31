@@ -110,7 +110,7 @@ def get_oa_questions(questions):
 def add_papers_and_categories(course):
     category_1 = m.AssessmentCategory(name = 'Test', weight = 50, course_id = course.id)
     category_2 = m.AssessmentCategory(name = 'Quiz', weight = 20, course_id = course.id)
-    category_3 = m.AssessmentCategory(name = 'IA', weight = 20, course_id = course.id)
+    category_3 = m.AssessmentCategory(name = 'IA', weight = 30, course_id = course.id)
     categories = [category_1, category_2, category_3]
     for category in categories:
         db.session.add(category)

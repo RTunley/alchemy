@@ -1,5 +1,10 @@
 {% include "layout_start.html" %}
 
+<script src="{{ url_for('static', filename='edit_grade_form.js') }}"></script>
+<script src="{{ url_for('static', filename='edit_categories_form.js') }}"></script>
+<script src="{{ url_for('static', filename='question_tag_manager.js') }}"></script>
+<script src="{{ url_for('static', filename='mcq_solution_editing.js') }}"></script>
+
 <style type="text/css">
   .paper_profile_table tr {
       font-size: 0.8em;
@@ -64,8 +69,6 @@
 {% import "course/paper_new_or_edit_macro.html" as paper_create_modal %}
 {{ paper_create_modal.render_modal("paper_create_modal", course, None) }}
 
-<script src="{{ url_for('static', filename='question_tag_manager.js') }}"></script>
-<script src="{{ url_for('static', filename='mcq_solution_editing.js') }}"></script>
 <!-- Other common JavaScript files -->
 <script type="text/javascript">
 

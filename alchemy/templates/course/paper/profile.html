@@ -10,13 +10,13 @@
 
     <div class="card-text">
         {% if g.paper.profile.has_mc_questions %}
-          <p>Multiple Choice Questions: {{ g.paper.profile.total_mc_questions }}</p>
-          <p>Open Answer Questions: {{ g.paper.profile.total_oa_questions }}</p>
+          <p>Multiple Choice (MC) Questions: {{ g.paper.profile.total_mc_questions }}</p>
+          <p>Open Answer (OA) Questions: {{ g.paper.profile.total_oa_questions }}</p>
           <b>Total Questions: {{ g.paper.profile.total_questions }}</b>
           <br>
           <br>
-          <p>Multiple Choice Marks: {{ g.paper.profile.total_mc_points }} ({{ g.paper.profile.mcq_points_norm_ratio }} %)</p>
-          <p>Open Answer Marks: {{ g.paper.profile.total_oa_points }} ({{ g.paper.profile.oaq_points_norm_ratio }} %)</p>
+          <p>Multiple Choice Marks: {{ g.paper.profile.total_mc_points }} ({{ g.paper.profile.mcq_points_norm_ratio }}%)</p>
+          <p>Open Answer Marks: {{ g.paper.profile.total_oa_points }} ({{ g.paper.profile.oaq_points_norm_ratio }}%)</p>
           <b>Total Marks: {{ g.paper.profile.total_points }}</b>
         {% else %}
           <b>Total Questions: {{ g.paper.profile.total_questions }}</b>

@@ -42,7 +42,7 @@
       </thead>
       {% for profile in clazz_profiles %}
       <tr>
-        <td>{{ profile.clazz.code }}</td>
+        <td><a href="{{ url_for('course.clazz.index', clazz_id = profile.clazz.id)}}">{{ profile.clazz.code }}</a></td>
         <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
         <td>{{ profile.clazz.students | length }}</td>
       </tr>
