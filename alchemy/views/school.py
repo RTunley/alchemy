@@ -45,7 +45,6 @@ def new_snapshot():
     for checkpoint in new_snapshot.checkpoints:
         checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
         checkpoint.snapshot = models.Snapshot.query.get_or_404(checkpoint.snapshot_id)
-        checkpoint.name = checkpoint.snapshot.name
     db.session.commit() ##This will commit both the snapshot and the checkpoints created
     return flask.render_template('school/snapshots.html')
 

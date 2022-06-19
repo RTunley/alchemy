@@ -171,7 +171,7 @@
         </thead>
         {% for checkpoint in g.course.checkpoints %}
           <tr>
-            <td>{{ checkpoint.name }}</td>
+            <td>{{ checkpoint.snapshot.name }}</td>
             {% if checkpoint.papers %}
               <td>
                 {% for paper in checkpoint.papers %}
