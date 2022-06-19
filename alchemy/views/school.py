@@ -36,20 +36,23 @@ def new_snapshot():
     school_id = post_data['school_id']
     school = models.School.query.get_or_404(school_id)
     new_snapshot_name = post_data['snapshot_name']
-    #courses = get_snapshot_courses(g.school)
     new_snapshot = models.Snapshot(name = new_snapshot_name, school_id = school_id)
-    courses = get_snapshot_courses(school)
-    print("From fn: ", courses)
-    new_snapshot.add_courses(courses)
-    print("From Snapshot: ", new_snapshot.courses)
     db.session.add(new_snapshot)
-    db.session.commit()
+    all_courses = get_all_courses(school)
+    print(all_courses)
+    new_snapshot.create_checkpoints(all_courses)
+    print(new_snapshot.checkpoints)
+    for checkpoint in new_snapshot.checkpoints:
+        checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
+        checkpoint.snapshot = models.Snapshot.query.get_or_404(checkpoint.snapshot_id)
+        checkpoint.name = checkpoint.snapshot.name
+    db.session.commit() ##This will commit both the snapshot and the checkpoints created
     return flask.render_template('school/snapshots.html')
 
 ## Default for now is all courses, but in future need some way to group courses so that snapshots can be taken for some courses but not others ##
-def get_snapshot_courses(school):
-    snapshot_courses = []
+def get_all_courses(school):
+    courses = []
     for department in school.departments:
         for course in department.courses:
-            snapshot_courses.append(course)
-    return snapshot_courses
+            courses.append(course)
+    return courses

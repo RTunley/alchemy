@@ -169,19 +169,31 @@
           <th>Assessment Inclusions</th>
           <th>Reports Deployed</th>
         </thead>
-        <tr>
-          <td>{Snapshot Name}</td>
-          <td>Default: None</td>
-          <td>
-            <!-- 3 options:
-            - Not all papers have marks uploaded: red, disabled
-            - All papers have marks uploaded, reports are ready: green, enabled
-            - reports have been published: green, disabled -->
-            <button class="btn btn-danger btn-sm disabled">Reports Ready</button>
-          </td>
-          <!-- If reports have been published, this button will be disabled. -->
-          <td valign="middle"><button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button><td>
-        </tr>
+        {% for checkpoint in g.course.checkpoints %}
+          <tr>
+            <td>{{ checkpoint.name }}</td>
+            {% if checkpoint.papers %}
+              <td>
+                {% for paper in checkpoint.papers %}
+                  <p>{{ paper.title }}</p>
+                {% endfor %}
+              </td>
+            {% else %}
+              <td>
+                <p>None (yet...)</p>
+              </td>
+            {% endif %}
+            <td>
+              <!-- 3 options:
+              - Not all papers have marks uploaded: red, disabled
+              - All papers have marks uploaded, reports are ready: green, enabled
+              - reports have been published: green, disabled -->
+              <button class="btn btn-danger btn-sm disabled">Reports Ready</button>
+            </td>
+            <!-- If reports have been published, this button will be disabled. -->
+            <td valign="middle"><button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button></td>
+          </tr>
+        {% endfor %}
       </table>
     </div>
   </div>

@@ -32,6 +32,7 @@ class Course(db.Model):
     #TODO should the backref on grade_levels be 'course' instead of 'grade_levels'?
     grade_levels = db.relationship('GradeLevel', backref='grade_levels')
     assessment_categories = db.relationship('AssessmentCategory', backref='assessment_categories')
+    checkpoints = db.relationship('Checkpoint', backref='course')
 
     def order_grade_levels(self):
         self.grade_levels.sort(key=lambda x: x.lower_bound,  reverse = True)
@@ -487,13 +488,17 @@ class Snapshot(db.Model):
     __tablename__ = 'snapshot'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    checkpoints = db.relationship('Checkpoint', backref='snapshot')
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
 
-    def add_courses(self, course_list):
+    def create_checkpoints(self, course_list):
         self.courses = course_list
-        # for course in self.courses:
-        #     new_checkpoint = None
-        #     self.checkpoints.append(new_checkpoint)
+        for course in self.courses:
+            new_checkpoint = Checkpoint(course_id = course.id, snapshot_id = self.id)
+            ## For now, give the checkpoints all the papers in a course ##
+            self.checkpoints.append(new_checkpoint)
+            db.session.add(new_checkpoint)
+        db.session.commit()
 
     def is_ready(self):
         if not self.checkpoints:
@@ -504,6 +509,19 @@ class Snapshot(db.Model):
                     return False
                 else:
                     return True
+
+class Checkpoint(db.Model):
+    __tablename__ = 'checkpoint'
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    snapshot_id = db.Column(db.Integer, db.ForeignKey('snapshot.id'))
+
+    def is_ready(self):
+        for paper in self.papers:
+            if not paper.has_all_scores():
+                return False
+            else:
+                return True
 
 class JwtBlocklist(db.Model):
     __tablename__ = 'jwt_blocklist'
