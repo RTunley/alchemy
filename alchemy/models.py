@@ -313,6 +313,11 @@ class Tag(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     questions = db.relationship('Question', secondary=questions_tags, back_populates='tags')
 
+checkpoints_papers = db.Table('checkpoints_papers',
+    db.Column('checkpoint_id', db.Integer, db.ForeignKey('checkpoint.id')),
+    db.Column('paper_id', db.Integer, db.ForeignKey('paper.id'))
+    )
+
 class Paper(db.Model):
     __tablename__ = 'paper'
     id = db.Column(db.Integer, primary_key=True)
@@ -324,6 +329,7 @@ class Paper(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('assessment_category.id'), nullable=False)
     category = db.relationship('AssessmentCategory', back_populates='papers')
+    checkpoints = db.relationship('Checkpoint', secondary=checkpoints_papers, back_populates='papers')
 
     def __init__(self, **kwargs):
         super(Paper, self).__init__(**kwargs)
@@ -494,8 +500,10 @@ class Snapshot(db.Model):
     def create_checkpoints(self, course_list):
         self.courses = course_list
         for course in self.courses:
-            new_checkpoint = Checkpoint(course_id = course.id, snapshot_id = self.id)
+            new_checkpoint = Checkpoint(course_id = course.id, snapshot_id = self.id, papers = [])
             ## For now, give the checkpoints all the papers in a course ##
+            for paper in course.papers:
+                new_checkpoint.papers.append(paper)
             self.checkpoints.append(new_checkpoint)
             db.session.add(new_checkpoint)
         db.session.commit()
@@ -515,6 +523,7 @@ class Checkpoint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     snapshot_id = db.Column(db.Integer, db.ForeignKey('snapshot.id'))
+    papers = db.relationship('Paper', secondary=checkpoints_papers, back_populates='checkpoints')
 
     def is_ready(self):
         for paper in self.papers:
