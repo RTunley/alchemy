@@ -162,12 +162,12 @@
         </div>
       </form>
 
-      <h4>Reporting</h4>
+      <h4>Reporting Events</h4>
       <table class="table table-hover text-center">
         <thead>
           <th>Snapshot Name</th>
           <th>Assessment Inclusions</th>
-          <th>Reports Deployed</th>
+          <th>Status</th>
         </thead>
         {% for checkpoint in g.course.checkpoints %}
           <tr>
@@ -175,7 +175,7 @@
             {% if checkpoint.papers %}
               <td>
                 {% for paper in checkpoint.papers %}
-                  <p>{{ paper.title }}</p>
+                  <p>{{ paper.title }}</p>: {{ paper.has_all_scores() }}
                 {% endfor %}
               </td>
             {% else %}
@@ -184,14 +184,21 @@
               </td>
             {% endif %}
             <td>
-              <!-- 3 options:
-              - Not all papers have marks uploaded: red, disabled
-              - All papers have marks uploaded, reports are ready: green, enabled
-              - reports have been published: green, disabled -->
-              <button class="btn btn-danger btn-sm disabled">Reports Ready</button>
+              {% if not checkpoint.is_ready() %}
+                <h5><span class="badge badge-danger">Not Ready</span></h5>
+              {% else %}
+              <!-- Eventually have 'not checkpoint.snapshot.is_published()' -->
+                {% if True %}
+                  <h5><span class="badge badge-success">Ready</span></h5>
+                {% else %}
+                  <h5><span class="badge badge-primary">Published</span></h5>
+                {% endif %}
+              {% endif %}
             </td>
             <!-- If reports have been published, this button will be disabled. -->
-            <td valign="middle"><button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button></td>
+            <td valign="middle">
+              <button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button>
+            </td>
           </tr>
         {% endfor %}
       </table>

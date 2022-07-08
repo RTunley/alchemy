@@ -461,12 +461,11 @@ class Paper(db.Model):
                 return True
 
     def has_all_scores(self):
-        scores = Score.query.filter_by(paper_id = self.id).all()
-        for score in scores:
-            if score == None:
-                return False
-            else:
-                return True
+        has_all_scores = True
+        for clazz in self.course.clazzes:
+            if not self.check_clazz_scores(clazz):
+                has_all_scores = False
+        return has_all_scores
 
     def has_all_student_scores(self, student):
         scores = Score.query.filter_by(paper_id = self.id, student_id = student.id).all()
@@ -526,11 +525,11 @@ class Checkpoint(db.Model):
     papers = db.relationship('Paper', secondary=checkpoints_papers, back_populates='checkpoints')
 
     def is_ready(self):
+        is_ready = True
         for paper in self.papers:
             if not paper.has_all_scores():
-                return False
-            else:
-                return True
+                is_ready = False
+        return is_ready
 
 class JwtBlocklist(db.Model):
     __tablename__ = 'jwt_blocklist'
