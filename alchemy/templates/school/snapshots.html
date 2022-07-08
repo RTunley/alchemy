@@ -15,29 +15,48 @@
       <thead>
         <tr>
           <th scope="col">Event</th>
-          <th scope="col">Ready</th>
-          <th scope="col">Published</th>
+          <th scope="col">Status</th>
         </tr>
       </thead>
       <tbody>
         {% for snapshot in g.school.snapshots %}
           <tr>
-            <td>{{ snapshot.name }}</td>
-            <td>Yes / No</td>
-            <td>Yes / No</td>
+            <td>{{ snapshot.name }}<span data-feather="help-circle"></span></td>
+            {% if not snapshot.is_ready() %}
+              <td>
+                <h5>
+                  <span class="badge badge-danger">Not Ready</span> <button type="button" class="btn btn-info" data-toggle="modal" data-target='#all-checkpoints-modal'>?</button>
+
+                  <!-- Add view_all_checkpoints Modal here -->
+                  {% import "school/view_all_checkpoints_macro.html" as view_all_checkpoints %}
+                  <form id="view-all-checkpoints" class="needs-validation" novalidate>
+                    <div class="modal fade" id="all-checkpoints-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <p>{{ view_all_checkpoints.render_modal(snapshot) }}</p>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </h5>
+              </td>
+            {% else %}
+              <td>Nothing</td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% endif %}
   <br>
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#snapshot-modal">
   New Reporting Event
   </button>
     <!-- Add Snapshot Modal here -->
   {% import "school/new_snapshot_macro.html" as new_snapshot %}
   <form id="new-snapshot-form" class="needs-validation" novalidate>
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="snapshot-modal" tabindex="-1" aria-labelledby="snapshot-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <p>{{ new_snapshot.render_modal() }}</p>
         <div class="modal-footer">
@@ -47,5 +66,6 @@
       </div>
     </div>
   </form>
+
 
 {% endblock school_tab_content %}

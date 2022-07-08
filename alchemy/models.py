@@ -512,7 +512,7 @@ class Snapshot(db.Model):
             return False
         else:
             for checkpoint in self.checkpoints:
-                if not checkpoint.check_if_ready():
+                if not checkpoint.is_ready():
                     return False
                 else:
                     return True
