@@ -3,57 +3,137 @@
 <div>
   <h2><b>Question Overview</b></h2>
   <br>
-  <h4>Central Tendency of Question Achievement</h4>
-  <br>
-  <table>
-    <tr>
-      <td style="vertical-align:top; width: 30%;">
-        <table style="text-align:center" class="table table-hover">
-          <tr>
-            <th>Question Number</th>
-            <th>Mean</th>
-            <th>Median</th>
-          </tr>
-          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
+  {% if question_overview_section.paper.has_mc_questions() and question_overview_section.paper.has_oa_questions()  %}
+    <h4>Comparison of Achievement: Open Answer and Multiple Choice Questions</h4>
+    <br>
+    <table>
+      <tr>
+        <td style="vertical-align:top; width: 30%;">
+          <table style="text-align:center" class="table table-hover">
             <tr>
-              <td>{{ statprofile.object.order_number }}</td>
-              <td>{{ statprofile.norm_mean }} %</td>
-              <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
+              <th>Question Group</th>
+              <th>Mean</th>
+              <th>Median</th>
             </tr>
-          {% endfor %}
-        </table>
-      </td>
-      <td>&nbsp &nbsp &nbsp</td>
-      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.center_bar_plot }}" alt="graph"></td>
-    </tr>
-  </table>
-  <br>
-  <h4>Spread of Question Achievement</h4>
-  <br>
-  <table>
-    <tr>
-      <td style="vertical-align:top; width: 30%;">
-        <table style="text-align:center" class="table table-hover">
-          <tr>
-            <th>Question Number</th>
-            <th>Standard Deviation</th>
-            <th>Interquartile Range</th>
-          </tr>
-          {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_sd', reverse=True) %}
+            {% for statprofile in question_overview_section.question_group_statprofiles|sort(attribute='norm_mean', reverse=True) %}
+              <tr>
+                <td>{{ statprofile.label }}</td>
+                <td>{{ statprofile.norm_mean }} %</td>
+                <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>&nbsp &nbsp &nbsp</td>
+        <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.oa_vs_mc_center_plot }}" alt="graph"></td>
+      </tr>
+    </table>
+    <br>
+    <h4>Comparison of Spread: Open Answer and Multiple Choice Questions</h4>
+    <br>
+    <table>
+      <tr>
+        <td style="vertical-align:top; width: 30%;">
+          <table style="text-align:center" class="table table-hover">
             <tr>
-              <td>{{ statprofile.object.order_number }}</td>
-              <td>{{ statprofile.norm_sd }} %</td>
-              <td>{{ statprofile.norm_iqr }} %</td>
+              <th>Question Group</th>
+              <th>Standard Deviation</th>
+              <th>Interquartile Range</th>
             </tr>
-          {% endfor %}
-        </table>
-      </td>
-      <td>&nbsp &nbsp</td>
-      <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.spread_bar_plot }}" alt="graph"></td>
-    </tr>
-  </table>
+            {% for statprofile in question_overview_section.question_group_statprofiles|sort(attribute='norm_sd', reverse=True) %}
+              <tr>
+                <td>{{ statprofile.label }}</td>
+                <td>{{ statprofile.norm_sd }} %</td>
+                <td>{{ statprofile.norm_iqr }} %</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>&nbsp &nbsp</td>
+        <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.oa_vs_mc_spread_plot }}" alt="graph"></td>
+      </tr>
+    </table>
+    <br>
+  {% endif %}
+  {% if question_overview_section.paper.has_mc_questions() %}
+    <h4>Multiple Choice Questions: Top 2 and Bottom 2</h4>
+    <p>Shows the two Multiple Choice Questions with the largest and smallest percentage of students who answered them correctly.</p>
+    <table style="text-align:center" class="table table-hover table-bordered">
+      <tr>
+        <th class="table-success">Top 2</th>
+        <th class="table-danger">Bottom 2</th>
+      </tr>
+      <tr>
+        <td>
+          <p>
+            Q{{ question_overview_section.mcq_group_tallies[0].paper_question.order_number }} : {{ question_overview_section.mcq_group_tallies[0].num_correct_percent }}%
+            <br>
+            Q{{ question_overview_section.mcq_group_tallies[1].paper_question.order_number }} : {{ question_overview_section.mcq_group_tallies[1].num_correct_percent }}%
+          </p>
+        </td>
+        <td>
+          <p>
+            Q{{ question_overview_section.mcq_group_tallies[-2].paper_question.order_number }} : {{ question_overview_section.mcq_group_tallies[-2].num_correct_percent }}%
+            <br>
+            Q{{ question_overview_section.mcq_group_tallies[-1].paper_question.order_number }} : {{ question_overview_section.mcq_group_tallies[-1].num_correct_percent }}%
+          </p>
+        </td>
+      </tr>
+    </table>
+    <br>
+  {% endif %}
+  {% if question_overview_section.paper.has_oa_questions() %}
+    <h4>Central Tendency of Open Answer Question Achievement</h4>
+    <br>
+    <table>
+      <tr>
+        <td style="vertical-align:top; width: 30%;">
+          <table style="text-align:center" class="table table-hover">
+            <tr>
+              <th>Question Number</th>
+              <th>Mean</th>
+              <th>Median</th>
+            </tr>
+            {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
+              <tr>
+                <td>{{ statprofile.object.order_number }}</td>
+                <td>{{ statprofile.norm_mean }} %</td>
+                <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>&nbsp &nbsp &nbsp</td>
+        <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.center_bar_plot }}" alt="graph"></td>
+      </tr>
+    </table>
+    <br>
+    <h4>Spread of Open Answer Question Achievement</h4>
+    <br>
+    <table>
+      <tr>
+        <td style="vertical-align:top; width: 30%;">
+          <table style="text-align:center" class="table table-hover">
+            <tr>
+              <th>Question Number</th>
+              <th>Standard Deviation</th>
+              <th>Interquartile Range</th>
+            </tr>
+            {% for statprofile in question_overview_section.statprofiles|sort(attribute='norm_sd', reverse=True) %}
+              <tr>
+                <td>{{ statprofile.object.order_number }}</td>
+                <td>{{ statprofile.norm_sd }} %</td>
+                <td>{{ statprofile.norm_iqr }} %</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>&nbsp &nbsp</td>
+        <td><img style = "width: 100%; height: auto;" src="data:image/png;base64, {{ question_overview_section.spread_bar_plot }}" alt="graph"></td>
+      </tr>
+    </table>
+  {% endif %}
   <br>
 </div>
-
 
 {%- endmacro %}

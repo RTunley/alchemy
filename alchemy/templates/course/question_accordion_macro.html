@@ -32,7 +32,7 @@
 
       <!-- Showing question as part of the whole library: allow question to be edited or deleted from library. -->
       {% if paper_id == 0 %}
-      <a role="button" aria-label="Edit question" onclick="question_form_load({{ course_id }}, {{ question.id }})" class="btn btn-link">
+      <a role="button" aria-label="Edit question" onclick="question_form_load({{ course_id }}, {{ question.id }})" class="btn btn-link {{ 'disabled' if question.papers }}">
         <span data-feather="edit"></span>
       </a>
       <a class="btn btn-link {{ 'disabled' if question.papers }}" aria-label="Delete question" href="{{ url_for('course.library.delete_question', course_id=course_id, question_id=question.id) }}">

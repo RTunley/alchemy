@@ -8,11 +8,13 @@ bp_course = flask.Blueprint('course', __name__)
 def url_value_preprocessor(endpoint, values):
     g.course = models.Course.query.get_or_404(values.pop('course_id'))
     g.department = models.Department.query.get_or_404(g.course.department_id)
+    g.school = models.School.query.get_or_404(g.department.school_id)
 
 @bp_course.url_defaults
 def url_defaults(endpoint, values):
     if 'course_id' not in values:
         values['course_id'] = g.course.id
+
 
 @bp_course.before_request
 def before_request():

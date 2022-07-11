@@ -1,0 +1,63 @@
+{% macro render_section(question_details_section) -%}
+
+<h2><b>Question Details</b></h2>
+<br>
+{% if question_details_section.paper.has_mc_questions() %}
+  <h4>Multiple Choice Questions</h4>
+  <p>The following table shows the Multiple Choice Questions that you answered correctly and incorrectly.</p>
+  <center>
+    <table style="width: 40%; text-align:center" class="table table-hover table-bordered">
+      <tr>
+        <th class="table-success">Well Done!</th>
+        <th class="table-danger">Next Time!</th>
+      </tr>
+      <tr>
+        <td>
+          {% for statsumm in question_details_section.mc_statsumms %}
+            {% if statsumm.percent_score == 100 %}
+              <p> Q{{ statsumm.object.order_number }} <span data-feather="check-circle"></span> </p>
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td>
+          {% for statsumm in question_details_section.mc_statsumms %}
+            {% if statsumm.percent_score != 100 %}
+              <p> Q{{ statsumm.object.order_number }} <span data-feather="x-circle"></span> </p>
+            {% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </center>
+  <br>
+{% endif %}
+{% if question_details_section.paper.has_oa_questions() %}
+  <br>
+  <h4>Open Answer Questions</h4>
+  <p>Your performance across all open answer questions can be seen in the table and graph below.</p>
+  <center>
+    <table>
+      <tr>
+        <td style="vertical-align:top; width: 30%;">
+          <table style="text-align:center" class="table table-hover">
+            <tr>
+              <th>Question Number</th>
+              <th>Achievement (%)</th>
+            </tr>
+            {% for statsumm in question_details_section.oa_statsumms %}
+              <tr>
+                <td>{{ statsumm.object.order_number }}</td>
+                <td>{{ statsumm.percent_score }} %</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+        <td>&nbsp &nbsp &nbsp</td>
+        <td><img style="width: 100%; height: auto;" src="data:image/png;base64, {{ question_details_section.oa_question_chart }}" alt="graph"></td>
+      </tr>
+    </table>
+  </center>
+{% endif %}
+<br>
+
+{%- endmacro %}

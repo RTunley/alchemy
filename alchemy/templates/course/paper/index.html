@@ -9,7 +9,7 @@
   </div>
 
   <h1 class="my-3">{{ g.course.name }} - {{ g.paper.title }}</h1>
-  <h2>(Category: {{ g.paper.category.name }})</h2>
+  <h3>Category: {{ g.paper.category.name }}</h3>
   <br>
 
   {% if (g.paper.scores | length) != 0 %}

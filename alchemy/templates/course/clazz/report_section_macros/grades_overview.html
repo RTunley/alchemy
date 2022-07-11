@@ -1,8 +1,11 @@
 {% macro render_section(grade_overview_section) -%}
 
 <h2>Student Grades</h2>
+<p>The pie chart below shows the percentages of students with an overall achievement at each grade level. Click Student Rankings by Grade to see all students ranked within each grade level.</p>
 <div>
-  <img src="data:image/png;base64, {{ grade_overview_section.grade_pie_data }}" alt="graph">
+  <center>
+    <img src="data:image/png;base64, {{ grade_overview_section.grade_pie_data }}" alt="graph">
+  </center>
 </div>
 <br>
 <div class="accordion" id="student-ranks-table">
@@ -10,7 +13,7 @@
     <div class="card-header" id="student-ranks-table">
       <h2 class="mb-0">
         <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#student-ranks-contents" aria-expanded="false" aria-controls="collapseTwo">
-          <h4><b>Student Rankings By Grade</h4>
+          <h4><b>Student Rankings By Grade</b></h4>
         </button>
       </h2>
     </div>

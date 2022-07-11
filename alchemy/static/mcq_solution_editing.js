@@ -28,9 +28,16 @@ function reload_mcq_solutions_tab(form_prefix) {
 
   var submit_button = document.getElementById(form_prefix + 'submit')
   submit_button.addEventListener('click', function(event) {
-    window.mcq_choices[form_prefix] = get_current_mcq_choices(form_prefix)
-    hidden_mcq_choices.value = JSON.stringify(window.mcq_choices[form_prefix])
-    hidden_correct_mcq_choice_label.value = correct_mcq_choice.innerText
+
+    const solution = document.getElementById(form_prefix + 'solution')
+    if (solution.value.length > 0) {
+      hidden_mcq_choices.value = JSON.stringify([])
+      hidden_correct_mcq_choice_label.value = ""
+    } else {
+      window.mcq_choices[form_prefix] = get_current_mcq_choices(form_prefix)
+      hidden_mcq_choices.value = JSON.stringify(window.mcq_choices[form_prefix])
+      hidden_correct_mcq_choice_label.value = correct_mcq_choice.innerText
+    }
   })
 
   // Select open-answer solution tab if this is a new question, or if editing a question that already has multiple choice solutions

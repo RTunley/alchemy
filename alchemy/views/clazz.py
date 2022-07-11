@@ -10,7 +10,7 @@ bp_clazz = flask.Blueprint('clazz', __name__)
 @bp_clazz.url_value_preprocessor
 def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
-    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection'
+    g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
     g.clazz_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
 
 @bp_clazz.url_defaults

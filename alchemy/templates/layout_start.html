@@ -13,52 +13,27 @@
       <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='card-body.css') }}">
       <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-      <style type="text/css">
-        .paper_profile_table tr {
-            font-size: 0.8em;
-            text-align: center;
-        }
-
-        /* The sidebar menu */
-        .sidebar {
-          height: min-height;
-          max-height: 90vh;
-          width: 0; /* 0 width - change this with JavaScript */
-          position: fixed; /* Stay in place */
-          z-index: 1; /* Stay on top */
-          top: 10vh;
-          left: 0;
-          background-color: #fff;
-          overflow-x: hidden; /* Disable horizontal scroll */
-          overflow-y: auto;
-          transition: 0.3s;
-          white-space: nowrap;
-        }
-
-      </style>
-
     </head>
     <body>
-
       <div class="p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
         <div class="row justify-content-md-center">
           <div class="col d-flex align-items-baseline">
             <h6 class="mt-2 mr-3">
-              Alchemy{% if 'department' in g %}: {{ g.department.name }}{% endif %}
+              {% if g.school %}
+                <a href = "{{ url_for('school.index', school_id = g.school.id)}}">{{ g.school.name }}</a>
+              {% else %}
+                <b style="text-align: center;">Welcome to...</b>
+              {% endif %}
+              {% if g.student %}
+                <span>&#8594;</span><a href = "{{ url_for('student.index', student_id = g.student.id) }}"> {{ g.student.aws_user.given_name }}</a>
+              {% endif %}
+              {% if g.department %}
+                <span>&#8594;</span><a href = "{{ url_for('department.index', department_id = g.department.id) }}"> {{ g.department.name }}</a>
+              {% endif %}
+              {% if g.course %}
+                <span>&#8594;</span><a href = "{{ url_for('course.index', course_id = g.course.id) }}"> {{ g.course.name }}</a>
+              {% endif %}
             </h6>
-
-            {% if 'department' in g %}
-              <ul class="nav nav-pills">
-                <li class="nav-item dropdown mr-2">
-                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Courses</a>
-                  <div class="dropdown-menu">
-                    {% for course in g.department.courses %}
-                    <a class="dropdown-item" href="{{ url_for('course.index', course_id=course.id) }}">{{course.name}}</a>
-                    {% endfor %}
-                  </div>
-                </li>
-              </ul>
-            {% endif %}
           </div>
 
           <div class="col-md-auto d-flex align-items-baseline">
@@ -67,7 +42,6 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ g.current_user.username }}</a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{{ url_for('department.index') }}">Department home</a>
                   <a class="dropdown-item" href="{{ url_for('auth.sign_out') }}">Sign out</a>
                 </div>
               </li>

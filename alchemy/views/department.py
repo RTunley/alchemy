@@ -19,3 +19,8 @@ def bp_department_url_defaults(endpoint, values):
 @auth_manager.require_group
 def index():
     return flask.render_template('department/index.html')
+
+@bp_department.route('/courses')
+@auth_manager.require_group
+def courses():
+    return flask.render_template('department/courses.html')

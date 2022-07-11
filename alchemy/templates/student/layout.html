@@ -1,0 +1,24 @@
+{% include "layout_start.html" %}
+
+<!-- course carousel -->
+<!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='course_carousel.css') }}">
+<script src="{{ url_for('static', filename='course_carousel.js') }}"></script>
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'student.index' }}" href="{{ url_for('student.index', student_id=g.student.id) }}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'student.courses' }}" href="{{ url_for('student.courses', student_id=g.student.id) }}">Courses</a>
+    </li>
+  </ul>
+  <br>
+  {% block student_tab_content %}
+  {% endblock student_tab_content %}
+</div>
+
+{% include "layout_end.html" %}
