@@ -21,25 +21,22 @@
       <tbody>
         {% for snapshot in g.school.snapshots %}
           <tr>
-            <td>{{ snapshot.name }}<span data-feather="help-circle"></span></td>
+            <td>{{ snapshot.name }}</td>
             {% if not snapshot.is_ready() %}
               <td>
-                <h5>
-                  <span class="badge badge-danger">Not Ready</span> <button type="button" class="btn btn-info" data-toggle="modal" data-target='#all-checkpoints-modal'>?</button>
-
+                  <span class="badge badge-danger">Not Ready</span> <button type="button" class="btn btn-info" data-toggle="modal" data-target='#all-checkpoints-modal'><span data-feather="help-circle"></span></button>
                   <!-- Add view_all_checkpoints Modal here -->
                   {% import "school/view_all_checkpoints_macro.html" as view_all_checkpoints %}
-                  <form id="view-all-checkpoints" class="needs-validation" novalidate>
+                  <form id="view-all-checkpoints">
                     <div class="modal fade" id="all-checkpoints-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                       <div class="modal-dialog">
-                        <p>{{ view_all_checkpoints.render_modal(snapshot) }}</p>
+                        {{ view_all_checkpoints.render_modal(snapshot) }}
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
                       </div>
                     </div>
                   </form>
-                </h5>
               </td>
             {% else %}
               <td>Nothing</td>
