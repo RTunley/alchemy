@@ -40,6 +40,18 @@ class Course(db.Model):
     def order_assessment_categories(self):
         self.assessment_categories.sort(key=lambda x: x.weight,  reverse = True)
 
+    def get_checkpoint(self, snapshot):
+        print(snapshot)
+        print(snapshot.checkpoints)
+        print(self.checkpoints)
+        for checkpoint in self.checkpoints:
+            if snapshot.id == checkpoint.snapshot.id:
+                print("Snapshot ID: ", snapshot.id)
+                print("Checkpoint Sanspshot ID: ", checkpoint.snapshot.id)
+                return checkpoint
+            else:
+                return None
+
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
     db.Column('student_id', db.Integer, db.ForeignKey('student.id'))
