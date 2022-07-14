@@ -26,7 +26,7 @@ def populate_db():
     all_questions = db_data.add_questions_and_tags(course)
     mc_questions = db_data.get_mc_questions(all_questions)
     oa_questions = db_data.get_oa_questions(all_questions)
-    papers = db_data.add_papers_and_categories(course)
+    papers = db_data.add_papers_and_categories_physics(course)
     db_data.add_questions_to_test(papers[0], all_questions)
     db_data.add_questions_to_test(papers[1], mc_questions)
     db_data.add_questions_to_test(papers[2], oa_questions)
@@ -53,6 +53,8 @@ def populate_db():
     clazz_eng1 = db_data.add_clazz(course_eng, 'IGENG01')
     clazz_eng2 = db_data.add_clazz(course_eng, 'IGENG02')
 
+    courses = [course_chem, course_math, course_mus, course_eng]
+    other_papers = db_data.add_other_papers_and_categories(courses)
     clazzes1 = [clazz1, clazz_chem1, clazz_math1, clazz_mus1, clazz_eng1]
     clazzes2 = [clazz2, clazz_chem2, clazz_math2, clazz_mus2, clazz_eng2]
     student_list1, student_list2 = db_data.add_students_and_aws_users(clazzes1, clazzes2)

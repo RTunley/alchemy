@@ -107,7 +107,7 @@ def get_oa_questions(questions):
     oa_questions = [q for q in questions if not q.is_multiple_choice()]
     return(oa_questions)
 
-def add_papers_and_categories(course):
+def add_papers_and_categories_physics(course):
     category_1 = m.AssessmentCategory(name = 'Test', weight = 50, course_id = course.id)
     category_2 = m.AssessmentCategory(name = 'Quiz', weight = 20, course_id = course.id)
     category_3 = m.AssessmentCategory(name = 'IA', weight = 30, course_id = course.id)
@@ -124,6 +124,25 @@ def add_papers_and_categories(course):
         db.session.add(paper)
     db.session.commit()
     return(papers)
+
+def add_other_papers_and_categories(course_list):
+    all_papers = []
+    for course in course_list:
+        category_1 = m.AssessmentCategory(name = 'Exam', weight = 50, course_id = course.id)
+        category_2 = m.AssessmentCategory(name = 'Test', weight = 50, course_id = course.id)
+        categories = [category_1, category_2]
+        for category in categories:
+            db.session.add(category)
+        db.session.commit()
+
+        new_paper1 = m.Paper(title = "First Exam", course_id = course.id, category_id = category_1.id)
+        new_paper2 = m.Paper(title = "First Test", course_id = course.id, category_id = category_2.id)
+        papers = [new_paper1, new_paper2]
+        for paper in papers:
+            db.session.add(paper)
+            all_papers.append(paper)
+        db.session.commit()
+    return all_papers
 
 def add_questions_to_test(paper, questions):
     for question in questions:
