@@ -16,6 +16,11 @@
             <h2 class="mb-0">
               <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index0 }}" aria-expanded="true" aria-controls="collapse{{ loop.index0 }}">
                 {{ department.name }}
+                {% if not department.snapshot_is_ready(snapshot) %}
+                  <span style = "float: right;" color = 'red' data-feather="x-circle"></span>
+                {% else %}
+                  <span style = "float: right;" color = 'green' data-feather="check-circle"></span>
+                {% endif %}
               </button>
             </h2>
           </div>

@@ -39,9 +39,7 @@ def new_snapshot():
     new_snapshot = models.Snapshot(name = new_snapshot_name, school_id = school_id)
     db.session.add(new_snapshot)
     all_courses = get_all_courses(school)
-    print(all_courses)
     new_snapshot.create_checkpoints(all_courses)
-    print(new_snapshot.checkpoints)
     for checkpoint in new_snapshot.checkpoints:
         checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
         checkpoint.snapshot = models.Snapshot.query.get_or_404(checkpoint.snapshot_id)

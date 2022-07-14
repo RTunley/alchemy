@@ -13,12 +13,20 @@ class School(db.Model):
     departments = db.relationship('Department', backref='school')
     snapshots = db.relationship('Snapshot', backref='school')
 
+
 class Department(db.Model):
     __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
     courses = db.relationship('Course', backref='department')
+
+    def snapshot_is_ready(self, snapshot):
+        is_ready = True
+        for course in self.courses:
+            if not course.get_checkpoint(snapshot).is_ready():
+                is_ready = False
+        return False
 
 class Course(db.Model):
     __tablename__ = 'course'
@@ -51,6 +59,7 @@ class Course(db.Model):
                 return checkpoint
             else:
                 return None
+
 
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
@@ -520,14 +529,11 @@ class Snapshot(db.Model):
         db.session.commit()
 
     def is_ready(self):
-        if not self.checkpoints:
-            return False
-        else:
-            for checkpoint in self.checkpoints:
-                if not checkpoint.is_ready():
-                    return False
-                else:
-                    return True
+        is_ready = True
+        for checkpoint in self.checkpoints:
+            if not checkpoint.is_ready():
+                is_ready = False
+        return is_ready
 
 class Checkpoint(db.Model):
     __tablename__ = 'checkpoint'
