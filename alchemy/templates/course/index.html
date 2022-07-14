@@ -150,52 +150,41 @@
     </div>
 
     <div class="right-col">
-      {% import "course/edit_snapshot_macro.html" as edit_snapshot %}
-      <!-- edit new snapshot modal form -->
-      <form id="new_snapshot_form" class="needs-validation" novalidate>
-        <div class="modal fade" id="new_snapshot_modal" tabindex="-1" aria-labelledby="new_snapshot_modal_label" aria-hidden="true">
-          <div class="modal-dialog">
-            <p>{{ edit_snapshot.render_modal(g.course) }}</p>
-          </div>
-        </div>
-      </form>
-
       <h4>Reporting Events</h4>
-      <table class="table table-hover text-center">
+      <table class="table table-hover">
         <thead>
-          <th>Snapshot Name</th>
+          <th>Reporting Event</th>
           <th>Assessment Inclusions</th>
           <th>Status</th>
         </thead>
         {% for checkpoint in g.course.checkpoints %}
           <tr>
             <td>{{ checkpoint.snapshot.name }}</td>
-            {% if checkpoint.papers %}
-              <td>
-                {% for paper in checkpoint.papers %}
-                  <p>{{ paper.title }}</p>: {{ paper.has_all_scores() }}
-                {% endfor %}
-              </td>
-            {% else %}
-              <td>
-                <p>None (yet...)</p>
-              </td>
-            {% endif %}
+            <td>
+              {% for paper in checkpoint.papers %}
+                <p>{{ paper.title }}</p>: {{ paper.has_all_scores() }}
+              {% endfor %}
+            </td>
             <td>
               {% if not checkpoint.is_ready() %}
-                <h5><span class="badge badge-danger">Not Ready</span></h5>
+                <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-danger">Not Ready <span data-feather="edit"></span></button>
               {% else %}
               <!-- Eventually have 'not checkpoint.snapshot.is_published()' -->
-                {% if True %}
-                  <h5><span class="badge badge-success">Ready</span></h5>
+                {% if not checkpoint.snapshot.is_published %}
+                  <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-success">Ready <span data-feather="edit"></span></button>
                 {% else %}
-                  <h5><span class="badge badge-primary">Published</span></h5>
+                  <button type="button" class="btn btn-success disabled">Published <span data-toggle="modal" data-target="#edit_checkpoint_modal" data-feather="edit"></span></button>
                 {% endif %}
               {% endif %}
-            </td>
-            <!-- If reports have been published, this button will be disabled. -->
-            <td valign="middle">
-              <button type="button" class="btn btn-info btn-sm"><span data-toggle="modal" data-target="#new_snapshot_modal" data-feather="edit"></span></button>
+              {% import "course/edit_checkpoint_macro.html" as edit_checkpoint %}
+              <!-- edit new snapshot modal form -->
+              <form id="edit_checkpoint_form" class="needs-validation" novalidate>
+                <div class="modal fade" id="edit_checkpoint_modal" tabindex="-1" aria-labelledby="edit_checkpoint_modal_label" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <p>{{ edit_checkpoint.render_modal(g.course, checkpoint) }}</p>
+                  </div>
+                </div>
+              </form>
             </td>
           </tr>
         {% endfor %}

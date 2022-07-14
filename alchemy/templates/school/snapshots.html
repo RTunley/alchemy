@@ -24,7 +24,7 @@
             <td>{{ snapshot.name }}</td>
             {% if not snapshot.is_ready() %}
               <td>
-                  <h4><button type="button" class="btn btn-danger">Not Ready</button> <button type="button" class="btn btn-info" data-toggle="modal" data-target='#all-checkpoints-modal'><span data-feather="help-circle"></span></button></h4> 
+                  <h4><button type="button" class="btn btn-danger">Not Ready</button> <button type="button" class="btn btn-info" data-toggle="modal" data-target='#all-checkpoints-modal'><span data-feather="help-circle"></span></button></h4>
                   <!-- Add view_all_checkpoints Modal here -->
                   {% import "school/view_all_checkpoints_macro.html" as view_all_checkpoints %}
                   <form id="view-all-checkpoints">
@@ -38,8 +38,14 @@
                     </div>
                   </form>
               </td>
+            {% elif not snapshot.is_published %}
+              <td>
+                <h4><button type="button" class="btn btn-success">Publish</button>
+              </td>
             {% else %}
-              <td>Nothing</td>
+              <td>
+                <h4><button type="button" class="btn btn-success disabled">Published</button>
+              </td>
             {% endif %}
           </tr>
         {% endfor %}

@@ -516,6 +516,7 @@ class Snapshot(db.Model):
     name = db.Column(db.String(50), nullable=False)
     checkpoints = db.relationship('Checkpoint', backref='snapshot')
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
+    is_published = db.Column(db.Boolean)
 
     def create_checkpoints(self, course_list):
         self.courses = course_list
