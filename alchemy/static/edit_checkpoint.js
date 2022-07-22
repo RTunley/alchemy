@@ -1,20 +1,13 @@
-var switch_container = $('#all_papers_switch')
+var all_switch = document.getElementById('all_papers_switch')
 var switch_container = $('#edit_checkpoint_switch_container')
-checkbox.addEventListener('change', function() {
-  if (this.checked) {
-    console.log("Checkbox is checked..");
-    switch_container.children('input').each(function () {
-      var switch = $(this)
-      switch.checked = true
-    }
-  } else {
-    console.log("Checkbox is not checked..");
-    switch_container.children('input').each(function () {
-      var switch = $(this)
-      switch.checked = false
-    }
+all_switch.addEventListener('change', function() {
+    switch_container.find('input').each(function () {
+      var paper_switch = $(this).get(0)
+      paper_switch.checked = all_switch.checked
+    })
   }
-});
+);
+
 //
 // function checkpoint_papers_all() {
 //   // Activate all papers
