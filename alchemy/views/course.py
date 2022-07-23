@@ -84,3 +84,31 @@ def edit_categories():
     db.session.commit()
     course.order_assessment_categories()
     return flask.render_template('course/index.html')
+
+@bp_course.route('/get_checkpoint_paper_ids/<int:checkpoint_id>', methods = ['POST'])
+@auth_manager.require_group
+def get_checkpoint_paper_ids(checkpoint_id):
+    checkpoint = models.Checkpoint.query.get_or_404(checkpoint_id)
+    checkpoint_paper_ids = []
+    for paper in checkpoint.papers:
+        checkpoint_paper_ids.append(paper.id)
+    return flask.jsonify(paper_ids_json = checkpoint_paper_ids)
+
+@bp_course.route('/edit_checkpoint', methods = ['POST'])
+@auth_manager.require_group
+def edit_checkpoint():
+    post_data = flask.request.get_json()
+    course_id = post_data['course_id']
+    # paper_id_string = post_data['']
+
+    # school = models.School.query.get_or_404(school_id)
+    # new_snapshot_name = post_data['snapshot_name']
+    # new_snapshot = models.Snapshot(name = new_snapshot_name, school_id = school_id, is_published = False)
+    # db.session.add(new_snapshot)
+    # all_courses = get_all_courses(school)
+    # new_snapshot.create_checkpoints(all_courses)
+    # for checkpoint in new_snapshot.checkpoints:
+    #     checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
+    #     checkpoint.snapshot = models.Snapshot.query.get_or_404(checkpoint.snapshot_id)
+    # db.session.commit() ##This will commit both the snapshot and the checkpoints created
+    # return flask.render_template('school/snapshots.html')

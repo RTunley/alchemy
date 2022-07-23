@@ -1,12 +1,46 @@
-var all_switch = document.getElementById('all_papers_switch')
-var switch_container = $('#edit_checkpoint_switch_container')
+let all_switch = document.getElementById('all_papers_switch')
+let switch_container = $('#edit_checkpoint_switch_container')
 all_switch.addEventListener('change', function() {
     switch_container.find('input').each(function () {
-      var paper_switch = $(this).get(0)
+      let paper_switch = $(this).get(0)
       paper_switch.checked = all_switch.checked
     })
   }
 );
+
+function get_paper_ids(course_id, checkpoint_id) {
+  $.ajax({
+    type: 'GET',
+    url: '/course/' + course_id + '/get_checkpoint_paper_ids/' + checkpoint_id,
+    data: JSON.stringify({'paper_ids': paper_ids_json}),
+    contentType: 'application/json',
+    dataType: 'json',
+  }).done(function(data) {
+    if (data) {
+      initialize_switches(paper_ids)
+    }
+  });
+}
+
+function initialize_switches(paper_id_list){
+  console.log(paper_id_list)
+}
+
+// switch_container.find('input').each(function () {
+//   let paper_switch = $(this).get(0)
+//   paper_switch.addEventListener('change', function() {
+//     let all_checked = true
+//     switch_container.find('input').each(function () {
+//         let paper_switch_loop = $(this).get(0)
+//         if (!paper_switch_loop.checked) {
+//           all_checked = false
+//         }
+//     })
+//     if (all_checked == true) {
+//       all_switch.checked = true
+//     }
+//   })
+// )}
 
 //
 // function checkpoint_papers_all() {

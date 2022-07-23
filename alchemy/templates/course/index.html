@@ -167,11 +167,11 @@
             </td>
             <td>
               {% if not checkpoint.is_ready() %}
-                <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-danger">Not Ready <span data-feather="edit"></span></button>
+                <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-danger">Not Ready <span data-feather="edit" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})"></span></button>
               {% else %}
               <!-- Eventually have 'not checkpoint.snapshot.is_published()' -->
                 {% if not checkpoint.snapshot.is_published %}
-                  <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-success">Ready <span data-feather="edit"></span></button>
+                  <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-success">Ready <span data-feather="edit" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})"></span></button>
                 {% else %}
                   <button type="button" class="btn btn-success disabled">Published <span data-toggle="modal" data-target="#edit_checkpoint_modal" data-feather="edit"></span></button>
                 {% endif %}
