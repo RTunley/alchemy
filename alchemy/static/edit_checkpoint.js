@@ -12,12 +12,11 @@ function get_paper_ids(course_id, checkpoint_id) {
   $.ajax({
     type: 'GET',
     url: '/course/' + course_id + '/get_checkpoint_paper_ids/' + checkpoint_id,
-    data: JSON.stringify({'paper_ids': paper_ids_json}),
     contentType: 'application/json',
     dataType: 'json',
   }).done(function(data) {
     if (data) {
-      initialize_switches(paper_ids)
+      initialize_switches(data.paper_ids_json)
     }
   });
 }

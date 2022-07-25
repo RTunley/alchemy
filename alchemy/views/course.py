@@ -85,7 +85,7 @@ def edit_categories():
     course.order_assessment_categories()
     return flask.render_template('course/index.html')
 
-@bp_course.route('/get_checkpoint_paper_ids/<int:checkpoint_id>', methods = ['POST'])
+@bp_course.route('/get_checkpoint_paper_ids/<int:checkpoint_id>', methods = ['GET'])
 @auth_manager.require_group
 def get_checkpoint_paper_ids(checkpoint_id):
     checkpoint = models.Checkpoint.query.get_or_404(checkpoint_id)
