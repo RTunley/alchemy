@@ -23,7 +23,23 @@ function get_paper_ids(course_id, checkpoint_id) {
 
 function initialize_switches(paper_id_list){
   console.log(paper_id_list)
+  let set_all_switch = true
+  console.log(set_all_switch)
+  switch_container.find('input').each(function () {
+    let paper_switch = $(this)
+    let switch_id = paper_switch.attr('data-alchemy_paper_id')
+    console.log(paper_id_list.includes(switch_id))
+    if (if paper_id_list.includes(switch_id)) {
+      paper_switch.get(0).checked = true
+    }
+    else {
+      paper_switch.get(0).checked = false
+      set_all_switch = false
+    }
+  })
+  all_switch.checked = set_all_switch
 }
+
 
 // switch_container.find('input').each(function () {
 //   let paper_switch = $(this).get(0)
