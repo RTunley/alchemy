@@ -100,7 +100,6 @@ def get_checkpoint_paper_ids(checkpoint_id):
 def edit_checkpoint(checkpoint_id):
     post_data = flask.request.get_json()
     course_id = post_data['course_id']
-    checkpoint_id = post_data['checkpoint_id']
     paper_ids = post_data['paper_ids']
 
     course = models.Course.query.get_or_404(course_id)

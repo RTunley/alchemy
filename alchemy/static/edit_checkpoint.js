@@ -73,7 +73,7 @@ function submit_edit_checkpoint (course_id, checkpoint_id) {
   let switches = get_paper_switches(switch_container)
   let paper_id_list = []
   for (let i = 0; i < switches.length; i++) {
-    if (switches[i].get(0).checked = true) {
+    if (switches[i].get(0).checked == true) {
       paper_id_list.push(switches[i].attr('data-alchemy_paper_id'))
     }
   }
@@ -82,11 +82,10 @@ function submit_edit_checkpoint (course_id, checkpoint_id) {
     url: '/course/' + course_id + '/edit_checkpoint/' + checkpoint_id,
     data: JSON.stringify({
       course_id: course_id,
-      checkpoint_id: checkpoint_id,
       paper_ids: paper_id_list
     }),
     contentType: 'application/json',
   })
+  document.getElementById('edit_checkpoint_form').submit();
   return true
-
 }
