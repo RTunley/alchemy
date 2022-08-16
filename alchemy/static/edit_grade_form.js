@@ -30,6 +30,7 @@ function validate_grade_levels(course_id){
     }),
     contentType: 'application/json',
   })
+  document.getElementById('grade-level-form').submit();
   return true
 }
 

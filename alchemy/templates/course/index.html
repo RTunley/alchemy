@@ -110,7 +110,7 @@
 
   {% import "course/grade_levels_form_macro.html" as grades_form %}
   <!-- edit grade levels modal form -->
-  <form id="grade-level-form" class="needs-validation" novalidate>
+  <form id="grade-level-form" class="needs-validation" action="{{ url_for('course.index', course_id=g.course.id) }}" method="POST" novalidate>
     <div class="modal fade" id="grade_level_modal" tabindex="-1" aria-labelledby="grade_level_modal_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
