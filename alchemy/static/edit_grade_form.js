@@ -1,4 +1,5 @@
 function validate_grade_levels(course_id){
+  console.log("We started the function!!")
   var lower_bounds = []
   var grades = []
   var grade_levels = []
@@ -19,7 +20,8 @@ function validate_grade_levels(course_id){
     lower_bound_element.classList.remove('is-invalid')
   }
   if (!validate_form(lower_bounds, grades)) {
-    return false
+    console.log("Validation failed!!")
+    // return false <-- add this back later
   }
   $.ajax({
     type: 'POST',
@@ -31,6 +33,7 @@ function validate_grade_levels(course_id){
     contentType: 'application/json',
   })
   document.getElementById('grade-level-form').submit();
+  console.log("We just passed the submit!!")
   return true
 }
 
