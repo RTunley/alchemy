@@ -56,6 +56,7 @@ class Course(db.Model):
             if snapshot.id == checkpoint.snapshot.id:
                 print("Snapshot ID: ", snapshot.id)
                 print("Checkpoint Sanspshot ID: ", checkpoint.snapshot.id)
+                print("Checkpoint ID: ", checkpoint.id)
                 return checkpoint
             else:
                 return None

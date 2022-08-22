@@ -1,14 +1,32 @@
 // Switch Management for edit_checkpoint macro
 
-let all_switch = document.getElementById('all_papers_switch')
-let switch_container = $('#edit_checkpoint_switch_container')
-all_switch.addEventListener('change', function() {
-    switch_container.find('input').each(function () {
-      let paper_switch = $(this).get(0)
-      paper_switch.checked = all_switch.checked
+(function(){
+  let all_switch = document.getElementById('all_papers_switch')
+  if (!all_switch){
+    return
+  }
+  let switch_container = $('#edit_checkpoint_switch_container')
+  all_switch.addEventListener('change', function() {
+      switch_container.find('input').each(function () {
+        let paper_switch = $(this).get(0)
+        paper_switch.checked = all_switch.checked
+      })
+    }
+  );
+  let paper_switch_list = get_paper_switches(switch_container)
+  for (let i = 0; i < paper_switch_list.length; i++) {
+    paper_switch_list[i].get(0).addEventListener('change', function() {
+      let all_checked = true
+      let switches = get_paper_switches(switch_container)
+      for (let j = 0; j < switches.length; j++) {
+        if (!switches[j].get(0).checked) {
+          all_checked = false
+        }
+      }
+      all_switch.checked = all_checked
     })
   }
-);
+}())
 
 // Returns a list of jquery switches corresponding to individual papers - skips the 'All' switch.
 function get_paper_switches(container){
@@ -20,20 +38,6 @@ function get_paper_switches(container){
     }
   })
   return switches
-}
-
-paper_switch_list = get_paper_switches(switch_container)
-for (let i = 0; i < paper_switch_list.length; i++) {
-  paper_switch_list[i].get(0).addEventListener('change', function() {
-    let all_checked = true
-    switches = get_paper_switches(switch_container)
-    for (let j = 0; j < switches.length; j++) {
-      if (!switches[j].get(0).checked) {
-        all_checked = false
-      }
-    }
-    all_switch.checked = all_checked
-  })
 }
 
 function get_paper_ids(course_id, checkpoint_id) {
@@ -70,6 +74,7 @@ function initialize_switches(paper_id_list){
 // Submitting the changes to checkpoint.papers
 
 function submit_edit_checkpoint (course_id, checkpoint_id) {
+  let switch_container = $('#edit_checkpoint_switch_container')
   let switches = get_paper_switches(switch_container)
   let paper_id_list = []
   for (let i = 0; i < switches.length; i++) {

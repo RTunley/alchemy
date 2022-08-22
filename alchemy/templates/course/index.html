@@ -157,37 +157,45 @@
           <th>Assessment Inclusions</th>
           <th>Status</th>
         </thead>
-        {% for checkpoint in g.course.checkpoints %}
-          <tr>
-            <td>{{ checkpoint.snapshot.name }}</td>
-            <td>
-              {% for paper in checkpoint.papers %}
-                <p>{{ paper.title }}</p>: {{ paper.has_all_scores() }}
-              {% endfor %}
-            </td>
-            <td>
-              {% if not checkpoint.is_ready() %}
-                <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-danger" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})">Not Ready <span data-feather="edit" ></span></button>
-              {% else %}
-              <!-- Eventually have 'not checkpoint.snapshot.is_published()' -->
-                {% if not checkpoint.snapshot.is_published %}
-                  <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-success" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})">Ready <span data-feather="edit"></span></button>
+        {% if g.course.checkpoints %}
+          {% for checkpoint in g.course.checkpoints %}
+            <tr>
+              <td>{{ checkpoint.snapshot.name }}</td>
+              <td>
+                {% for paper in checkpoint.papers %}
+                  <p>{{ paper.title }}</p>: {{ paper.has_all_scores() }}
+                {% endfor %}
+              </td>
+              <td>
+                {% if not checkpoint.is_ready() %}
+                  <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-danger" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})">Not Ready <span data-feather="edit" ></span></button>
                 {% else %}
-                  <button type="button" class="btn btn-success disabled">Published <span data-toggle="modal" data-target="#edit_checkpoint_modal" data-feather="edit"></span></button>
+                <!-- Eventually have 'not checkpoint.snapshot.is_published()' -->
+                  {% if not checkpoint.snapshot.is_published %}
+                    <button data-toggle="modal" data-target="#edit_checkpoint_modal" type="button" class="btn btn-success" onclick="get_paper_ids({{ checkpoint.id }}, {{ g.course.id }})">Ready <span data-feather="edit"></span></button>
+                  {% else %}
+                    <button type="button" class="btn btn-success disabled">Published <span data-toggle="modal" data-target="#edit_checkpoint_modal" data-feather="edit"></span></button>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-              {% import "course/edit_checkpoint_macro.html" as edit_checkpoint %}
-              <!-- edit checkpoint modal form -->
-              <form id="edit_checkpoint_form" class="needs-validation" novalidate action="{{ url_for('course.index', course_id=g.course.id) }}" method="GET">
-                <div class="modal fade" id="edit_checkpoint_modal" tabindex="-1" aria-labelledby="edit_checkpoint_modal_label" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <p>{{ edit_checkpoint.render_modal(g.course, checkpoint) }}</p>
+                {% import "course/edit_checkpoint_macro.html" as edit_checkpoint %}
+                <!-- edit checkpoint modal form -->
+                <form id="edit_checkpoint_form" class="needs-validation" novalidate action="{{ url_for('course.index', course_id=g.course.id) }}" method="GET">
+                  <div class="modal fade" id="edit_checkpoint_modal" tabindex="-1" aria-labelledby="edit_checkpoint_modal_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <p>{{ edit_checkpoint.render_modal(g.course, checkpoint) }}</p>
+                    </div>
                   </div>
-                </div>
-              </form>
-            </td>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td></td>
+            <td>No Reporting Events</td>
+            <td></td>
           </tr>
-        {% endfor %}
+        {% endif %}
       </table>
     </div>
   </div>
