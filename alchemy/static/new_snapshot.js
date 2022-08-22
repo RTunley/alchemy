@@ -10,5 +10,6 @@ function validate_new_snapshot(school_id){
     }),
     contentType: 'application/json',
   })
+  document.getElementById('new-snapshot-form').submit();
   return true
 }

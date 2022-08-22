@@ -58,7 +58,7 @@
   </button>
     <!-- Add Snapshot Modal here -->
   {% import "school/new_snapshot_macro.html" as new_snapshot %}
-  <form id="new-snapshot-form" class="needs-validation" novalidate>
+  <form id="new-snapshot-form" action="{{ url_for('school.snapshots')}}" method = "GET" novalidate>
     <div class="modal fade" id="snapshot-modal" tabindex="-1" aria-labelledby="snapshot-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <p>{{ new_snapshot.render_modal() }}</p>

@@ -21,7 +21,7 @@ function validate_grade_levels(course_id){
   }
   if (!validate_form(lower_bounds, grades)) {
     console.log("Validation failed!!")
-    // return false <-- add this back later
+    return false
   }
   $.ajax({
     type: 'POST',
@@ -41,7 +41,8 @@ function validate_form(lower_bounds, grades){
   if (!check_lower_bounds(lower_bounds)
       || !check_highest_bound(lower_bounds)
       || !check_lowest_bound(lower_bounds)
-      || !no_double_grades(grades)) {
+      || !no_double_grades(grades))
+    ){
     return false
   }
   return true
