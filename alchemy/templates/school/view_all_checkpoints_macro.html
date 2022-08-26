@@ -39,7 +39,7 @@
                   <tr>
                     <td>{{ course.name }}</td>
                     <td>
-                      {% if not course.get_checkpoint(snapshot).is_ready() %}
+                      {% if not course.get_checkpoint(snapshot) or not course.get_checkpoint(snapshot).is_ready() %}
                         <span color = 'red' data-feather="x-circle"></span>
                       {% else %}
                         <span color = 'green' data-feather="check-circle"></span>
