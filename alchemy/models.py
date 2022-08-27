@@ -22,11 +22,11 @@ class Department(db.Model):
     courses = db.relationship('Course', backref='department')
 
     def snapshot_is_ready(self, snapshot):
-        is_ready = True
         for course in self.courses:
-            if not course.get_checkpoint(snapshot).is_ready():
-                is_ready = False
-        return False
+            checkpoint = course.get_checkpoint(snapshot)
+            if not checkpoint or not checkpoint.is_ready():
+                return False
+        return True
 
 class Course(db.Model):
     __tablename__ = 'course'
