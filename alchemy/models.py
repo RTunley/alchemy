@@ -22,11 +22,13 @@ class Department(db.Model):
     courses = db.relationship('Course', backref='department')
 
     def snapshot_is_ready(self, snapshot):
+        snapshot_ready = True
         for course in self.courses:
             checkpoint = course.get_checkpoint(snapshot)
-            if not checkpoint or not checkpoint.is_ready():
-                return False
-        return True
+            if not checkpoint.is_ready():
+                snapshot_ready = False
+
+        return snapshot_ready
 
 class Course(db.Model):
     __tablename__ = 'course'
@@ -49,18 +51,9 @@ class Course(db.Model):
         self.assessment_categories.sort(key=lambda x: x.weight,  reverse = True)
 
     def get_checkpoint(self, snapshot):
-        print(snapshot)
-        print(snapshot.checkpoints)
-        print(self.checkpoints)
         for checkpoint in self.checkpoints:
             if snapshot.id == checkpoint.snapshot.id:
-                print("Snapshot ID: ", snapshot.id)
-                print("Checkpoint Sanspshot ID: ", checkpoint.snapshot.id)
-                print("Checkpoint ID: ", checkpoint.id)
                 return checkpoint
-            else:
-                return None
-
 
 clazzes_students = db.Table('clazzes_students',
     db.Column('clazz_id', db.Integer, db.ForeignKey('clazz.id')),
@@ -520,15 +513,14 @@ class Snapshot(db.Model):
     is_published = db.Column(db.Boolean)
 
     def create_checkpoints(self, course_list):
-        self.courses = course_list
-        for course in self.courses:
+        for course in course_list:
             new_checkpoint = Checkpoint(course_id = course.id, snapshot_id = self.id, papers = [])
             ## For now, give the checkpoints all the papers in a course ##
             for paper in course.papers:
                 new_checkpoint.papers.append(paper)
             self.checkpoints.append(new_checkpoint)
             db.session.add(new_checkpoint)
-        db.session.commit()
+    db.session.commit()
 
     def is_ready(self):
         is_ready = True

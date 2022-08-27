@@ -43,6 +43,7 @@ def new_snapshot():
     db.session.commit()
 
     all_courses = get_all_courses(school)
+    print(all_courses)
     new_snapshot.create_checkpoints(all_courses)
     for checkpoint in new_snapshot.checkpoints:
         checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
