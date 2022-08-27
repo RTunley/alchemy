@@ -42,7 +42,7 @@ function validate_form(lower_bounds, grades){
       || !check_highest_bound(lower_bounds)
       || !check_lowest_bound(lower_bounds)
       || !no_double_grades(grades))
-    ){
+    {
     return false
   }
   return true

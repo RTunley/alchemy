@@ -55,6 +55,7 @@ function get_paper_ids(course_id, checkpoint_id) {
 
 function initialize_switches(paper_id_list){
   let all_switch = document.getElementById('all_papers_switch')
+  let switch_container = $('#edit_checkpoint_switch_container')
   all_switch.checked = true
   let set_all_switch = true
   paper_switches = get_paper_switches(switch_container)
