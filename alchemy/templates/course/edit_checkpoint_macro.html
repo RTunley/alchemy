@@ -13,16 +13,16 @@
         Choose from the available assessments:
       </label>
         <br>
-        <div id="edit_checkpoint_switch_container">
+        <div id="edit_checkpoint_switch_container_{{ checkpoint.id }}">
           <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="all_papers_switch" checked='false'>
-            <label class="custom-control-label" for="all_papers_switch">All</label>
+            <input type="checkbox" class="custom-control-input" id="all_papers_switch_{{ checkpoint.id }}" checked='false'>
+            <label class="custom-control-label" for="all_papers_switch_{{ checkpoint.id }}">All</label>
           </div>
           <hr/>
           {% for paper in course.papers %}
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="{{paper.id}}_switch" data-alchemy_paper_id = "{{ paper.id }}">
-              <label class="custom-control-label" for="{{paper.id}}_switch">{{ paper.title }}</label>
+              <input type="checkbox" class="custom-control-input" id="{{paper.id}}_switch_{{ checkpoint.id }}" data-alchemy_paper_id = "{{ paper.id }}">
+              <label class="custom-control-label" for="{{paper.id}}_switch_{{ checkpoint.id }}">{{ paper.title }}</label>
             </div>
           {% endfor %}
         </div>
