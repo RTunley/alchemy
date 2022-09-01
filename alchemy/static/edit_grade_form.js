@@ -1,5 +1,4 @@
 function validate_grade_levels(course_id){
-  console.log("We started the function!!")
   var lower_bounds = []
   var grades = []
   var grade_levels = []
@@ -19,8 +18,7 @@ function validate_grade_levels(course_id){
     grade_element.classList.remove('is-invalid')
     lower_bound_element.classList.remove('is-invalid')
   }
-  if (!validate_form(lower_bounds, grades)) {
-    console.log("Validation failed!!")
+  if (!validate_form_success(lower_bounds, grades)) {
     return false
   }
   $.ajax({
@@ -33,20 +31,19 @@ function validate_grade_levels(course_id){
     contentType: 'application/json',
   })
   document.getElementById('grade-level-form').submit();
-  console.log("We just passed the submit!!")
   return true
 }
 
-function validate_form(lower_bounds, grades){
-  if (!check_lower_bounds(lower_bounds)
-      || !check_highest_bound(lower_bounds)
-      || !check_lowest_bound(lower_bounds)
-      || !no_double_grades(grades))
-    {
-    return false
-  }
+function validate_form_success(lower_bounds, grades){
+  if ( !lower_bounds_ok(lower_bounds)
+    || !highest_bound_ok(lower_bounds)
+    || !lowest_bound_ok(lower_bounds)
+    || !no_double_grades(grades)
+    ){
+      return false
+    }
   return true
-}
+  }
 
 function no_double_grades(grades_list){
   var map = {}
@@ -63,7 +60,7 @@ function no_double_grades(grades_list){
   return true
 }
 
-function check_highest_bound(lower_bounds){
+function highest_bound_ok(lower_bounds){
   if (lower_bounds[0]>100){
     var input = document.getElementById('lower_bound_'+ 0)
     input.classList.add('is-invalid')
@@ -74,7 +71,7 @@ function check_highest_bound(lower_bounds){
   return true
 }
 
-function check_lowest_bound(lower_bounds){
+function lowest_bound_ok(lower_bounds){
   if (lower_bounds[lower_bounds.length - 1] != 0){
     var index = lower_bounds.length - 1
     var input = document.getElementById('lower_bound_'+index)
@@ -86,7 +83,7 @@ function check_lowest_bound(lower_bounds){
   return true
 }
 
-function check_lower_bounds(lower_bounds){
+function lower_bounds_ok(lower_bounds){
   var i
   for (i=0; i<lower_bounds.length; i++) {
     if (lower_bounds[i]<0 || lower_bounds[i] <= lower_bounds[i+1]){
