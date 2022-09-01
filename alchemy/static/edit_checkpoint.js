@@ -1,7 +1,6 @@
 // Switch Management for edit_checkpoint macro
 
 function init_checkpoint_paper_event_listeners(checkpoint_id) {
-  console.log("2) Made it into init_checkpoint_paper_event_listeners!!")
   let all_switch = document.getElementById('all_papers_switch_' + checkpoint_id)
   if (!all_switch){
     return
@@ -15,35 +14,23 @@ function init_checkpoint_paper_event_listeners(checkpoint_id) {
     }
   );
   let paper_switch_list = get_paper_switches(switch_container, checkpoint_id)
-  console.log("paper_switch_list!!")
-  console.log(paper_switch_list)
   for (let i = 0; i < paper_switch_list.length; i++) {
     paper_switch_list[i].get(0).addEventListener('change', function() {
       let all_checked = true
       let paper_switch_container = $('#edit_checkpoint_switch_container_' + checkpoint_id)
       let switches = get_paper_switches(paper_switch_container, checkpoint_id)
-      console.log("switches!!")
-      console.log(switches)
       for (let j = 0; j < switches.length; j++) {
         if (!switches[j].get(0).checked) {
           all_checked = false
-          console.log("all_checked: ")
-          consolle.log(all_checked)
         }
       }
       all_switch.checked = all_checked
-      console.log("all_switch is changed!!")
     })
   }
 }
 
 // Returns a list of jquery switches corresponding to individual papers - skips the 'All' switch.
 function get_paper_switches(container, checkpoint_id){
-  console.log("3) Made it into get_paper_switches!!")
-  console.log("container: ")
-  console.log(container)
-  console.log("checkpoint_id: ")
-  console.log(checkpoint_id)
   let switches = []
   container.find('input').each(function(){
     let paper_switch = $(this)
@@ -68,7 +55,6 @@ function get_paper_ids(course_id, checkpoint_id) {
 }
 
 function initialize_switches(paper_id_list, checkpoint_id){
-  console.log("1) Made it into initalize_switches!!")
   init_checkpoint_paper_event_listeners(checkpoint_id)
   let all_switch = document.getElementById('all_papers_switch_' + checkpoint_id)
   let switch_container = $('#edit_checkpoint_switch_container_' + checkpoint_id)
