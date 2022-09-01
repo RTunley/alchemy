@@ -71,7 +71,7 @@ function initialize_switches(paper_id_list, checkpoint_id){
   console.log("1) Made it into initalize_switches!!")
   init_checkpoint_paper_event_listeners(checkpoint_id)
   let all_switch = document.getElementById('all_papers_switch_' + checkpoint_id)
-  let switch_container = $('#edit_checkpoint_switch_container'+ checkpoint_id)
+  let switch_container = $('#edit_checkpoint_switch_container_' + checkpoint_id)
   all_switch.checked = true
   let set_all_switch = true
   paper_switches = get_paper_switches(switch_container, checkpoint_id)
