@@ -1,0 +1,53 @@
+{% extends "course/clazz/layout.html" %}
+
+{% block clazz_tab_content %}
+
+<h2>Assessment Reports ({{ g.course.papers | length }})</h2>
+<br>
+<table class="table table-hover">
+  <tr>
+    <th>Assessment</th>
+    <th>Category</th>
+    <th>Total Marks</th>
+    <th>Achievement</th>
+  </tr>
+  {% for paper in g.course.papers %}
+    <tr>
+      <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+      <td>{{ paper.category.name }}</td>
+      <td>{{ paper.profile.total_points }}</td>
+      <td>
+        {% if (paper.paper_questions | length) != 0 %}
+          {% if paper.check_clazz_scores(g.clazz) %}
+            <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.clazz_paper_report_sections_string ) }}">View Class Report</a>
+          {% else %}
+            <a class="btn btn-success btn-sm disabled" target="_blank">View Class Report</a>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+<br>
+<h2>Reporting Events ({{ g.school.snapshots | length }})</h2>
+<br>
+{% if g.school.snapshots %}
+  <table class="table table-hover">
+    <tr>
+      <th>Event</th>
+      <th>Achievement</th>
+    </tr>
+    {% for snapshot in g.school.snapshots %}
+      <tr>
+        <td>{{ snapshot.name }}</td>
+        <td>
+          <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Class Report</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <h5 color='red'>There are no Reporting Events to view.</h5>
+{% endif %}
+
+{% endblock clazz_tab_content %}

@@ -1,0 +1,29 @@
+{% include "layout_start.html" %}
+
+<script src="{{ url_for('static', filename='mc_results_input.js') }}"></script>
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.clazz.index' }}" href="{{ url_for('course.clazz.index', clazz_id = g.clazz.id) }}">Home</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Results</a>
+      <div class="dropdown-menu">
+        {% for paper in g.course.papers %}
+          <a class="nav-link {{ 'active' if request.endpoint == 'course.clazz.index' }}" href="{{ url_for('course.clazz.paper_results', paper_id = paper.id) }}">{{ paper.title }}</a>
+        {% endfor %}
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.clazz.view_reports' }}" href="{{ url_for('course.clazz.view_reports', clazz_id = g.clazz.id) }}">Reports</a>
+    </li>
+  </ul>
+  <br>
+
+  {% block clazz_tab_content %}
+  {% endblock clazz_tab_content %}
+
+</div>
+
+{% include "layout_end.html" %}

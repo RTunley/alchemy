@@ -33,6 +33,9 @@
               {% if g.course %}
                 <span>&#8594;</span><a href = "{{ url_for('course.index', course_id = g.course.id) }}"> {{ g.course.name }}</a>
               {% endif %}
+              {% if g.clazz %}
+                <span>&#8594;</span><a href = "{{ url_for('course.clazz.index', clazz_id = g.clazz.id) }}"> {{ g.clazz.code }}</a>
+              {% endif %}
             </h6>
           </div>
 

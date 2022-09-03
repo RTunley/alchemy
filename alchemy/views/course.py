@@ -15,7 +15,6 @@ def url_defaults(endpoint, values):
     if 'course_id' not in values:
         values['course_id'] = g.course.id
 
-
 @bp_course.before_request
 def before_request():
     # only set title if not already set in a blueprint child

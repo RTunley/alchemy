@@ -30,6 +30,11 @@ def index():
     student_course_profiles = data_manager.make_student_course_profiles(g.course, g.clazz.students)
     return flask.render_template('course/clazz/index.html', profiles = student_course_profiles)
 
+@bp_clazz.route('view_reports')
+@auth_manager.require_group
+def view_reports():
+    return flask.render_template('course/clazz/view_reports.html')
+
 @bp_clazz.route('/student_scores_update', methods=['POST'])
 @auth_manager.require_group
 def student_scores_update():
