@@ -144,7 +144,7 @@ def add_other_papers_and_categories(course_list):
         db.session.commit()
     return all_papers
 
-def add_questions_to_test(paper, questions):
+def add_questions_to_paper(paper, questions):
     for question in questions:
         pq = paper.new_question(question)
         db.session.add(pq)
