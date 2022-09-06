@@ -385,11 +385,19 @@ class Paper(db.Model):
     def new_question(self, question):
         # Place multiple-choice questions before open-answer questions
         insertion_index = len(self.paper_questions)
+        print("--------------------------")
+        print("Inside paper.new_question!!")
+        print("Input Question!!")
+        print(question)
+        print("Question ID:")
+        print(question.id)
         if question.is_multiple_choice():
             # insert it before the first open answer question
             insertion_index = self.open_answer_questions_start_index()
         paper_question = PaperQuestion(paper_id=self.id, question_id=question.id)
         self.paper_questions.insert(insertion_index, paper_question)
+        print("Output paper_question!!")
+        print(paper_question)
         return paper_question
 
     def remove_question(self, question_id):

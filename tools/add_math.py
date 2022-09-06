@@ -57,13 +57,25 @@ def add_math():
     course_id = 2
     course = m.Course.query.get(course_id)
     all_questions = add_questions_and_tags(course)
+    print("All Questions: ")
+    print(all_questions)
     mc_questions = db_data.get_mc_questions(all_questions)
+    print("MC Questions: ")
+    print(mc_questions)
     oa_questions = db_data.get_oa_questions(all_questions)
+    print("OA Questions: ")
+    print(oa_questions)
     # Danger!! Hardcoded Paper IDs!!
     first_exam = m.Paper.query.filter_by(course_id = course.id, id = 4).first()
+    print(first_exam)
     first_test = m.Paper.query.filter_by(course_id = course.id, id = 5).first()
+    print(first_test)
     db_data.add_questions_to_paper(first_test, mc_questions)
+    print("Questions on first_test: ")
+    print(first_test.paper_questions)
     db_data.add_questions_to_paper(first_exam, all_questions)
+    print("Questions on first_exam: ")
+    print(first_exam.paper_questions)
     # scores for all the students in each clazz
     for clazz in course.clazzes:
         db_data.add_scores(first_test, clazz.students)
