@@ -394,7 +394,7 @@ class Paper(db.Model):
         if question.is_multiple_choice():
             # insert it before the first open answer question
             insertion_index = self.open_answer_questions_start_index()
-        paper_question = PaperQuestion(paper_id=self.id, question_id=question.id)
+        paper_question = PaperQuestion(paper_id=self.id, question_id=question.id, question=question)
         self.paper_questions.insert(insertion_index, paper_question)
         print("Output paper_question!!")
         print(paper_question)
