@@ -30,7 +30,7 @@ def add_questions_and_tags(course):
     oa_content_2 = "Determine the roots and the apex of the parabola \(-2x^2 + 4x -12 = 0 \)."
     oa_solution_2 = m.Solution(content ="Use the quadratic equation (1 point) to determine the roots are x = 6 and x = -2. (1 point each). The apex will be found at the geometric average of the roots x = 2 (1 point). Substitue this into the original formula (1 point) to obtain y = -16 (1 point)")
     oa_points_2 = 6
-    oa_question_2 = m.Question.create(content = oa_content_2, all_solutions = [oa_solution_2], points = oa_points_2, course_id = course.id, tags = [tag1, tag3])
+    oa_question_2 = m.Question.create(content = oa_content_2, all_solutions = [oa_solution_2], points = oa_points_2, course_id  = course.id, tags = [tag1, tag3])
 
     mc_content_1 = """Which of the following quadratic equations describes a parabola with a global maximum: """
     mc_choices_1 = [m.Solution(content=content) for content in ('\[f(x) = \frac{x^2}{6} - 2x +9\]', '\[f(x) = -5x^2 + 5x + 10\]', '\[f(x) = 6x^2 - \frac{2x}{7} + 3\]', '\[f(x) = x^2 - 3x + \frac{5}{17}\]')]
@@ -57,25 +57,13 @@ def add_math():
     course_id = 2
     course = m.Course.query.get(course_id)
     all_questions = add_questions_and_tags(course)
-    print("All Questions: ")
-    print(all_questions)
     mc_questions = db_data.get_mc_questions(all_questions)
-    print("MC Questions: ")
-    print(mc_questions)
     oa_questions = db_data.get_oa_questions(all_questions)
-    print("OA Questions: ")
-    print(oa_questions)
     # Danger!! Hardcoded Paper IDs!!
     first_exam = m.Paper.query.filter_by(course_id = course.id, id = 4).first()
-    print(first_exam)
     first_test = m.Paper.query.filter_by(course_id = course.id, id = 5).first()
-    print(first_test)
     db_data.add_questions_to_paper(first_test, mc_questions)
-    print("Questions on first_test: ")
-    print(first_test.paper_questions)
     db_data.add_questions_to_paper(first_exam, all_questions)
-    print("Questions on first_exam: ")
-    print(first_exam.paper_questions)
     # scores for all the students in each clazz
     for clazz in course.clazzes:
         db_data.add_scores(first_test, clazz.students)
