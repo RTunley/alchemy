@@ -1,0 +1,54 @@
+{% extends "course/cohort/layout.html" %}
+
+{% block cohort_tab_content %}
+
+  <h2>Assessment Reports ({{ g.course.papers | length }})</h2>
+  <br>
+  <table class="table table-hover">
+    <tr>
+      <th>Assessment</th>
+      <th>Category</th>
+      <th>Total Marks</th>
+      <th>Achievement</th>
+    </tr>
+    {% for paper in g.course.papers %}
+      <tr>
+        <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
+        <td>{{ paper.category.name }}</td>
+        <td>{{ paper.profile.total_points }}</td>
+        <td>
+          {% if (paper.paper_questions | length) != 0 %}
+            {% if paper.has_all_scores() %}
+                <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id, section_selection_string_get = g.cohort_paper_report_sections_string) }}">View Cohort Report</a>
+            {% else %}
+              <a class="btn btn-success btn-sm disabled" target="_blank">View Cohort Report</a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <br>
+
+  <h2>Reporting Events ({{ g.school.snapshots | length }})</h2>
+  <br>
+  {% if g.school.snapshots %}
+    <table class="table table-hover">
+      <tr>
+        <th>Event</th>
+        <th>Achievement</th>
+      </tr>
+      {% for snapshot in g.school.snapshots %}
+        <tr>
+          <td>{{ snapshot.name }}</td>
+          <td>
+            <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Cohort Report</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <h5 color='red'>There are no Reporting Events to view.</h5>
+  {% endif %}
+
+{% endblock cohort_tab_content %}

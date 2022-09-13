@@ -13,6 +13,10 @@ def get_cohort_size(course):
         num_students+=len(clazz.students)
     return num_students
 
+@bp_cohort.url_value_preprocessor
+def url_value_preprocessor(endpoint, values):
+    g.cohort = "Cohort"
+
 @bp_cohort.before_request
 def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
@@ -30,6 +34,11 @@ def get_clazz_course_profiles(course):
 def index():
     return flask.render_template('course/cohort/index.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
 
+@bp_cohort.route('/view_reports')
+@auth_manager.require_group
+def view_reports():
+    return flask.render_template('course/cohort/view_reports.html', num_students = get_cohort_size(g.course), clazz_profiles = get_clazz_course_profiles(g.course))
+
 @bp_cohort.route('/paper_report/<int:paper_id>')
 @auth_manager.require_group
 def paper_report(paper_id=0):
@@ -38,6 +47,11 @@ def paper_report(paper_id=0):
     section_selections = section_selection_string.split(',')
     cohort_report = report_types.CohortPaperReport(paper, section_selections)
     return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)
+
+@bp_cohort.route('/manage_members')
+@auth_manager.require_group
+def manage_members():
+    return flask.render_template('course/cohort/manage_members.html', num_students = get_cohort_size(g.course))
 
 @bp_cohort.route('/add_student', methods=['POST'])
 @auth_manager.require_group

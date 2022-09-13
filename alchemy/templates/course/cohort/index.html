@@ -1,149 +1,71 @@
-{% extends "course/layout.html" %}
+{% extends "course/cohort/layout.html" %}
 
-{% block course_main_content %}
-  <main role="main">
-    <h1 class="my-3">{{ g.course.name }} - Current Cohort</h1>
+{% block cohort_tab_content %}
 
-    <h2>Assessments ({{ g.course.papers | length }})</h2>
-    <br>
-    <table class="table table-hover">
-      <tr>
-        <th>Assessment</th>
-        <th>Category</th>
-        <th>Total Marks</th>
-        <th>Achievement</th>
-      </tr>
-      {% for paper in g.course.papers %}
-        <tr>
-          <td><a href="{{ url_for('course.paper.index', paper_id = paper.id)}}">{{ paper.title }}</a></td>
-          <td>{{ paper.category.name }}</td>
-          <td>{{ paper.profile.total_points }}</td>
-          <td>
-            {% if (paper.paper_questions | length) != 0 %}
-              {% if paper.has_all_scores() %}
-                  <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id, section_selection_string_get = g.cohort_paper_report_sections_string) }}">View Cohort Report</a>
-              {% else %}
-                <a class="btn btn-success btn-sm disabled" target="_blank">View Cohort Report</a>
-              {% endif %}
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-    <br>
+  <h1 class="my-3">{{ g.course.name }} - Current Cohort</h1>
 
-    <h2>Classes ({{ g.course.clazzes | length }})</h2>
-    <br>
-    <table class="table table-hover">
-      <thead>
-        <th>Class</th>
-        <th>Teacher</th>
-        <th>Number of Students</th>
-      </thead>
-      {% for profile in clazz_profiles %}
-      <tr>
-        <td><a href="{{ url_for('course.clazz.index', clazz_id = profile.clazz.id)}}">{{ profile.clazz.code }}</a></td>
-        <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
-        <td>{{ profile.clazz.students | length }}</td>
-      </tr>
-      {% endfor %}
-    </table>
+  <h2>Classes ({{ g.course.clazzes | length }})</h2>
+  <br>
+  <table class="table table-hover">
+    <thead>
+      <th>Class</th>
+      <th>Teacher</th>
+      <th>Number of Students</th>
+    </thead>
+    {% for profile in clazz_profiles %}
+    <tr>
+      <td><a href="{{ url_for('course.clazz.index', clazz_id = profile.clazz.id)}}">{{ profile.clazz.code }}</a></td>
+      <td>TEACHER (eventually)</td><!--TODO eventually clazz.teachers-->
+      <td>{{ profile.clazz.students | length }}</td>
+    </tr>
+    {% endfor %}
+  </table>
 
-    <h2>Students ({{ num_students }})</h2>
-    <br>
-    <div class="accordion" id="student-cohort-list">
-      <div class="card">
-        <div class="card-header" id="student-list-header">
-          <h2 class="mb-0">
-            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#cohort-list" aria-expanded="false" aria-controls="collapseTwo">
-              <h4>View All Students</h4>
-            </button>
-          </h2>
-        </div>
-        <div id="cohort-list" class="collapse" aria-labelledby="student-list-header" data-parent="#student-cohort-list">
-          <div class="card-body">
-            <table class="table table-hover">
-              <thead>
-                <th>Student ID</th>
-                <th>Family Name, Given Name</th>
-                <th>Class</th>
-                {% for paper in g.course.papers %}
-                  <th>{{ paper.title }}</th>
-                {% endfor %}
-              </thead>
-              {% for clazz_profile in clazz_profiles %}
-                {% for student_profile in clazz_profile.student_course_profiles %}
-                  <tr>
-                    <td class="align-middle"><a href="{{ url_for('student.index', student_id = student_profile.student.id) }}">{{ student_profile.student.id }}</a></td>
-                    <td class="align-middle">{{ student_profile.student.aws_user.family_name }}, {{ student_profile.student.aws_user.given_name }}</td>
-                    <td class="align-middle">{{ clazz_profile.clazz.code }}</td>
-                    {% for tally in student_profile.paper_score_tallies %}
-                      {% if tally.has_all_scores() %}
-                        <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br>
-                          <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}">View Report</a></td>
-                      {% else %}
-                        <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
-                        </td>
-                      {% endif %}
-                    {% endfor %}
-                  </tr>
-                {% endfor %}
+  <h2>Students ({{ num_students }})</h2>
+  <br>
+  <div class="accordion" id="student-cohort-list">
+    <div class="card">
+      <div class="card-header" id="student-list-header">
+        <h2 class="mb-0">
+          <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#cohort-list" aria-expanded="false" aria-controls="collapseTwo">
+            <h4>View All Students</h4>
+          </button>
+        </h2>
+      </div>
+      <div id="cohort-list" class="collapse" aria-labelledby="student-list-header" data-parent="#student-cohort-list">
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead>
+              <th>Student ID</th>
+              <th>Family Name, Given Name</th>
+              <th>Class</th>
+              {% for paper in g.course.papers %}
+                <th>{{ paper.title }}</th>
               {% endfor %}
-            </table>
-          </div>
+            </thead>
+            {% for clazz_profile in clazz_profiles %}
+              {% for student_profile in clazz_profile.student_course_profiles %}
+                <tr>
+                  <td class="align-middle"><a href="{{ url_for('student.index', student_id = student_profile.student.id) }}">{{ student_profile.student.id }}</a></td>
+                  <td class="align-middle">{{ student_profile.student.aws_user.family_name }}, {{ student_profile.student.aws_user.given_name }}</td>
+                  <td class="align-middle">{{ clazz_profile.clazz.code }}</td>
+                  {% for tally in student_profile.paper_score_tallies %}
+                    {% if tally.has_all_scores() %}
+                      <td>{{ tally.percent_total }}% | {{ tally.grade }}  <br>
+                        <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = student_profile.student.id, paper_id = tally.paper.id, clazz_id = clazz_profile.clazz.id, section_selection_string_get = g.student_paper_report_sections_string ) }}">View Report</a></td>
+                    {% else %}
+                      <td>No Grade Assigned<br><a class="btn btn-success btn-sm disabled">View Report</a>
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </table>
         </div>
       </div>
     </div>
-    <br>
+  </div>
 
-    <br>
-    <h2>Edit Cohort</h2>
-    <br>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
-      <span data-feather="plus-square"></span>
-      Add Student
-    </button> Add a single student to any class by using this button.
-    <!-- Add Student Modal goes here -->
-    {% import "course/cohort/add_student_macro.html" as add_student %}
-    <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="add_student_modal_label">Add New Student</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>{{ add_student.render_add_student(g.course) }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br>
-    <br>
-    <h3>Upload Class Data</h3>
-    <p>You can add an entire class list by uploading a pre-formatted file with the student information.</p>
-    <p>Download a preformatted Excel sheet <a href="{{ url_for('course.cohort.download_class_template') }}">here</a>.</p>
-    <p>Acceptable file formats are: <b>.csv</b> and <b>.xlsx</b> (Excel)</p>
-    <p>Once it is completed, upload below to add your students.</p>
-    <p>
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-      {% endwith %}
-    </p>
-    <form method="post" action="{{ url_for('course.cohort.upload_class_data') }}" enctype="multipart/form-data">
-      <div class="form-group">
-        <input type="file" name="file" autocomplete="off" required>
-        <input type="text" name="clazz_code" placeholder='New Class Code' required>
-      </div>
-      <input type="submit" value="Submit">
-    </form>
-  </main>
-{% endblock course_main_content %}
+
+{% endblock cohort_tab_content %}

@@ -1,0 +1,24 @@
+{% include "layout_start.html" %}
+
+<script src="{{ url_for('static', filename='mc_results_input.js') }}"></script>
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.cohort.index' }}" href="{{ url_for('course.cohort.index') }}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.cohort.view_reports' }}" href="{{ url_for('course.cohort.view_reports') }}">Reports</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'course.cohort.manage_members' }}" href="{{ url_for('course.cohort.manage_members') }}">Manage Members</a>
+    </li>
+  </ul>
+  <br>
+
+  {% block cohort_tab_content %}
+  {% endblock cohort_tab_content %}
+
+</div>
+
+{% include "layout_end.html" %}

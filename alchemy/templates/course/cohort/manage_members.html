@@ -1,0 +1,54 @@
+{% extends "course/cohort/layout.html" %}
+
+{% block cohort_tab_content %}
+
+  <h3>New Student</h3>
+  <br>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_student">
+    <span data-feather="plus-square"></span> Add New Student
+  </button> Add a single student to any existing class by using this button.
+  <br>
+  <!-- Add Student Modal goes here -->
+  {% import "course/cohort/add_student_macro.html" as add_student %}
+  <div class="modal fade" id="add_student" tabindex="-1" aria-labelledby="add_student_modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add_student_modal_label">Add New Student</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>{{ add_student.render_add_student(g.course) }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <h3>Upload Class Data</h3>
+  <p>You can add an entire class list by uploading a pre-formatted file with the student information.</p>
+  <p>Download a preformatted Excel sheet <a href="{{ url_for('course.cohort.download_class_template') }}">here</a>.</p>
+  <p>Acceptable file formats are: <b>.csv</b> and <b>.xlsx</b> (Excel)</p>
+  <p>Once it is completed, upload below to add your students.</p>
+  <p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+    {% endwith %}
+  </p>
+  <form method="post" action="{{ url_for('course.cohort.upload_class_data') }}" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="file" name="file" autocomplete="off" required>
+      <input type="text" name="clazz_code" placeholder='New Class Code' required>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+
+{% endblock cohort_tab_content %}
