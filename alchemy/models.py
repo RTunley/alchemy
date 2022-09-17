@@ -13,7 +13,6 @@ class School(db.Model):
     departments = db.relationship('Department', backref='school')
     snapshots = db.relationship('Snapshot', backref='school')
 
-
 class Department(db.Model):
     __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)

@@ -40,7 +40,7 @@
               </td>
             {% elif not snapshot.is_published %}
               <td>
-                <h4><button type="button" class="btn btn-success">Publish</button>
+                <h4><a type="button" class="btn btn-success" href="{{ url_for('school.publish_snapshot', school_id = g.school.id, snapshot_id = snapshot.id) }}">Publish</a>
               </td>
             {% else %}
               <td>

@@ -10,28 +10,28 @@ class ClazzReportSection:
 
 class OverviewSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/overview.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/overview.html', **section_kwargs)
 
     def build_self(self):
         self.tally = data_manager.PaperMultiScoreTally.from_clazz(self.clazz, self.paper)
 
 class OverviewPlotSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/overview_plot.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/overview_plot.html', **section_kwargs)
 
     def build_self(self):
         self.plot = data_manager.create_clazz_distribution_plot(self.clazz, self.paper)
 
 class OverviewDetailsSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/overview_details.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/overview_details.html', **section_kwargs)
 
     def build_self(self):
         self.statprofile = data_manager.StatProfile(data_manager.total_student_scores_for_clazz(self.clazz, self.paper), self.paper.profile.total_points)
 
 class GradeOverviewSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/grades_overview.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/grades_overview.html', **section_kwargs)
 
     def build_self(self):
         student_tallies = [data_manager.PaperScoreTally.from_student(student, self.paper) for student in self.clazz.students]
@@ -40,7 +40,7 @@ class GradeOverviewSection(ClazzReportSection):
 
 class TagOverviewSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/tag_overview.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/tag_overview.html', **section_kwargs)
 
     def build_self(self):
         self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz.students, self.paper)
@@ -48,7 +48,7 @@ class TagOverviewSection(ClazzReportSection):
 
 class QuestionOverviewSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/question_overview.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/question_overview.html', **section_kwargs)
 
     def build_self(self):
         if self.paper.has_oa_questions() and self.paper.has_mc_questions():
@@ -63,7 +63,7 @@ class QuestionOverviewSection(ClazzReportSection):
 
 class TagDetailsSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/tag_details.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/tag_details.html', **section_kwargs)
 
     def build_self(self):
         self.statprofiles = data_manager.make_tag_statprofile_list(self.clazz.students, self.paper)
@@ -71,7 +71,7 @@ class TagDetailsSection(ClazzReportSection):
 
 class QuestionDetailsSection(ClazzReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/clazz/report_section_macros/question_details.html', **section_kwargs)
+        super().__init__('course/clazz/paper_report_sections/question_details.html', **section_kwargs)
 
     def build_self(self):
         mcq_group_tallies = data_manager.make_mcq_group_tallies(self.paper, self.clazz.students)

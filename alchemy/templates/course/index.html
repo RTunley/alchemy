@@ -176,7 +176,7 @@
                   {% if not checkpoint.snapshot.is_published %}
                     <button data-toggle="modal" data-target="#edit_checkpoint_modal_{{ checkpoint.id }}" type="button" class="btn btn-success" onclick="get_paper_ids({{ g.course.id }}, {{ checkpoint.id }})">Ready <span data-feather="edit"></span></button>
                   {% else %}
-                    <button type="button" class="btn btn-success disabled">Published <span data-toggle="modal" data-target="#edit_checkpoint_modal_{{ checkpoint.id }}" data-feather="edit"></span></button>
+                    <button type="button" class="btn btn-success disabled">Published</button>
                   {% endif %}
                 {% endif %}
               </td>

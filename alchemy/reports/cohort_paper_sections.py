@@ -10,28 +10,28 @@ class CohortReportSection:
 
 class OverviewSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/overview.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/overview.html', **section_kwargs)
 
     def build_self(self):
          self.tally = data_manager.PaperMultiScoreTally.from_cohort(self.paper)
 
 class OverviewPlotSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/overview_plot.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/overview_plot.html', **section_kwargs)
 
     def build_self(self):
         self.plot = data_manager.create_cohort_distribution_plot(self.paper)
 
 class OverviewDetailsSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/overview_details.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/overview_details.html', **section_kwargs)
 
     def build_self(self):
         self.statprofile = data_manager.StatProfile(data_manager.total_student_scores_for_cohort(self.paper), self.paper.profile.total_points)
 
 class GradeOverviewSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/grades_overview.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/grades_overview.html', **section_kwargs)
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
@@ -45,7 +45,7 @@ class GradeOverviewSection(CohortReportSection):
 
 class TagOverviewSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/tag_overview.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/tag_overview.html', **section_kwargs)
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
@@ -54,7 +54,7 @@ class TagOverviewSection(CohortReportSection):
 
 class QuestionOverviewSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/question_overview.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/question_overview.html', **section_kwargs)
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
@@ -70,7 +70,7 @@ class QuestionOverviewSection(CohortReportSection):
 
 class TagDetailsSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/tag_details.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/tag_details.html', **section_kwargs)
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)
@@ -79,7 +79,7 @@ class TagDetailsSection(CohortReportSection):
 
 class QuestionDetailsSection(CohortReportSection):
     def __init__(self, **section_kwargs):
-        super().__init__('course/cohort/report_section_macros/question_details.html', **section_kwargs)
+        super().__init__('course/cohort/paper_report_sections/question_details.html', **section_kwargs)
 
     def build_self(self):
         all_students = data_manager.all_students_in_course(self.paper.course)

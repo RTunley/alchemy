@@ -29,6 +29,14 @@ def departments():
 def snapshots():
     return flask.render_template('school/snapshots.html')
 
+@bp_school.route('/publish_snapshot/<int:snapshot_id>')
+@auth_manager.require_group
+def publish_snapshot(snapshot_id):
+    snapshot = models.Snapshot.query.get_or_404(snapshot_id)
+    snapshot.is_published = True
+    db.session.commit()
+    return flask.render_template('school/snapshots.html')
+
 @bp_school.route('/new_snapshot', methods = ['POST'])
 @auth_manager.require_group
 def new_snapshot():

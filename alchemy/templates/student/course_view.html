@@ -52,4 +52,30 @@
   </table>
 </div>
 
+<div class='container'>
+  <h4>Reporting Events</h4>
+  <br>
+  <table style="text-align:center" class="table table-hover">
+    <tr>
+      <th>Reporting Event</th>
+      <th>Achievement</th>
+      <th>Report</th>
+    </tr>
+    <tbody>
+      {% for checkpoint in g.course.checkpoints %}
+        <tr>
+          <td>{{ checkpoint.snapshot.name }}</td>
+          {% if not checkpoint.snapshot.is_published %}
+            <td>No Grade Assigned</td>
+            <td><a class="btn btn-success btn-sm disabled">Report Unavailable</a></td>
+          {% else %}
+            <td>grade here soon!</td>
+            <td><a class="btn btn-success btn-sm">View Report</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock student_tab_content %}
