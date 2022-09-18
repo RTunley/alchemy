@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% include "course/reports/layout_start.html" %}
+
+<body>
+  <h1 style="text-align:center">{{ student_checkpoint_report.title }}</h1>
+  <h1 style="text-align:center">{{ student_checkpoint_report.subtitle }}</h1>
+
+  <div class='container'>
+
+    {% for section in student_checkpoint_report.sections %}
+
+    <div class='section'>
+      {% import section.html_macro as section_html %}
+      {{ section_html.render_section(section) }}
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+</body>
+{% include "layout_end.html" %}
+
+</html>

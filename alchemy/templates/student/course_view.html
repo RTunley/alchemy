@@ -70,7 +70,7 @@
             <td><a class="btn btn-success btn-sm disabled">Report Unavailable</a></td>
           {% else %}
             <td>grade here soon!</td>
-            <td><a class="btn btn-success btn-sm">View Report</a></td>
+            <td><a class="btn btn-success btn-sm" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
           {% endif %}
         </tr>
       {% endfor %}

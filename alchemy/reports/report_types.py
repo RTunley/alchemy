@@ -1,4 +1,6 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections, cohort_paper_sections
+from alchemy.reports import student_checkpoint_sections
+
 
 class StudentPaperReport(object):
     def __init__(self, student, clazz, paper, section_types):
@@ -54,4 +56,23 @@ class CohortPaperReport(object):
         for section_type in section_types:
             section_class = getattr(cohort_paper_sections, section_type)
             section = section_class(paper = self.paper)
+            self.sections.append(section)
+
+class StudentCheckpointReport(object):
+    def __init__(self, student, clazz, checkpoint, section_types):
+        self.title = None
+        self.subtitle = None
+        self.student = student
+        self.clazz = clazz
+        self.checkpoint = checkpoint
+        self.sections = []
+        self.build_self(section_types)
+
+    def build_self(self, section_types):
+        self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Achievement Report"
+        self.subtitle = f"{self.clazz.course.name} ({self.clazz.code}): {self.checkpoint.snapshot.name}"
+
+        for section_type in section_types:
+            section_class = getattr(student_checkpoint_sections, section_type)
+            section = section_class(student = self.student, checkpoint = self.checkpoint, clazz = self.clazz)
             self.sections.append(section)
