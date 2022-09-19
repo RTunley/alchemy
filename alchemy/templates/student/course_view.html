@@ -32,6 +32,7 @@
   <table style="text-align:center" class="table table-hover">
     <tr>
       <th>Assessment</th>
+      <th>Category | Weighting</th>
       <th>Achievement</th>
       <th>Report</th>
     </tr>
@@ -40,6 +41,7 @@
         <tr>
           <td>{{ tally.paper.title }}</td>
           {% if tally.has_all_scores %}
+            <td>{{ tally.paper.category.name }} | {{ tally.paper.category.weight }}%</td>
             <td>{{ tally.grade }} | {{ tally.percent_total }}% | {{ tally.raw_total }} / {{ tally.paper.profile.total_points }}</td>
             <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_paper_report_sections_string) }}" >View Report</a></td>
           {% else %}
@@ -70,7 +72,7 @@
             <td><a class="btn btn-success btn-sm disabled">Report Unavailable</a></td>
           {% else %}
             <td>grade here soon!</td>
-            <td><a class="btn btn-success btn-sm" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
+            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
           {% endif %}
         </tr>
       {% endfor %}

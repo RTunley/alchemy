@@ -13,4 +13,4 @@ class OverviewSection(StudentReportSection):
         super().__init__('student/checkpoint_report_sections/overview.html', **section_kwargs)
 
     def build_self(self):
-        self.checkpoint_tally = checkpoint_data_manager.CheckpointTally(self.student, self.checkpoint)
+        self.checkpoint_tally = checkpoint_data_manager.make_student_checkpoint_tally(self.student, self.checkpoint)
