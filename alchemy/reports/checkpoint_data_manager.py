@@ -11,13 +11,15 @@ class StudentCheckpointTally():
         self.percentage = 0
         self.grade = None
         self.paper_score_tally_list = []
-        self.paper_tally_groups = []
+        self.category_tally_groups = []
 
 class CategoryTallyGroup():
     def __init__(self, category, paper_tally_list):
         self.category = category
         self.paper_tally_list = []
-        self.average_tally = 0
+        self.total_points = 0
+        self.total_tally = 0
+        self.percentage = 0
         self.build_self(paper_tally_list)
 
     def build_self(self, paper_tally_list):
@@ -25,12 +27,14 @@ class CategoryTallyGroup():
         for tally in paper_tally_list:
             if tally.paper.category == self.category:
                 self.paper_tally_list.append(tally)
-                tally_sum += tally.percent_total
+                self.total_tally += tally.raw_total
+                self.total_points += tally.paper.profile.total_points
 
         if len(self.paper_tally_list) != 0:
-            self.average_tally = round(tally_sum/len(self.paper_tally_list),2)
+            self.percentage = round(self.total_tally/self.total_points*100, 2)
+
         else:
-            self.average_tally = None
+            self.percentage = None
 
 def make_student_checkpoint_tally(student, checkpoint):
     student_checkpoint_tally = StudentCheckpointTally(student, checkpoint)
@@ -47,15 +51,17 @@ def make_student_checkpoint_tally(student, checkpoint):
     weight_sum = 0
     for category in all_categories:
         category_group = CategoryTallyGroup(category, student_checkpoint_tally.paper_score_tally_list)
-        student_checkpoint_tally.paper_tally_groups.append(category_group)
-        if category_group.average_tally != None:
+        student_checkpoint_tally.category_tally_groups.append(category_group)
+        if category_group.percentage != None:
             weight_sum += category_group.category.weight
 
     # Add up the weighted category averages and normalize against weight_sum
     weighted_category_sum = 0
-    for group in student_checkpoint_tally.paper_tally_groups:
-        if group.average_tally != None:
-            weighted_category_sum += round(group.average_tally*group.category.weight, 2)
+    for group in student_checkpoint_tally.category_tally_groups:
+        print(group.category.name)
+        print(group.percentage)
+        if group.percentage != None:
+            weighted_category_sum += round(group.percentage*group.category.weight, 2)
 
     student_checkpoint_tally.percentage = round(weighted_category_sum/weight_sum, 1)
     student_checkpoint_tally.grade = data_manager.determine_grade(student_checkpoint_tally.percentage, checkpoint.course)
