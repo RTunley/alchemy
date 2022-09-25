@@ -8,7 +8,7 @@
     <tr>
       <td>
         {% if adjacent_grades_section.adjacent_grades.lower_grade %}
-          <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_lower_grade }}%</b> (or <b>{{ adjacent_grades_section.adjacent_grades.raw_diff_lower_grade }}</b> marks) from <b>{{ adjacent_grades_section.adjacent_grades.lower_grade.grade }}</b> level.</p>
+          <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_lower_grade }}%</b> from <b>{{ adjacent_grades_section.adjacent_grades.lower_grade.grade }}</b> level.</p>
           <br>
         {% else %}
           <p>Don't stress! Small improvements will make big differences!</p>
@@ -16,7 +16,7 @@
       </td>
       <td>
         {% if adjacent_grades_section.adjacent_grades.higher_grade %}
-          <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_higher_grade }}%</b> (or <b>{{ adjacent_grades_section.adjacent_grades.raw_diff_higher_grade }}</b> marks) from <b>{{ adjacent_grades_section.adjacent_grades.higher_grade.grade }}</b> level.</p>
+          <p>Your achievement on this assessment was <b>{{ adjacent_grades_section.adjacent_grades.diff_higher_grade }}%</b> from <b>{{ adjacent_grades_section.adjacent_grades.higher_grade.grade }}</b> level.</p>
           <br>
         {% else %}
           <p>Wowsers! You have achieved at the highest possible grade level! Congratulations!</p>

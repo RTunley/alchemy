@@ -14,6 +14,70 @@
     <td style="text-align: center">{{ overview_section.checkpoint_tally.grade }}</td>
   </tr>
 </table>
-<br>
+<div class="accordion" id="show_calc_card">
+  <div class="card">
+    <div class="card-header" id="grade_calculation">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-center" type="button" data-toggle="collapse" data-target="#show_calc" aria-expanded="true" aria-controls="show_calc">
+          How?
+        </button>
+      </h2>
+    </div>
+    <div id="show_calc" class="collapse" aria-labelledby="show_calc_heading" data-parent="#show_calc_card">
+      <div class="card-body">
+        How your overall achievement is calculated:
+        <br>
+        <br>
+        <table style="text-align:center" class="table table-hover">
+          <thead>
+            {% for category_group in overview_section.checkpoint_tally.category_tally_groups %}
+              <th>{{ category_group.category.name }} ({{ category_group.category.weight }}%)</th>
+            {% endfor %}
+          </thead>
+          <tr>
+            {% for category_group in overview_section.checkpoint_tally.category_tally_groups %}
+              <td>
+                <table style="text-align:center" class="table table-hover">
+                  <thead>
+                    <th>Assessment</th>
+                    <th>Achieved</th>
+                    <th>Total</th>
+                  </thead>
+                  {% for paper_tally in category_group.paper_tally_list %}
+                    <tr>
+                      <td>{{ paper_tally.paper.title }}</td>
+                      <td>{{ paper_tally.raw_total }}</td>
+                      <td>{{ paper_tally.paper.profile.total_points }}</td>
+                    </tr>
+                  {% endfor %}
+                  <tr>
+                    <td>Totals</td>
+                    <td>{{ category_group.total_tally }}</td>
+                    <td>{{ category_group.total_points }}</td>
+                  </tr>
+                </table>
+              </td>
+            {% endfor %}
+          </tr>
+          <thead>
+            {% for category_group in overview_section.checkpoint_tally.category_tally_groups %}
+              <th>Weighted Percentage</th>
+            {% endfor %}
+          </thead>
+          <tr>
+            {% for category_group in overview_section.checkpoint_tally.category_tally_groups %}
+              {% if category_group.total_points != 0 %}
+                <td>\( \frac{ {{ category_group.total_tally }} }{ {{ category_group.total_points  }} } \times \frac{ {{ category_group.category.weight }} }{ {{ overview_section.checkpoint_tally.weight_sum }} } = {{ category_group.weighted_percentage }}% \)</td>
+              {% else %}
+                <td>0</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        </table>
+        <p>The weighted percentages are then summed together to get {{ overview_section.checkpoint_tally.percentage }}% which corresponds to a grade of {{ overview_section.checkpoint_tally.grade }} in this course.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 {%- endmacro %}
