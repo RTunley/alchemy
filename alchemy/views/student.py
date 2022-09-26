@@ -20,7 +20,7 @@ def url_value_preprocessor(endpoint, values):
     g.student = models.Student.query.get_or_404(values.pop('student_id'))
     g.school = models.School.query.first()
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
-    g.student_checkpoint_report_sections_string = 'OverviewSection,AdjacentGradesSection'
+    g.student_checkpoint_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection'
 
 @bp_student.url_defaults
 def url_defaults(endpoint, values):

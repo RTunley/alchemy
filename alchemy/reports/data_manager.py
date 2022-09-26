@@ -2,7 +2,7 @@ import numpy as np
 import sqlalchemy
 from alchemy import models, db
 from alchemy.views import profile
-from alchemy.reports import plots
+from alchemy.reports import plots, checkpoint_data_manager
 
 ## Data organisation classes
 
@@ -30,12 +30,17 @@ class StudentCourseProfile(object):
     def __init__(self, student, course):
         self.student = student
         self.paper_score_tallies = []
+        self.checkpoint_tallies = []
         self.build_self(student, course)
 
     def build_self(self, student, course):
         for paper in course.papers:
             paper_score_tally = PaperScoreTally.from_student(student, paper)
             self.paper_score_tallies.append(paper_score_tally)
+
+        for checkpoint in course.checkpoints:
+            checkpoint_tally = checkpoint_data_manager.StudentCheckpointTally(student, checkpoint)
+            self.checkpoint_tallies.append(checkpoint_tally)
 
 class PaperScoreTally(object):
     def __init__(self, student, paper, score):

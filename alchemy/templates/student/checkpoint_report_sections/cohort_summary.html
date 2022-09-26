@@ -1,0 +1,18 @@
+{% macro render_section(cohort_summary_section) -%}
+
+<h2><b>Cohort</b></h2>
+<br>
+<p>For comparison, here is the mean achievement for your cohort on this assessment:</p>
+<table style="text-align:center" class="table table-hover">
+  <thead>
+    <th>Achievement (%) </th>
+    <th>Grade Level</th>
+  </thead>
+  <tr>
+    <td style="text-align: center">{{ cohort_summary_section.checkpoint_tally.percent_mean }}% </td>
+    <td style="text-align: center">{{ cohort_summary_section.checkpoint_tally.mean_grade }}</td>
+  </tr>
+</table>
+<br>
+
+{%- endmacro %}

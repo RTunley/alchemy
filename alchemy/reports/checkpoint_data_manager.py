@@ -97,3 +97,25 @@ class AdjacentGrades(object):
             self.diff_higher_grade = round(self.higher_grade.lower_bound - percentage, 1)
             self.lower_grade = grade_list[index+1]
             self.diff_lower_grade = round(percentage - self.lower_grade.upper_bound, 1)
+
+class CheckpointMultiScoreTally(object):
+    def __init__(self, checkpoint, score_list):
+        self.percent_mean = data_manager.calc_mean(score_list)
+        self.mean_grade = data_manager.determine_grade(self.percent_mean, checkpoint.course)
+
+    @staticmethod
+    def from_clazz(clazz, checkpoint):
+        clazz_checkpoint_percents = []
+        for student in clazz.students:
+            checkpoint_tally = StudentCheckpointTally(student, checkpoint)
+            clazz_checkpoint_percents.append(checkpoint_tally.percentage)
+        return CheckpointMultiScoreTally(checkpoint, clazz_checkpoint_percents)
+
+    @staticmethod
+    def from_cohort(checkpoint):
+        cohort_checkpoint_percents = []
+        for clazz in checkpoint.course.clazzes:
+            for student in clazz.students:
+                checkpoint_tally = StudentCheckpointTally(student, checkpoint)
+                cohort_checkpoint_percents.append(checkpoint_tally.percentage)
+        return CheckpointMultiScoreTally(checkpoint, cohort_checkpoint_percents)
