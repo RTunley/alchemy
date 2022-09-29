@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% include "course/reports/layout_start.html" %}
+
+<body>
+  <h1 style="text-align:center">{{ snapshot_report.title }}</h1>
+  <h1 style="text-align:center">{{ snapshot_report.subtitle }}</h1>
+  <br>
+  <table class="table table-hover">
+    <thead>
+      <th>Course</th>
+      <th>Your Achievement</th>
+      <th>Detailed Report</th>
+    </thead>
+    {% for tally in snapshot_report.checkpoint_tallies %}
+      <tr>
+        <td>{{ tally.checkpoint.course.name }}</td>
+        <td>{{ tally.percentage }}% | {{ tally.grade }}</td>
+        <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = tally.checkpoint.id, clazz_id = tally.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
+      </tr>
+    {% endfor %}
+  </table>
+
+</body>
+{% include "layout_end.html" %}
+
+</html>

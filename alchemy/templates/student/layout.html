@@ -15,6 +15,9 @@
     <li class="nav-item">
       <a class="nav-link {{ 'active' if request.endpoint == 'student.courses' }}" href="{{ url_for('student.courses', student_id=g.student.id) }}">Courses</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link {{ 'active' if request.endpoint == 'student.snapshots' }}" href="{{ url_for('student.snapshots', student_id=g.student.id) }}">Reporting</a>
+    </li>
   </ul>
   <br>
   {% block student_tab_content %}

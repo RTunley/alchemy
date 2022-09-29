@@ -48,6 +48,18 @@ def course_view(course_id):
     course_profile = data_manager.StudentCourseProfile(g.student, g.course)
     return flask.render_template('student/course_view.html', profile = course_profile)
 
+@bp_student.route('/snapshots')
+@auth_manager.require_group
+def snapshots():
+    return flask.render_template('student/snapshots.html')
+
+@bp_student.route('/snapshots/<int:snapshot_id>/report')
+@auth_manager.require_group
+def snapshot_report(snapshot_id):
+    snapshot = models.Snapshot.query.filter_by(id = snapshot_id).first()
+    snapshot_report = report_types.SnapshotReport(g.student, snapshot)
+    return flask.render_template('student/snapshot_report.html', snapshot_report = snapshot_report )
+
 @bp_student.route('/student_paper_report/clazz/<int:clazz_id>/paper/<int:paper_id>')
 @auth_manager.require_group
 def paper_report(clazz_id=0, paper_id=0):

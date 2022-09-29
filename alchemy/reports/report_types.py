@@ -1,5 +1,5 @@
 from alchemy.reports import student_paper_sections, clazz_paper_sections, cohort_paper_sections
-from alchemy.reports import student_checkpoint_sections
+from alchemy.reports import student_checkpoint_sections, checkpoint_data_manager
 
 
 class StudentPaperReport(object):
@@ -76,3 +76,23 @@ class StudentCheckpointReport(object):
             section_class = getattr(student_checkpoint_sections, section_type)
             section = section_class(student = self.student, checkpoint = self.checkpoint, clazz = self.clazz)
             self.sections.append(section)
+
+class SnapshotReport(object):
+    def __init__(self, student, snapshot):
+        self.title = None
+        self.subtitle = None
+        self.student = student
+        self.snapshot = snapshot
+        self.checkpoint_tallies = []
+        self.build_self()
+
+    def build_self(self):
+        self.title = f"{self.student.aws_user.family_name}, {self.student.aws_user.given_name} - Summary Report"
+        self.subtitle = f"{self.snapshot.name}"
+
+        for clazz in self.student.clazzes:
+            course = clazz.course
+            for checkpoint in course.checkpoints:
+                if checkpoint.snapshot == self.snapshot:
+                    tally = checkpoint_data_manager.StudentCheckpointTally(self.student, checkpoint)
+                    self.checkpoint_tallies.append(tally)

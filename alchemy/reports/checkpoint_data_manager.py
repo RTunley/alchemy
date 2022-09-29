@@ -8,6 +8,7 @@ class StudentCheckpointTally():
     def __init__(self, student, checkpoint):
         self.student = student
         self.checkpoint = checkpoint
+        self.clazz = None
         self.percentage = 0
         self.grade = None
         self.paper_score_tally_list = []
@@ -17,6 +18,10 @@ class StudentCheckpointTally():
 
     def build_self(self, student, checkpoint):
 
+        for clazz in self.student.clazzes:
+            if clazz.course == self.checkpoint.course:
+                self.clazz = clazz
+        
         # Make StudentPaperTally for each paper
         for paper in checkpoint.papers:
             paper_tally = data_manager.PaperScoreTally.from_student(student, paper)
