@@ -32,7 +32,7 @@ class StudentCheckpointTally():
 
         all_categories = [category for category in checkpoint.course.assessment_categories]
         for category in all_categories:
-            category_group = CategoryTallyGroup(category, self.paper_score_tally_list)
+            category_group = CategoryTallyGroup(category, self.paper_score_tally_list, checkpoint.course)
             self.category_tally_groups.append(category_group)
             if category_group.percentage != None:
                 self.weight_sum += category_group.category.weight
@@ -56,16 +56,17 @@ class StudentSnapshotSection():
         self.cohort_tally = CheckpointMultiScoreTally.from_cohort(checkpoint)
 
 class CategoryTallyGroup():
-    def __init__(self, category, paper_tally_list):
+    def __init__(self, category, paper_tally_list, course):
         self.category = category
         self.paper_tally_list = []
         self.total_points = 0
         self.total_tally = 0
         self.percentage = 0
+        self.grade = None
         self.weighted_percentage = 0
-        self.build_self(paper_tally_list)
+        self.build_self(paper_tally_list, course)
 
-    def build_self(self, paper_tally_list):
+    def build_self(self, paper_tally_list, course):
         tally_sum = 0
         for tally in paper_tally_list:
             if tally.paper.category == self.category:
@@ -75,6 +76,7 @@ class CategoryTallyGroup():
 
         if len(self.paper_tally_list) != 0:
             self.percentage = round(self.total_tally/self.total_points*100, 2)
+            self.grade = data_manager.determine_grade(self.percentage, course)
 
         else:
             self.percentage = None
@@ -110,6 +112,51 @@ class AdjacentGrades(object):
             self.diff_higher_grade = round(self.higher_grade.lower_bound - percentage, 1)
             self.lower_grade = grade_list[index+1]
             self.diff_lower_grade = round(percentage - self.lower_grade.upper_bound, 1)
+
+class TagHighlights():
+    def __init__(self, student, checkpoint):
+        self.has_strengths = True
+        self.has_weaknesses = True
+        self.strengths = []
+        self.weaknesses = []
+        self.build_self()
+
+class CategoryHighlights():
+    def __init__(self, student, checkpoint):
+        self.has_strengths = False
+        self.has_weaknesses = False
+        self.strengths = []
+        self.weaknesses = []
+        self.build_self(student, checkpoint)
+
+    def build_self(self, student, checkpoint):
+        paper_tally_list = []
+        for paper in checkpoint.papers:
+            paper_tally = data_manager.PaperScoreTally.from_student(student, paper)
+            paper_tally_list.append(paper_tally)
+
+        category_tally_list = []
+        for category in checkpoint.course.assessment_categories:
+            category_tally = CategoryTallyGroup(category, paper_tally_list, checkpoint.course)
+            if category_tally.percentage:
+                category_tally_list.append(category_tally)
+
+        category_tally_list.sort(key=lambda x: x.percentage, reverse=True)
+        max_percentage = category_tally_list[0].percentage
+        min_percentage = category_tally_list[-1].percentage
+        if min_percentage == 100:
+            self.has_strengths = True
+        elif max_percentage == 0:
+            self.has_weaknesses = True
+        else:
+            self.has_weaknesses = True
+            self.has_strengths = True
+        for category_tally in category_tally_list:
+            if category_tally.percentage == max_percentage:
+                self.strengths.append(category_tally)
+
+            elif category_tally.percentage == min_percentage:
+                self.weaknesses.append(category_tally)
 
 class CheckpointMultiScoreTally(object):
     def __init__(self, checkpoint, score_list):

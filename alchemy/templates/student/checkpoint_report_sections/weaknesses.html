@@ -1,0 +1,13 @@
+
+{% if highlights_section.category_highlights.has_weaknesses %}
+  {% if highlights_section.category_highlights.weaknesses|length==1 %}
+    <p>The Assessment Category that may require the most attention is: <b>{{ highlights_section.category_highlights.weaknesses[0].category.name }}</b></p>
+    <p>In this category, you achieved: <b>{{ highlights_section.category_highlights.weaknesses[0].total_tally }}</b> marks out of an available {{ highlights_section.category_highlights.weaknesses[0].total_points }} marks. This is <b>{{ highlights_section.category_highlights.weaknesses[0].percentage }}%</b> ( Grade Level <b>{{ highlights_section.category_highlights.weaknesses[0].grade }}</b> )</p>
+
+  {% else %}
+  <p>The Assessment Categories that my require the most attention, with <b>{{ highlights_section.category_highlights.weaknesses[0].percentage }}%</b> ( Grade Level <b>{{ highlights_section.category_highlights.weaknesses.grade }}</b> ) were:</p>
+  {% for weakness in highlights_section.category_highlights.weaknesses %}
+    <p><b>{{ weakness.category.name }}</b> with <b>{{ weakness.total_tally }}</b> marks achieved out of {{ weakness.total_points }} available.</p>
+  {% endfor %}
+  {% endif %}
+{% endif %}

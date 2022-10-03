@@ -1,0 +1,14 @@
+
+
+{% if highlights_section.category_highlights.has_strengths %}
+  {% if highlights_section.category_highlights.strengths|length==1 %}
+    <p>You have performed best on the Assessment Category: <b>{{ highlights_section.category_highlights.strengths[0].category.name }}</b></p>
+    <p>In this category, you achieved: <b>{{ highlights_section.category_highlights.strengths[0].total_tally }}</b> marks out of {{ highlights_section.category_highlights.strengths[0].total_points }} marks available. This is <b>{{ highlights_section.category_highlights.strengths[0].percentage }}%</b> ( Grade Level <b>{{ highlights_section.category_highlights.strengths[0].grade }}</b> )</p>
+
+  {% else %}
+    <p>The Assessment Categories where you performed the best, with <b>{{ highlights_section.category_highlights.strengths[0].percentage }}%</b> ( Grade Level <b>{{ highlights_section.category_highlights.strengths.grade }}</b> ) were:</p>
+    {% for strength in highlights_section.category_highlights.strengths %}
+      <p><b>{{ strength.category.name }}</b> with <b>{{ strength.total_tally }}</b> marks achieved out of {{ strength.total_points }} available.</p>
+    {% endfor %}
+  {% endif %}
+{% endif %}

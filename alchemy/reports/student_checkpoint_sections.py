@@ -37,3 +37,19 @@ class CohortSummarySection(StudentReportSection):
 
     def build_self(self):
         self.checkpoint_tally = checkpoint_data_manager.CheckpointMultiScoreTally.from_cohort(self.checkpoint)
+
+# Highlights = strengths and weaknesses
+class HighlightsSection(StudentReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('student/checkpoint_report_sections/highlights.html', **section_kwargs)
+
+    def build_self(self):
+        # self.data_model = checkpoint_data_manager.HighlightsDataModel(self.student, self.checkpoint)
+        self.has_strengths = False
+        self.has_weaknesses = False
+        self.category_highlights = checkpoint_data_manager.CategoryHighlights(self.student, self.checkpoint)
+        if self.category_highlights.has_strengths == True:
+            self.has_strengths = True
+
+        if self.category_highlights.has_weaknesses == True:
+            self.has_weaknesses = True

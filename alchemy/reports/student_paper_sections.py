@@ -26,7 +26,6 @@ class AdjacentGradesSection(StudentReportSection):
 class ClazzSummarySection(StudentReportSection):
     def __init__(self, **section_kwargs):
         super().__init__('student/paper_report_sections/clazz_summary.html', **section_kwargs)
-        self.build_self()
 
     def build_self(self):
         self.tally = data_manager.PaperMultiScoreTally.from_clazz(self.clazz, self.paper)
