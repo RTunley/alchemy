@@ -83,7 +83,7 @@ class SnapshotReport(object):
         self.subtitle = None
         self.student = student
         self.snapshot = snapshot
-        self.checkpoint_tallies = []
+        self.checkpoint_sections = []
         self.build_self()
 
     def build_self(self):
@@ -94,5 +94,5 @@ class SnapshotReport(object):
             course = clazz.course
             for checkpoint in course.checkpoints:
                 if checkpoint.snapshot == self.snapshot:
-                    tally = checkpoint_data_manager.StudentCheckpointTally(self.student, checkpoint)
-                    self.checkpoint_tallies.append(tally)
+                    section = checkpoint_data_manager.StudentSnapshotSection(self.student, checkpoint)
+                    self.checkpoint_sections.append(section)

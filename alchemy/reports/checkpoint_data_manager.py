@@ -21,7 +21,7 @@ class StudentCheckpointTally():
         for clazz in self.student.clazzes:
             if clazz.course == self.checkpoint.course:
                 self.clazz = clazz
-        
+
         # Make StudentPaperTally for each paper
         for paper in checkpoint.papers:
             paper_tally = data_manager.PaperScoreTally.from_student(student, paper)
@@ -46,6 +46,14 @@ class StudentCheckpointTally():
 
         self.percentage = round(weighted_category_sum/self.weight_sum, 1)
         self.grade = data_manager.determine_grade(self.percentage, checkpoint.course)
+
+class StudentSnapshotSection():
+    def __init__(self, student, checkpoint):
+        self.student = student
+        self.checkpoint = checkpoint
+        self.course = self.checkpoint.course
+        self.tally = StudentCheckpointTally(student, checkpoint)
+        self.cohort_tally = CheckpointMultiScoreTally.from_cohort(checkpoint)
 
 class CategoryTallyGroup():
     def __init__(self, category, paper_tally_list):

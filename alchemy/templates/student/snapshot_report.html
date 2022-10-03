@@ -10,13 +10,15 @@
     <thead>
       <th>Course</th>
       <th>Your Achievement</th>
+      <th>Cohort Average</th>
       <th>Detailed Report</th>
     </thead>
-    {% for tally in snapshot_report.checkpoint_tallies %}
+    {% for section in snapshot_report.checkpoint_sections %}
       <tr>
-        <td>{{ tally.checkpoint.course.name }}</td>
-        <td>{{ tally.percentage }}% | {{ tally.grade }}</td>
-        <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = tally.checkpoint.id, clazz_id = tally.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
+        <td>{{ section.course.name }}</td>
+        <td>{{ section.tally.percentage }}% | {{ section.tally.grade }}</td>
+        <td>{{ section.cohort_tally.percent_mean }}% | {{ section.cohort_tally.mean_grade }} </td>
+        <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = section.checkpoint.id, clazz_id = section.tally.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
       </tr>
     {% endfor %}
   </table>
