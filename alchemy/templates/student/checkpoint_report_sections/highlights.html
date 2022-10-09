@@ -10,14 +10,16 @@
   <tr>
     <td style="text-align: center">
       {% if highlights_section.has_strengths %}
-        {% include "student/checkpoint_report_sections/strengths.html" %}
+        {% include "student/checkpoint_report_sections/category_strengths.html" %}
+        {% include "student/checkpoint_report_sections/tag_strengths.html" %}
       {% else %}
         <p>Unfortunately, there is insufficient data available in this reporting period to identify your strengths. Keep trying, small efforts will make big differences!</p>
       {% endif %}
     </td>
     <td style="text-align: center">
       {% if highlights_section.has_weaknesses %}
-        {% include "student/checkpoint_report_sections/weaknesses.html" %}
+        {% include "student/checkpoint_report_sections/category_weaknesses.html" %}
+        {% include "student/checkpoint_report_sections/tag_weaknesses.html" %}
       {% else %}
         <p>Wowsers! There is actually insufficient data in this reporting period to identify your weaknesses. Keep up the spectacular work!</p>
       {% endif %}

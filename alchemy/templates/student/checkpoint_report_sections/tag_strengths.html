@@ -1,0 +1,14 @@
+{% if highlights_section.tag_highlights.has_strengths %}
+  {% if highlights_section.tag_highlights.strengths|length==1 %}
+    <p>The area where you experienced the most success, with {{ highlights_section.tag_highlights.strengths[0].percentage }}% (Grade Level: <b>{{ highlights_section.tag_highlights.strengths[0].grade }}</b>), was:</p>
+
+    <p><b>{{ highlights_section.tag_highlights.strengths[0].tag.name }}</b>, with {{ highlights_section.tag_highlights.strengths[0].raw_score }} out of {{ highlights_section.tag_highlights.strengths[0].total }} marks available.</p>
+
+  {% else %}
+    <p>The areas where you experienced the most success, with {{ highlights_section.tag_highlights.strengths[0].percentage }}% ( Grade Level: <b>{{ highlights_section.tag_highlights.strengths[0].grade }}</b> ), were:</p>
+    {% for summary in highlights_section.tag_highlights.strengths %}
+      <p><b>{{ summary.tag.name }}</b>, with <b>{{ summary.raw_score }}</b> out of {{ summary.total }} marks available.</p>
+    {% endfor %}
+  {% endif %}
+{% endif %}
+<br>

@@ -113,13 +113,79 @@ class AdjacentGrades(object):
             self.lower_grade = grade_list[index+1]
             self.diff_lower_grade = round(percentage - self.lower_grade.upper_bound, 1)
 
+class TagCheckpointSummary():
+    def __init__(self, student, tag, checkpoint):
+        self.student = student
+        self.tag = tag
+        self.checkpoint = checkpoint
+        self.total = 0
+        self.raw_score = 0
+        self.percentage = 0
+        self.grade = None
+
+    def calculate_percentage_and_grade(self):
+        self.percentage = data_manager.calc_percentage(self.raw_score, self.total)
+        self.grade = data_manager.determine_grade(self.percentage, self.checkpoint.course)
+
+def all_checkpoint_tags(checkpoint):
+    all_tags = []
+    for paper in checkpoint.papers:
+        for pq in paper.paper_questions:
+            for tag in pq.question.tags:
+                if tag not in all_tags:
+                    all_tags.append(tag)
+    return all_tags
+
+def get_tag_summary(tag_summary_list, tag):
+    for tag_summary in tag_summary_list:
+        if tag_summary.tag == tag:
+            target_summary = tag_summary
+            break
+    return target_summary
+
+def build_checkpoint_tag_summaries(tag_list, student, checkpoint):
+    checkpoint_tag_summaries = [TagCheckpointSummary(student, tag, checkpoint) for tag in tag_list]
+    for paper in checkpoint.papers:
+        for pq in paper.paper_questions:
+            score = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id,
+                    student_id = student.id).first()
+            for tag in pq.question.tags:
+                current_tag_summary = get_tag_summary(checkpoint_tag_summaries, tag)
+                current_tag_summary.total += pq.question.points
+                current_tag_summary.raw_score += score.value
+
+    return checkpoint_tag_summaries
+
 class TagHighlights():
     def __init__(self, student, checkpoint):
-        self.has_strengths = True
-        self.has_weaknesses = True
+        self.has_strengths = False
+        self.has_weaknesses = False
         self.strengths = []
         self.weaknesses = []
-        self.build_self()
+        self.build_self(student, checkpoint)
+
+    def build_self(self, student, checkpoint):
+        all_tags = all_checkpoint_tags(checkpoint)
+        all_tag_summaries = build_checkpoint_tag_summaries(all_tags, student, checkpoint)
+        for tag_summary in all_tag_summaries:
+            tag_summary.calculate_percentage_and_grade()
+        all_tag_summaries.sort(key=lambda x: x.percentage, reverse=True)
+
+        max_percentage = all_tag_summaries[0].percentage
+        min_percentage = all_tag_summaries[-1].percentage
+        if min_percentage == 100:
+            self.has_strengths = True
+        elif max_percentage == 0:
+            self.has_weaknesses = True
+        else:
+            self.has_weaknesses = True
+            self.has_strengths = True
+        for tag_summary in all_tag_summaries:
+            if tag_summary.percentage == max_percentage:
+                self.strengths.append(tag_summary)
+
+            elif tag_summary.percentage == min_percentage:
+                self.weaknesses.append(tag_summary)
 
 class CategoryHighlights():
     def __init__(self, student, checkpoint):

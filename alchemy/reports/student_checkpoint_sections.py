@@ -48,8 +48,9 @@ class HighlightsSection(StudentReportSection):
         self.has_strengths = False
         self.has_weaknesses = False
         self.category_highlights = checkpoint_data_manager.CategoryHighlights(self.student, self.checkpoint)
-        if self.category_highlights.has_strengths == True:
+        self.tag_highlights = checkpoint_data_manager.TagHighlights(self.student, self.checkpoint)
+        if self.category_highlights.has_strengths == True or self.tag_highlights.has_strengths == True:
             self.has_strengths = True
 
-        if self.category_highlights.has_weaknesses == True:
+        if self.category_highlights.has_weaknesses == True or self.tag_highlights.has_weaknesses == True:
             self.has_weaknesses = True
