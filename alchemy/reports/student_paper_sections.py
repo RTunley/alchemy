@@ -47,6 +47,17 @@ class HighlightsSection(StudentReportSection):
         raw_scores = models.Score.query.filter_by(student_id = self.student.id, paper_id = self.paper.id).all()
         self.question_highlights = data_manager.QuestionHighlightSets(self.student, self.paper)
         self.tag_highlights = data_manager.TagHighlightSets(self.student, self.paper, raw_scores)
+        self.all_same = False
+        if self.question_highlights.all_min == True or self.question_highlights.all_max == True:
+            self.all_same = True
+        print("self dot all_same")
+        print(self.all_same)
+        print("Questions all_min")
+        print(self.question_highlights.all_min)
+        print("MC Questions all_min")
+        print(self.question_highlights.all_mc_min)
+        print("OA Questions all_min")
+        print(self.question_highlights.all_oa_min)
 
 class TagDetailsSection(StudentReportSection):
     def __init__(self, **section_kwargs):

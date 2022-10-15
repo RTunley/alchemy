@@ -1,7 +1,86 @@
 {% macro render_section(highlights_section) -%}
 
-{% include "student/paper_report_sections/strengths.html" %}
+  <h2><b>Strengths and Areas for Improvement</b></h2>
+  <br>
+  {% if highlights_section.all_same %}
+    {% if highlights_section.question_highlights.all_max %}
+      <p>You have addressed all content at the highest level! Keep up the great work!</p>
+      <p>The only bad news is that there is insufficient data to comment on areas that require improvement - consult your teacher for more information.</p>
+      <br>
+    {% elif highlights_section.question_highlights.all_min %}
+      <p>Unfortunately, it appears that all content assessed will require more attention.</p>
+      <p>You might try adopting a more regular study schedule, or speak with your teacher for further recommendations.</p>
+      <br>
+    {% endif %}
+  {% else %}
+    <h4 style="color: green;"><b>Strengths</b></h4>
+    <table class="table table-hover">
+      <thead>
+        <th style="text-align:center; color: green;">Questions</th>
+        <th style="text-align:center; color: green;">Tags</th>
+      </thead>
+      <tr>
+        <td>
+          {% if highlights_section.paper.has_mc_questions() %}
+            {% if highlights_section.question_highlights.all_mc_max %}
+              <p>You have answered all Multiple Choice Questions correctly!</p>
+            {% endif %}
+          {% endif %}
+          {% if not highlights_section.paper.has_oa_questions() %}
+            <p>No Open-Answer Questions were included in this assessement.</p>
+          {% else %}
+            {% if not highlights_section.question_highlights.all_oa_same_mid %}
+              {% include "student/paper_report_sections/question_strengths.html" %}
+            {% else %}
+              {% include "student/paper_report_sections/questions_all_same.html" %}
+            {% endif %}
+          {% endif %}
+        </td>
+        <td>
+          {% if not highlights_section.tag_highlights.all_same_mid %}
+            {% include "student/paper_report_sections/tag_strengths.html" %}
+          {% else %}
+            {% include "student/paper_report_sections/tags_all_same.html" %}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+    <br>
+    <!-- Weaknesses -->
+    <h2 style="color: red;"><b>Areas for Improvement</b></h2>
+    <br>
+    <table class="table table-hover">
+      <thead>
+        <th style="text-align:center; color: red;">Questions</th>
+        <th style="text-align:center; color: red;">Tags</th>
+      </thead>
+      <tr>
+        <td>
+          {% if highlights_section.paper.has_mc_questions() %}
+            {% if highlights_section.question_highlights.all_mc_min %}
+              <p>Unfortunately, you have not answered any Multiple Choice Questions correctly. These would be great place to revise!</p>
+            {% else %}
+              <p>You can check which Multiple-Choice Questions you answered correctly below.</p>
+            {% endif %}
+          {% endif %}
+          {% if not highlights_section.question_highlights.all_oa_same_mid %}
+            {% include "student/paper_report_sections/question_weaknesses.html" %}
+          {% else %}
+            {% include "student/paper_report_sections/questions_all_same.html" %}
+          {% endif %}
+        </td>
+        <td>
+          {% if not highlights_section.tag_highlights.all_same_mid %}
+            {% include "student/paper_report_sections/tag_weaknesses.html" %}
+          {% else %}
+            {% include "student/paper_report_sections/tags_all_same.html" %}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  {% endif %}
 
-{% include "student/paper_report_sections/weaknesses.html" %}
+
+
 
 {%- endmacro %}

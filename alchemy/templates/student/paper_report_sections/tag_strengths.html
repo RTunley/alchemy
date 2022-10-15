@@ -1,0 +1,13 @@
+
+{% if highlights_section.tag_highlights.strengths|length==1 %}
+  <p>The area where you achieved the highest, with <b>{{ highlights_section.tag_highlights.strengths[0].percent_score }}%</b> ( Grade Level <b>{{ highlights_section.tag_highlights.strengths[0].grade }} )</b> was:</p>
+
+  <p><b>{{ highlights_section.tag_highlights.strengths[0].object.tag.name }}</b>, with <b>{{ highlights_section.tag_highlights.strengths[0].raw_score }}</b> marks achieved out of {{ highlights_section.tag_highlights.strengths[0].total }} marks available.</p>
+
+{% else %}
+  <p>Your greatest achievements across all assessed areas, with <b>{{ highlights_section.tag_highlights.strengths[0].percent_score }}%</b>, ( Grade Level: <b>{{ highlights_section.tag_highlights.strengths[0].grade }}</b> ), were:</p>
+
+  {% for statsumm in highlights_section.tag_highlights.strengths %}
+    <p><b>{{ statsumm.object.name }}</b>, with <b>{{ statsumm.raw_score }}</b> out of {{ statsumm.total }} marks available.</p>
+  {% endfor %}
+{% endif %}

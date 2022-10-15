@@ -1,0 +1,13 @@
+
+{% if highlights_section.tag_highlights.weaknesses|length==1 %}
+  <p>The area that may require the most attention, with <b>{{ highlights_section.tag_highlights.weaknesses[0].percent_score }}%</b> ( Grade Level <b>{{ highlights_section.tag_highlights.weaknesses[0].grade }} )</b> was:</p>
+
+  <p><b>{{ highlights_section.tag_highlights.weaknesses[0].object.tag.name }}</b>, with <b>{{ highlights_section.tag_highlights.weaknesses[0].raw_score }}</b> marks achieved out of {{ highlights_section.tag_highlights.weaknesses[0].total }} marks available.</p>
+
+{% else %}
+  <p>The areas that may require the most attention, with <b>{{ highlights_section.tag_highlights.weaknesses[0].percent_score }}%</b>, ( Grade Level: <b>{{ highlights_section.tag_highlights.weaknesses[0].grade }}</b> ), were:</p>
+
+  {% for statsumm in highlights_section.tag_highlights.weaknesses %}
+    <p><b>{{ statsumm.object.name }}</b>, with <b>{{ statsumm.raw_score }}</b> out of {{ statsumm.total }} marks available.</p>
+  {% endfor %}
+{% endif %}

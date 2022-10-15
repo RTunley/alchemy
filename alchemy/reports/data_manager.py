@@ -211,39 +211,82 @@ class StatSummary(object):
 
 class QuestionHighlightSets(object):
     def __init__(self, student, paper):
+        self.all_oa_max = False
+        self.all_oa_min = False
+        self.all_oa_same_mid = True
+        self.all_mc_max = False
+        self.all_mc_min = False
+        self.all_max = False
+        self.all_min = False
         self.strengths = []
-        self.has_strengths = False
         self.weaknesses = []
-        self.has_weaknesses = False
         self.build_self(student, paper)
 
     def build_self(self, student, paper):
         student_statsumm_list = make_student_statsumm_list(student, paper)
-        if paper.has_oa_questions():
+        if paper.has_mc_questions():
+            mc_statsumm_list = only_mc_statsumms(student_statsumm_list)
+            mc_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
+            mc_max_percentage = mc_statsumm_list[0].percent_score
+            mc_min_percentage = mc_statsumm_list[-1].percent_score
+
+            # check edge cases
+            if mc_min_percentage == 100:
+                self.all_mc_max = True
+            elif mc_max_percentage == 0:
+                self.all_mc_min = True
+
+        if not paper.has_oa_questions():
+            self.all_oa_same_mid = False
+        else:
             oa_statsumm_list = only_oa_statsumms(student_statsumm_list)
             oa_statsumm_list.sort(key=lambda x: x.percent_score, reverse=True)
-            max_percentage = oa_statsumm_list[0].percent_score
-            min_percentage = oa_statsumm_list[-1].percent_score
-            if min_percentage == 100:
-                self.has_strengths = True
-            elif max_percentage == 0:
-                self.has_weaknesses = True
+            oa_max_percentage = oa_statsumm_list[0].percent_score
+            oa_min_percentage = oa_statsumm_list[-1].percent_score
+
+            # check edge cases
+            if oa_min_percentage == 100:
+                self.all_oa_max = True
+                self.all_same_mid = False
+            elif oa_max_percentage == 0:
+                self.all_oa_min = True
+                self.all_same_mid = False
             else:
-                self.has_weaknesses = True
-                self.has_strengths = True
-            for statsumm in oa_statsumm_list:
-                if statsumm.percent_score == max_percentage:
+                for i in range(len(oa_statsumm_list)):
+                    if not oa_statsumm_list[i].percent_score == oa_statsumm_list[0].percent_score:
+                        self.all_oa_same_mid = False
+
+            # If all same, but neither max or min, put into strengths so values can be accessed in html #
+            if self.all_oa_same_mid:
+                for statsumm in oa_statsumm_list:
                     self.strengths.append(statsumm)
 
-                elif statsumm.percent_score == min_percentage:
-                    self.weaknesses.append(statsumm)
+            # Most likely scenario
+            if self.all_max == False and self.all_min == False and self.all_oa_same_mid == False:
+                for statsumm in oa_statsumm_list:
+                    if statsumm.percent_score == oa_max_percentage:
+                        self.strengths.append(statsumm)
+
+                    elif statsumm.percent_score == oa_min_percentage:
+                        self.weaknesses.append(statsumm)
+
+            if paper.has_oa_questions() and paper.has_mc_questions():
+                self.all_max = self.all_mc_max and self.all_oa_max
+                self.all_min = self.all_mc_min and self.all_oa_min
+            elif paper.has_oa_questions:
+                self.all_max = self.all_oa_max
+                self.all_min = self.all_oa_min
+            else:
+                self.all_max = self.all_mc_max
+                self.all_min = self.all_mc_min
 
 class TagHighlightSets(object):
     def __init__(self, student, paper, scores):
+        self.all_max = False
+        self.all_min = False
+        self.all_same_mid = True
         self.strengths = []
-        self.has_strengths = False
         self.weaknesses = []
-        self.has_weaknesses = False
         self.build_self(student, paper, scores)
 
     def build_self(self, student, paper, scores):
@@ -256,19 +299,36 @@ class TagHighlightSets(object):
         student_tag_statsumms.sort(key=lambda x: x.percent_score, reverse=True)
         max_percentage = student_tag_statsumms[0].percent_score
         min_percentage = student_tag_statsumms[-1].percent_score
+
+        # check edge cases
         if min_percentage == 100:
-            self.has_strengths = True
+            self.all_max = True
+            for statsumm in student_tag_statsumms:
+                self.strengths.append(statsumm)
+                self.weaknesses.append(statsumm)
         elif max_percentage == 0:
-            self.has_weaknesses = True
+            self.all_min = True
+            for statsumm in student_tag_statsumms:
+                self.strengths.append(statsumm)
+                self.weaknesses.append(statsumm)
         else:
-            self.has_weaknesses = True
-            self.has_strengths = True
-        for statsumm in student_tag_statsumms:
-            if statsumm.percent_score == student_tag_statsumms[0].percent_score:
+            for i in range(len(student_tag_statsumms)):
+                if not student_tag_statsumms[i].percent_score == student_tag_statsumms[0].percent_score:
+                    self.all_same_mid = False
+
+        # If all same, but neither max or min, put into strengths so values can be accessed in html #
+        if self.all_same_mid:
+            for statsumm in student_tag_statsumms:
                 self.strengths.append(statsumm)
 
-            elif statsumm.percent_score == student_tag_statsumms[-1].percent_score:
-                self.weaknesses.append(statsumm)
+        # Most likely scenario
+        if self.all_max == False and self.all_min == False and self.all_same_mid == False:
+            for statsumm in student_tag_statsumms:
+                if statsumm.percent_score == max_percentage:
+                    self.strengths.append(statsumm)
+
+                elif statsumm.percent_score == min_percentage:
+                    self.weaknesses.append(statsumm)
 
 class StatProfile(object):
     def __init__(self, values_list, total):
