@@ -50,14 +50,6 @@ class HighlightsSection(StudentReportSection):
         self.all_same = False
         if self.question_highlights.all_min == True or self.question_highlights.all_max == True:
             self.all_same = True
-        print("self dot all_same")
-        print(self.all_same)
-        print("Questions all_min")
-        print(self.question_highlights.all_min)
-        print("MC Questions all_min")
-        print(self.question_highlights.all_mc_min)
-        print("OA Questions all_min")
-        print(self.question_highlights.all_oa_min)
 
 class TagDetailsSection(StudentReportSection):
     def __init__(self, **section_kwargs):
