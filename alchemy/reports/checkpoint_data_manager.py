@@ -245,3 +245,16 @@ class CheckpointMultiScoreTally(object):
                 checkpoint_tally = StudentCheckpointTally(student, checkpoint)
                 cohort_checkpoint_percents.append(checkpoint_tally.percentage)
         return CheckpointMultiScoreTally(checkpoint, cohort_checkpoint_percents)
+
+
+def make_all_papers_graph(student, checkpoint):
+    values = []
+    labels = []
+    for paper in checkpoint.papers:
+        paper_score_tally = data_manager.PaperScoreTally.from_student(student, paper)
+        values.append(paper_score_tally.percent_total)
+        labels.append(paper_score_tally.paper.title)
+
+    title = f"Overall Assessment Achievement for {checkpoint.snapshot.name}"
+    plot_data = plots.create_bar_chart(title, values, None, labels, None)
+    return plot_data

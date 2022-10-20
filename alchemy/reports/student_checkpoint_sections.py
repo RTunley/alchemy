@@ -14,6 +14,7 @@ class OverviewSection(StudentReportSection):
 
     def build_self(self):
         self.checkpoint_tally = checkpoint_data_manager.StudentCheckpointTally(self.student, self.checkpoint)
+        self.all_papers_plot = checkpoint_data_manager.make_all_papers_graph(self.student, self.checkpoint)
 
 class AdjacentGradesSection(StudentReportSection):
     def __init__(self, **section_kwargs):
