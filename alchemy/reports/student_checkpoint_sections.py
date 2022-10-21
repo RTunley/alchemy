@@ -22,7 +22,7 @@ class AdjacentGradesSection(StudentReportSection):
 
     def build_self(self):
         checkpoint_tally = checkpoint_data_manager.StudentCheckpointTally(self.student, self.checkpoint)
-        self.adjacent_grades = checkpoint_data_manager.AdjacentGrades(self.checkpoint.course.grade_levels, checkpoint_tally.percentage, checkpoint_tally.grade)
+        self.adjacent_grades = checkpoint_data_manager.AdjacentGrades(self.checkpoint.course.grade_levels, checkpoint_tally.percent_total, checkpoint_tally.grade)
 
 class ClazzSummarySection(StudentReportSection):
     def __init__(self, **section_kwargs):
@@ -45,7 +45,6 @@ class HighlightsSection(StudentReportSection):
         super().__init__('student/checkpoint_report_sections/highlights.html', **section_kwargs)
 
     def build_self(self):
-        # self.data_model = checkpoint_data_manager.HighlightsDataModel(self.student, self.checkpoint)
         self.has_strengths = False
         self.has_weaknesses = False
         self.category_highlights = checkpoint_data_manager.CategoryHighlights(self.student, self.checkpoint)

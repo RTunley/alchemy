@@ -9,7 +9,7 @@ class StudentCheckpointTally():
         self.student = student
         self.checkpoint = checkpoint
         self.clazz = None
-        self.percentage = 0
+        self.percent_total = 0
         self.grade = None
         self.paper_score_tally_list = []
         self.category_tally_groups = []
@@ -44,8 +44,8 @@ class StudentCheckpointTally():
                 group.get_weighted_percentage(self.weight_sum)
                 weighted_category_sum += round(group.percentage*group.category.weight, 2)
 
-        self.percentage = round(weighted_category_sum/self.weight_sum, 1)
-        self.grade = data_manager.determine_grade(self.percentage, checkpoint.course)
+        self.percent_total = round(weighted_category_sum/self.weight_sum, 1)
+        self.grade = data_manager.determine_grade(self.percent_total, checkpoint.course)
 
 class StudentSnapshotSection():
     def __init__(self, student, checkpoint):
@@ -234,7 +234,7 @@ class CheckpointMultiScoreTally(object):
         clazz_checkpoint_percents = []
         for student in clazz.students:
             checkpoint_tally = StudentCheckpointTally(student, checkpoint)
-            clazz_checkpoint_percents.append(checkpoint_tally.percentage)
+            clazz_checkpoint_percents.append(checkpoint_tally.percent_total)
         return CheckpointMultiScoreTally(checkpoint, clazz_checkpoint_percents)
 
     @staticmethod
@@ -243,7 +243,7 @@ class CheckpointMultiScoreTally(object):
         for clazz in checkpoint.course.clazzes:
             for student in clazz.students:
                 checkpoint_tally = StudentCheckpointTally(student, checkpoint)
-                cohort_checkpoint_percents.append(checkpoint_tally.percentage)
+                cohort_checkpoint_percents.append(checkpoint_tally.percent_total)
         return CheckpointMultiScoreTally(checkpoint, cohort_checkpoint_percents)
 
 
