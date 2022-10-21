@@ -258,3 +258,26 @@ def make_all_papers_graph(student, checkpoint):
     title = f"Overall Assessment Achievement for {checkpoint.snapshot.name}"
     plot_data = plots.create_bar_chart(title, values, None, labels, None)
     return plot_data
+
+class GroupStatProfile():
+    def __init__(self, percentage_list):
+        self.values = percentage_list
+        self.mean = 0
+        self.sd = 0
+        self.fivenumsumm = []
+        self.iqr = 0
+        self.build_self()
+
+    def build_self(self):
+        array = np.array(self.values)
+        self.mean = round(np.mean(array), 2)
+        self.sd = round(np.std(array), 2)
+        min = array.min()
+        max = array.max()
+        quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
+        self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
+        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
+
+def create_distribution_plot(title, stat_profile):
+    plot_data = plots.create_distribution_plot(stat_profile.values, stat_profile.sd, stat_profile.mean, title, False, None)
+    return plot_data

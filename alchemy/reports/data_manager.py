@@ -600,6 +600,8 @@ def make_student_course_profiles(course, student_list):
 
 ## Functions for interacting with reports.plots ##
 
+## TODO easy to merge these two functions + the create_distribution_plot in checkpoint_data_manager together into a single function, but need to be careful of all existing calls to these funtions across all reports. --> two static methods, from_raw and from_norm and have the statprofile passed as an arg instead of the paper, like in checkpoint_data_manager.
+
 def create_clazz_distribution_plot(clazz, paper):
     clazz_statprofile = StatProfile(total_student_scores_for_clazz(clazz, paper), paper.profile.total_points)
     plot_data = plots.create_distribution_plot(clazz_statprofile.norm_values_list, clazz_statprofile.norm_sd, clazz_statprofile.norm_mean, 'Distribution of Overall Achievement', False, None)
