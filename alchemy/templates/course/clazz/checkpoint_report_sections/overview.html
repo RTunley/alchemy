@@ -1,0 +1,18 @@
+{% macro render_section(overview_section) -%}
+
+<br>
+<h2><b>Overview</b></h2>
+<br>
+<p>The average overall achievment across {{ overview_section.clazz.code }} for this Reporting Event is: </p>
+<table style="text-align:center" class="table table-hover">
+  <thead>
+    <th>Achievement (%)</th>
+    <th>Grade Level</th>
+  </thead>
+  <tr>
+    <td style="text-align: center">{{ overview_section.tally.percent_mean }}</td>
+    <td style="text-align: center">{{ overview_section.tally.mean_grade }}</td>
+  </tr>
+</table>
+
+{%- endmacro %}

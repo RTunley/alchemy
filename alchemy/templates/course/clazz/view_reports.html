@@ -37,11 +37,15 @@
       <th>Event</th>
       <th>Achievement</th>
     </tr>
-    {% for snapshot in g.school.snapshots %}
+    {% for checkpoint in g.clazz.course.checkpoints %}
       <tr>
-        <td>{{ snapshot.name }}</td>
+        <td>{{ checkpoint.snapshot.name }}</td>
         <td>
-          <a class="btn btn-success btn-sm disabled" target="_blank" href="">View Class Report</a>
+          {% if not checkpoint.snapshot.is_published %}
+            <a class="btn btn-info btn-sm disabled">Not Yet Published</a>
+          {% else %}
+            <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.checkpoint_report', checkpoint_id = checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.clazz_checkpoint_report_sections_string ) }}">View Class Report</a>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

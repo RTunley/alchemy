@@ -12,6 +12,7 @@ def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
     g.clazz_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
+    g.clazz_checkpoint_report_sections_string = 'OverviewSection'
 
 @bp_clazz.url_defaults
 def url_defaults(endpoint, values):
@@ -123,6 +124,15 @@ def paper_report(paper_id):
     section_selections = section_selection_string.split(',')
     clazz_report = report_types.ClazzPaperReport(g.clazz, paper, section_selections)
     return flask.render_template('course/clazz/paper_report.html', clazz_report = clazz_report)
+
+@bp_clazz.route('/checkpoint_report/<int:checkpoint_id>/')
+@auth_manager.require_group
+def checkpoint_report(checkpoint_id):
+    checkpoint = models.Checkpoint.query.get_or_404(checkpoint_id)
+    section_selection_string = flask.request.args.get('section_selection_string_get')
+    section_selections = section_selection_string.split(',')
+    checkpoint_report = report_types.ClazzCheckpointReport(g.clazz, checkpoint, section_selections)
+    return flask.render_template('course/clazz/checkpoint_report.html', checkpoint_report = checkpoint_report)
 
 @bp_clazz.route('/mc_result_input_submit', methods=['POST'])
 @auth_manager.require_group
