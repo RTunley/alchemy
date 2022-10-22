@@ -22,6 +22,7 @@ def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
     g.cohort_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
+    g.cohort_checkpoint_report_sections_string = 'OverviewSection'
 
 def get_clazz_course_profiles(course):
     clazz_course_profiles = []
@@ -47,6 +48,15 @@ def paper_report(paper_id=0):
     section_selections = section_selection_string.split(',')
     cohort_report = report_types.CohortPaperReport(paper, section_selections)
     return flask.render_template('course/cohort/paper_report.html', cohort_report = cohort_report)
+
+@bp_cohort.route('/checkpoint_report/<int:checkpoint_id>/')
+@auth_manager.require_group
+def checkpoint_report(checkpoint_id):
+    checkpoint = models.Checkpoint.query.get_or_404(checkpoint_id)
+    section_selection_string = flask.request.args.get('section_selection_string_get')
+    section_selections = section_selection_string.split(',')
+    checkpoint_report = report_types.CohortCheckpointReport(checkpoint, section_selections)
+    return flask.render_template('course/cohort/checkpoint_report.html', checkpoint_report = checkpoint_report)
 
 @bp_cohort.route('/manage_members')
 @auth_manager.require_group

@@ -131,9 +131,7 @@ def checkpoint_report(checkpoint_id):
     checkpoint = models.Checkpoint.query.get_or_404(checkpoint_id)
     section_selection_string = flask.request.args.get('section_selection_string_get')
     section_selections = section_selection_string.split(',')
-    print(section_selections)
     checkpoint_report = report_types.ClazzCheckpointReport(g.clazz, checkpoint, section_selections)
-    print(checkpoint_report.sections)
     return flask.render_template('course/clazz/checkpoint_report.html', checkpoint_report = checkpoint_report)
 
 @bp_clazz.route('/mc_result_input_submit', methods=['POST'])
