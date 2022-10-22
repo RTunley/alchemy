@@ -12,7 +12,7 @@ def url_value_preprocessor(endpoint, values):
     g.clazz = models.Clazz.query.get_or_404(values.pop('clazz_id'))
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
     g.clazz_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
-    g.clazz_checkpoint_report_sections_string = 'OverviewSection,GradeOverviewSection,OverviewDetailsSection'
+    g.clazz_checkpoint_report_sections_string = 'OverviewSection,GradeOverviewSection,OverviewDetailsSection,TagOverviewSection'
 
 @bp_clazz.url_defaults
 def url_defaults(endpoint, values):

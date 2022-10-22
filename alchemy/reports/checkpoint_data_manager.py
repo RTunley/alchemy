@@ -127,6 +127,32 @@ class TagCheckpointSummary():
         self.percentage = data_manager.calc_percentage(self.raw_score, self.total)
         self.grade = data_manager.determine_grade(self.percentage, self.checkpoint.course)
 
+class TagCheckpointProfile():
+    def __init__(self, tag, student_list, checkpoint):
+        self.tag = tag
+        self.students = student_list
+        self.checkpoint = checkpoint
+        self.mean = 0
+        self.sd = 0
+        self.fivenumsumm = 0
+        self.iqr = 0
+        self.build_self()
+
+    def build_self(self):
+        student_tag_summaries = many_students_single_tag_summaries(self.tag, self.students, self.checkpoint)
+        percent_values = []
+        for tag_summary in student_tag_summaries:
+            percent_values.append(tag_summary.percentage)
+
+        array = np.array(percent_values)
+        self.mean = round(np.mean(array), 2)
+        self.sd = round(np.std(array), 2)
+        min = array.min()
+        max = array.max()
+        quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
+        self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
+        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
+
 def all_checkpoint_tags(checkpoint):
     all_tags = []
     for paper in checkpoint.papers:
@@ -143,7 +169,7 @@ def get_tag_summary(tag_summary_list, tag):
             break
     return target_summary
 
-def build_checkpoint_tag_summaries(tag_list, student, checkpoint):
+def single_student_many_tag_summaries(tag_list, student, checkpoint):
     checkpoint_tag_summaries = [TagCheckpointSummary(student, tag, checkpoint) for tag in tag_list]
     for paper in checkpoint.papers:
         for pq in paper.paper_questions:
@@ -156,6 +182,28 @@ def build_checkpoint_tag_summaries(tag_list, student, checkpoint):
 
     return checkpoint_tag_summaries
 
+def many_students_single_tag_summaries(tag, student_list, checkpoint):
+    all_tag_summaries = []
+    for student in student_list:
+        checkpoint_tag_summary = TagCheckpointSummary(student, tag, checkpoint)
+        for paper in checkpoint.papers:
+            for pq in paper.paper_questions:
+                if tag in pq.question.tags:
+                    score = models.Score.query.filter_by(paper_id = paper.id, question_id = pq.question.id, student_id = student.id).first()
+                    checkpoint_tag_summary.total += pq.question.points
+                    checkpoint_tag_summary.raw_score += score.value
+        checkpoint_tag_summary.calculate_percentage_and_grade()
+        all_tag_summaries.append(checkpoint_tag_summary)
+    return all_tag_summaries
+
+def all_checkpoint_tag_profiles(checkpoint, student_list):
+    all_tags = all_checkpoint_tags(checkpoint)
+    all_tag_profiles = []
+    for tag in all_tags:
+        profile = TagCheckpointProfile(tag, student_list, checkpoint)
+        all_tag_profiles.append(profile)
+    return all_tag_profiles
+
 class TagHighlights():
     def __init__(self, student, checkpoint):
         self.has_strengths = False
@@ -166,7 +214,7 @@ class TagHighlights():
 
     def build_self(self, student, checkpoint):
         all_tags = all_checkpoint_tags(checkpoint)
-        all_tag_summaries = build_checkpoint_tag_summaries(all_tags, student, checkpoint)
+        all_tag_summaries = single_student_many_tag_summaries(all_tags, student, checkpoint)
         for tag_summary in all_tag_summaries:
             tag_summary.calculate_percentage_and_grade()
         all_tag_summaries.sort(key=lambda x: x.percentage, reverse=True)
@@ -281,3 +329,23 @@ class GroupStatProfile():
 def create_distribution_plot(title, stat_profile):
     plot_data = plots.create_distribution_plot(stat_profile.values, stat_profile.sd, stat_profile.mean, title, False, None)
     return plot_data
+
+def make_comparison_charts(tag_profile_list):
+    means = []
+    medians = []
+    sd_list = []
+    iqr_list = []
+    labels = []
+    for profile in tag_profile_list:
+        means.append(profile.mean)
+        medians.append(profile.fivenumsumm[2])
+        sd_list.append(profile.sd)
+        iqr_list.append(profile.iqr)
+        labels.append(profile.tag.name)
+
+    center_title = 'Tag Comparison: Central Tendency'
+    spread_title = 'Tag Comparison: Spread'
+    x_axis = None
+    center_bar_plot = plots.create_comparative_bar_chart(center_title, means, 'Mean', medians, 'Median', labels, x_axis)
+    spread_bar_plot = plots.create_comparative_bar_chart(spread_title, sd_list, 'Standard Deviation', iqr_list, 'Interquartile Range', labels, x_axis)
+    return (center_bar_plot, spread_bar_plot)

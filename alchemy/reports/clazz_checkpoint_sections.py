@@ -32,3 +32,11 @@ class OverviewDetailsSection(ClazzReportSection):
         student_tallies = [checkpoint_data_manager.StudentCheckpointTally(student, self.checkpoint) for student in self.clazz.students]
         self.statprofile = checkpoint_data_manager.GroupStatProfile([tally.percent_total for tally in student_tallies])
         self.plot = checkpoint_data_manager.create_distribution_plot(f"Distribution of Average Achievement in {self.clazz.code}", self.statprofile)
+
+class TagOverviewSection(ClazzReportSection):
+    def __init__(self, **section_kwargs):
+        super().__init__('course/clazz/checkpoint_report_sections/tag_overview.html', **section_kwargs)
+
+    def build_self(self):
+        self.tag_profiles = checkpoint_data_manager.all_checkpoint_tag_profiles(self.checkpoint, self.clazz.students)
+        self.center_bar_plot, self.spread_bar_plot = checkpoint_data_manager.make_comparison_charts(self.tag_profiles)
