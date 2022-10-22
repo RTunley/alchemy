@@ -21,7 +21,7 @@
           {% if paper.check_clazz_scores(g.clazz) %}
             <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.paper_report', paper_id = paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.clazz_paper_report_sections_string ) }}">View Class Report</a>
           {% else %}
-            <a class="btn btn-success btn-sm disabled" target="_blank">View Class Report</a>
+            <a class="btn btn-danger btn-sm disabled">View Class Report</a>
           {% endif %}
         {% endif %}
       </td>
@@ -42,7 +42,7 @@
         <td>{{ checkpoint.snapshot.name }}</td>
         <td>
           {% if not checkpoint.snapshot.is_published %}
-            <a class="btn btn-info btn-sm disabled">Not Yet Published</a>
+            <a class="btn btn-danger btn-sm disabled">Not Yet Published</a>
           {% else %}
             <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.clazz.checkpoint_report', checkpoint_id = checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.clazz_checkpoint_report_sections_string ) }}">View Class Report</a>
           {% endif %}

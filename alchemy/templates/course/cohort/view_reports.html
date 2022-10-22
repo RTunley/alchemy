@@ -21,7 +21,7 @@
             {% if paper.has_all_scores() %}
                 <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.paper_report', paper_id = paper.id, section_selection_string_get = g.cohort_paper_report_sections_string) }}">View Cohort Report</a>
             {% else %}
-              <a class="btn btn-success btn-sm disabled" target="_blank">View Cohort Report</a>
+              <a class="btn btn-danger btn-sm disabled">View Cohort Repor</a>
             {% endif %}
           {% endif %}
         </td>
@@ -43,7 +43,7 @@
           <td>{{ checkpoint.snapshot.name }}</td>
           <td>
             {% if not checkpoint.snapshot.is_published %}
-              <a class="btn btn-success btn-sm disabled">View Cohort Report</a>
+              <a class="btn btn-danger btn-sm disabled">Not Yet Published</a>
             {% else %}
               <a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('course.cohort.checkpoint_report', checkpoint_id = checkpoint.id, section_selection_string_get = g.cohort_checkpoint_report_sections_string) }}">View Cohort Report</a>
             {% endif %}
