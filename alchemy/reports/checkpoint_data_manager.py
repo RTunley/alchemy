@@ -151,7 +151,7 @@ class TagCheckpointProfile():
         max = array.max()
         quartiles = np.percentile(array, [25, 50, 75], interpolation = 'midpoint')
         self.fivenumsumm = [round(min,2), round(quartiles[0],2), round(quartiles[1],2), round(quartiles[2],2), round(max,2)]
-        self.iqr = self.fivenumsumm[3] - self.fivenumsumm[1]
+        self.iqr = round(self.fivenumsumm[3] - self.fivenumsumm[1],2)
 
 def all_checkpoint_tags(checkpoint):
     all_tags = []

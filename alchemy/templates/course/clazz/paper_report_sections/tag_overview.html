@@ -41,11 +41,11 @@
             <th>Standard Deviation</th>
             <th>Interquartile Range</th>
           </tr>
-          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='norm_mean', reverse=True) %}
+          {% for statprofile in tag_overview_section.statprofiles|sort(attribute='sd', reverse=True) %}
             <tr>
               <td>{{ statprofile.object.name }}</td>
-              <td>{{ statprofile.norm_mean }} %</td>
-              <td>{{ statprofile.norm_fivenumsumm[2] }} %</td>
+              <td>{{ statprofile.norm_sd }} %</td>
+              <td>{{ statprofile.norm_iqr }} %</td>
             </tr>
           {% endfor %}
         </table>
