@@ -1,0 +1,50 @@
+{% macro render_section(overview_details_section) -%}
+
+<center>
+  <img src="data:image/png;base64, {{ overview_details_section.plot }}" alt="graph">
+</center>
+<br>
+<br>
+
+<p>5 Number Summary:</p>
+<table style="text-align:center" class="table table-hover">
+    <tr>
+      <th>Minimum</th>
+      <th>First Quartile (Q1)</th>
+      <th>Median</th>
+      <th>Third Quartile (Q3)</th>
+      <th>Maximum</th>
+    </tr>
+    <tr>
+      <td style="text-align: center">
+        {{ overview_details_section.statprofile.fivenumsumm[0] }}%
+      </td>
+      <td style="text-align: center">
+        {{ overview_details_section.statprofile.fivenumsumm[1] }}%
+      </td>
+      <td style="text-align: center">
+        {{ overview_details_section.statprofile.fivenumsumm[2] }}%
+      </td>
+      <td style="text-align: center">
+        {{ overview_details_section.statprofile.fivenumsumm[3] }}%
+      </td>
+      <td style="text-align: center">
+        {{ overview_details_section.statprofile.fivenumsumm[4] }}%
+      </td>
+    </tr>
+</table>
+
+<p>Mean and Standard Deviation:</p>
+<table style="text-align:center" class="table table-hover">
+  <tr>
+    <th>Mean</th>
+    <th>Standard Deviation</th>
+  </tr>
+  <tr>
+    <td>{{ overview_details_section.statprofile.mean }}%</td>
+    <td>{{ overview_details_section.statprofile.sd }}%</td>
+  </tr>
+</table>
+<br>
+
+{%- endmacro %}
