@@ -22,7 +22,7 @@ def before_request():
     g.html_title = f'{{{ g.course.name }}} - Current Cohort'
     g.student_paper_report_sections_string = 'OverviewSection,AdjacentGradesSection,ClazzSummarySection,CohortSummarySection,HighlightsSection,TagDetailsSection,QuestionDetailsSection'
     g.cohort_paper_report_sections_string = 'OverviewSection,OverviewPlotSection,OverviewDetailsSection,GradeOverviewSection,TagOverviewSection,QuestionOverviewSection,TagDetailsSection,QuestionDetailsSection'
-    g.cohort_checkpoint_report_sections_string = 'OverviewSection'
+    g.cohort_checkpoint_report_sections_string = 'OverviewSection,GradeOverviewSection,OverviewDetailsSection,TagOverviewSection'
 
 def get_clazz_course_profiles(course):
     clazz_course_profiles = []
