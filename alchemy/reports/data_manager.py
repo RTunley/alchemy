@@ -49,8 +49,17 @@ class PaperScoreTally(object):
         self.scores = []
         self.paper_total = paper.profile.total_points
         self.raw_total = score
-        self.percent_total = calc_percentage(self.raw_total, self.paper_total)
-        self.grade = determine_grade(self.percent_total, paper.course)
+        self.percent_total = 0
+        self.grade = None
+        self.build_self()
+
+    def build_self(self):
+        if len(self.paper.paper_questions) == 0:
+            self.percent_total = None
+            self.grade = None
+        else:
+            self.percent_total = calc_percentage(self.raw_total, self.paper_total)
+            self.grade = determine_grade(self.percent_total, paper.course)
 
     @staticmethod
     def from_student(student, paper):
@@ -91,10 +100,22 @@ class PaperScoreTally(object):
 
 class PaperMultiScoreTally(object):
     def __init__(self, paper, score_list):
-        self.paper_total = paper.profile.total_points
-        self.raw_mean = calc_mean(score_list)
-        self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
-        self.mean_grade = determine_grade(self.percent_mean, paper.course)
+        self.paper = paper
+        self.paper_total = self.paper.profile.total_points
+        self.raw_mean = 0
+        self.percent_mean = 0
+        self.mean_grade = None
+        self.build_self()
+
+    def build_self(self):
+        if len(self.paper.paper_questions) == 0:
+            self.percent_mean = None
+            self.percent_total = None
+            self.grade = None
+        else:
+            self.raw_mean = calc_mean(score_list)
+            self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
+            self.mean_grade = determine_grade(self.percent_mean, paper.course)
 
     @staticmethod
     def from_clazz(clazz, paper):
@@ -192,10 +213,22 @@ class AdjacentGrades(object):
 class StatSummary(object):
     def __init__(self, paper, score, total):
         self.object = None
+        self.paper = paper
         self.total = total
         self.raw_score = score
-        self.percent_score = calc_percentage(self.raw_score, self.total)
-        self.grade = determine_grade(self.percent_score, paper.course)
+        self.percent_score = 0
+        self.grade = None
+        self.build_self()
+
+    def build_self(self):
+        if len(self.paper.paper_questions) == 0:
+            self.percent_score = 0
+            self.grade = None
+        else:
+            self.total = total
+            self.raw_score = score
+            self.percent_score = calc_percentage(self.raw_score, self.total)
+            self.grade = determine_grade(self.percent_score, paper.course)
 
     @staticmethod
     def from_tag(paper, tag_profile, tag_score):

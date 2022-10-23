@@ -15,89 +15,91 @@
     <br>
     <h3>Student Results: {{ clazz_paper_profile.paper.title }} ({{ g.clazz.code }})</h3>
     <br>
-    {% if clazz_paper_profile.paper.has_mc_questions() %}
-      <h4>Multiple Choice Questions</h4>
+    {% if clazz_paper_profile.paper.paper_questions|length == 0 %}
+      <h5 color='red'>There are no Questions included in this assessment.</h5>
+    {% else %}
+      {% if clazz_paper_profile.paper.has_mc_questions() %}
+        <h4>Multiple Choice Questions</h4>
+        <br>
+        <p>Record the results for multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
+        <br>
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Given Name</th>
+              <th>Family Name</th>
+              <th>Edit results</th>
+              <th>All results recorded?</th>
+            </tr>
+          </thead>
+          {% for student in g.clazz.students %}
+            <tr>
+              <td class="align-middle">{{ student.id }}</td>
+              <td class="align-middle">{{ student.aws_user.given_name }}</td>
+              <td class="align-middle">{{ student.aws_user.family_name }}</td>
+              <td class="align-middle">
+                <a role="button"
+                    aria-label="Edit question"
+                    onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})"
+                    class="btn btn-link">
+                  <span data-feather="edit"></span>
+                </a>
+              <td class="align-middle">{{ 'Yes' if student.has_results_for_all_mc_questions(clazz_paper_profile.paper) else '--' }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+      <div id="mc_input_area">
+        <!-- mc input form injected here -->
+      </div>
       <br>
-      <p>Record the results for multiple choice questions using the 'Edit' button for each student instead of entering the individual number of points of each question. The inputted results will be marked automatically and recorded below.</p>
+      <h4>All Question Results</h4>
       <br>
-      <table class="table table-sm table-hover">
+
+      <table id="results_spreadsheet">
         <thead>
           <tr>
-            <th>Student ID</th>
-            <th>Given Name</th>
-            <th>Family Name</th>
-            <th>Edit results</th>
-            <th>All results recorded?</th>
+            <td>ID</td>
+            <td>Given Name</td>
+            <td>Family Name</td>
+            {% for paper_question in clazz_paper_profile.paper.paper_questions %}
+              <td>Question {{ paper_question.order_number }}
+                ( / {{ paper_question.question.points | prettify_number }} )
+              </td>
+            {% endfor %}
+            <td>Total (Raw)
+              ( / {{ clazz_paper_profile.paper.profile.total_points | prettify_number }} )
+            </td>
+            <td>Total (%)</td>
+            <td>Grade</td>
           </tr>
         </thead>
-        {% for student in g.clazz.students %}
+
+        <tbody>
+          {% for tally in clazz_paper_profile.paper_score_tallies %}
           <tr>
-            <td class="align-middle">{{ student.id }}</td>
-            <td class="align-middle">{{ student.aws_user.given_name }}</td>
-            <td class="align-middle">{{ student.aws_user.family_name }}</td>
-            <td class="align-middle">
-              <a role="button"
-                  aria-label="Edit question"
-                  onclick="mc_results_form_load({{ g.clazz.course.id }}, {{ g.clazz.id }}, {{ clazz_paper_profile.paper.id }}, {{ student.id }})"
-                  class="btn btn-link">
-                <span data-feather="edit"></span>
-              </a>
-            <td class="align-middle">{{ 'Yes' if student.has_results_for_all_mc_questions(clazz_paper_profile.paper) else '--' }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-    <div id="mc_input_area">
-      <!-- mc input form injected here -->
-    </div>
-    <br>
-    <h4>All Question Results</h4>
-    <br>
-
-    <table id="results_spreadsheet">
-      <thead>
-        <tr>
-          <td>ID</td>
-          <td>Given Name</td>
-          <td>Family Name</td>
-          {% for paper_question in clazz_paper_profile.paper.paper_questions %}
-            <td>Question {{ paper_question.order_number }}
-              ( / {{ paper_question.question.points | prettify_number }} )
-            </td>
+          <td>{{ tally.student.id }}</td>
+          <td>{{ tally.student.aws_user.given_name }}</td>
+          <td>{{ tally.student.aws_user.family_name }}</td>
+          {% for score in tally.scores %}
+            <td>{{ score.value | prettify_number }}</td>
           {% endfor %}
-          <td>Total (Raw)
-            ( / {{ clazz_paper_profile.paper.profile.total_points | prettify_number }} )
-          </td>
-          <td>Total (%)</td>
-          <td>Grade</td>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for tally in clazz_paper_profile.paper_score_tallies %}
-        <tr>
-        <td>{{ tally.student.id }}</td>
-        <td>{{ tally.student.aws_user.given_name }}</td>
-        <td>{{ tally.student.aws_user.family_name }}</td>
-        {% for score in tally.scores %}
-          <td>{{ score.value | prettify_number }}</td>
-        {% endfor %}
-        <td>{{ tally.raw_total | prettify_number }}</td>
-        <td>{{ tally.percent_total | prettify_number }}</td>
-        <td>{{ tally.grade }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          <td>{{ tally.raw_total | prettify_number }}</td>
+          <td>{{ tally.percent_total | prettify_number }}</td>
+          <td>{{ tally.grade }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <br>
+      <p style="text-align: center;">
+        <input id="save_scores_button" class="btn btn-primary btn-lg btn-block" type="button" value="Save Results" onclick="update_student_data()" disabled>
+      </p>
+      <br>
+    {% endif %}
   </body>
-
-  <br>
-  <p style="text-align: center;">
-    <input id="save_scores_button" class="btn btn-primary btn-lg btn-block" type="button" value="Save Results" onclick="update_student_data()" disabled>
-  </p>
-  <br>
 </main>
-
 <script type="text/javascript">
   let modified_students = {}
   let results_table = jexcel(document.getElementById('results_spreadsheet'), {

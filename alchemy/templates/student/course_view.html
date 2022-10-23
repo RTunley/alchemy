@@ -39,18 +39,28 @@
     </tr>
     <tbody>
       {% for tally in profile.paper_score_tallies %}
-        <tr>
-          <td>{{ tally.paper.title }}</td>
-          {% if tally.has_all_scores %}
+        {% if tally.paper.paper_questions|length == 0 %}
+          <tr>
+            <td>{{ tally.paper.title }}</td>
             <td>{{ tally.paper.category.name }} | {{ tally.paper.category.weight }}%</td>
             <td>{{ tally.paper.profile.total_points }}</td>
-            <td> {{ tally.raw_total }} | {{ tally.percent_total }}% | {{ tally.grade }} </td>
-            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_paper_report_sections_string) }}" >View Report</a></td>
-          {% else %}
-            <td>No Grade Assigned</td>
-            <td><a class="btn btn-success btn-sm disabled">View Report</a></td>
-          {% endif %}
-        </tr>
+            <td><p style="color: orange;">Coming Soon</p></td>
+            <td><a class="btn btn-success btn-sm disabled">Not Yet Available</a></td>
+          </tr>
+        {% else %}
+          <tr>
+            <td>{{ tally.paper.title }}</td>
+            {% if tally.has_all_scores %}
+              <td>{{ tally.paper.category.name }} | {{ tally.paper.category.weight }}%</td>
+              <td>{{ tally.paper.profile.total_points }}</td>
+              <td> {{ tally.raw_total }} | {{ tally.percent_total }}% | {{ tally.grade }} </td>
+              <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.paper_report', student_id = g.student.id, paper_id = tally.paper.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_paper_report_sections_string) }}" >View Report</a></td>
+            {% else %}
+              <td>No Grade Assigned</td>
+              <td><a class="btn btn-success btn-sm disabled">Not Yet Available</a></td>
+            {% endif %}
+          </tr>
+        {% endif %}
       {% endfor %}
     </tbody>
   </table>
@@ -59,27 +69,31 @@
 <div class='container'>
   <h4>Reporting Events</h4>
   <br>
-  <table style="text-align:center" class="table table-hover">
-    <tr>
-      <th>Reporting Event</th>
-      <th>Achievement</th>
-      <th>Report</th>
-    </tr>
-    <tbody>
-      {% for tally in profile.checkpoint_tallies  %}
-        <tr>
-          <td>{{ tally.checkpoint.snapshot.name }}</td>
-          {% if not tally.checkpoint.snapshot.is_published %}
-            <td>No Grade Assigned</td>
-            <td><a class="btn btn-success btn-sm disabled">Report Unavailable</a></td>
-          {% else %}
-            <td>{{ tally.grade }} | {{ tally.percentage }}% </td>
-            <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = tally.checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
-          {% endif %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if g.school.snapshots|length == 0 %}
+    <h5 color='red'>There are no Reporting Events to view.</h5>
+  {% else %}
+    <table style="text-align:center" class="table table-hover">
+      <tr>
+        <th>Reporting Event</th>
+        <th>Achievement</th>
+        <th>Report</th>
+      </tr>
+      <tbody>
+        {% for tally in profile.checkpoint_tallies  %}
+          <tr>
+            <td>{{ tally.checkpoint.snapshot.name }}</td>
+            {% if not tally.checkpoint.snapshot.is_published %}
+              <td>No Grade Assigned</td>
+              <td><a class="btn btn-success btn-sm disabled">Report Unavailable</a></td>
+            {% else %}
+              <td>{{ tally.grade }} | {{ tally.percentage }}% </td>
+              <td><a class="btn btn-success btn-sm" target="_blank" href="{{ url_for('student.checkpoint_report', student_id = g.student.id, checkpoint_id = tally.checkpoint.id, clazz_id = g.clazz.id, section_selection_string_get = g.student_checkpoint_report_sections_string) }}">View Report</a></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
 </div>
 
 {% endblock student_tab_content %}
