@@ -9,7 +9,9 @@ function validate_new_snapshot(school_id){
       snapshot_name: snapshot_name
     }),
     contentType: 'application/json',
-  })
-  document.getElementById('new-snapshot-form').submit();
+  }).done(function(data) {
+    // Now refresh the snapshots page using the action in the html form
+    document.getElementById('new-snapshot-form').submit();
+  });
   return true
 }

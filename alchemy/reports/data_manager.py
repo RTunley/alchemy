@@ -59,7 +59,7 @@ class PaperScoreTally(object):
             self.grade = None
         else:
             self.percent_total = calc_percentage(self.raw_total, self.paper_total)
-            self.grade = determine_grade(self.percent_total, paper.course)
+            self.grade = determine_grade(self.percent_total, self.paper.course)
 
     @staticmethod
     def from_student(student, paper):

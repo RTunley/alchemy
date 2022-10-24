@@ -57,6 +57,8 @@ def new_snapshot():
         checkpoint.course = models.Course.query.get_or_404(checkpoint.course_id)
         checkpoint.snapshot = models.Snapshot.query.get_or_404(checkpoint.snapshot_id)
     db.session.commit() ##This will commit the checkpoints created
+    print("The Snapshot is ready?")
+    print(new_snapshot.is_ready())
     return flask.render_template('school/snapshots.html')
 
 ## Default for now is all courses, but in future need some way to group courses so that snapshots can be taken for some courses but not others ##
