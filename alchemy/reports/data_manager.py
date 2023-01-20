@@ -105,9 +105,9 @@ class PaperMultiScoreTally(object):
         self.raw_mean = 0
         self.percent_mean = 0
         self.mean_grade = None
-        self.build_self()
+        self.build_self(score_list)
 
-    def build_self(self):
+    def build_self(self, score_list):
         if len(self.paper.paper_questions) == 0:
             self.percent_mean = None
             self.percent_total = None
@@ -115,7 +115,7 @@ class PaperMultiScoreTally(object):
         else:
             self.raw_mean = calc_mean(score_list)
             self.percent_mean = calc_percentage(self.raw_mean, self.paper_total)
-            self.mean_grade = determine_grade(self.percent_mean, paper.course)
+            self.mean_grade = determine_grade(self.percent_mean, self.paper.course)
 
     @staticmethod
     def from_clazz(clazz, paper):
@@ -225,10 +225,8 @@ class StatSummary(object):
             self.percent_score = 0
             self.grade = None
         else:
-            self.total = total
-            self.raw_score = score
             self.percent_score = calc_percentage(self.raw_score, self.total)
-            self.grade = determine_grade(self.percent_score, paper.course)
+            self.grade = determine_grade(self.percent_score, self.paper.course)
 
     @staticmethod
     def from_tag(paper, tag_profile, tag_score):
