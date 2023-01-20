@@ -1,4 +1,4 @@
-## TODO or maybe we should store them in separate tables....?
+## TODO this is pseudocode - not implemented anywhere, just an idea for how to organize this type of assessment task
 
 class Paper(db.Model):
     __tablename__ = 'paper'
