@@ -519,7 +519,7 @@ class Snapshot(db.Model):
                 new_checkpoint.papers.append(paper)
             self.checkpoints.append(new_checkpoint)
             db.session.add(new_checkpoint)
-    db.session.commit()
+        db.session.commit()
 
     def is_ready(self):
         is_ready = True
