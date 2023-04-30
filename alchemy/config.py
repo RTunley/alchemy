@@ -36,8 +36,11 @@ def configure_flask_jwt_extended(config):
     config.JWT_ALGORITHM = 'RS256'
     config.JWT_IDENTITY_CLAIM = 'sub'
     config.JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(hours=1)
-    config.JWT_PUBLIC_KEY = jwt.algorithms.RSAAlgorithm.from_jwk(
-            download_cognito_public_keys(config.AWS_DEFAULT_REGION, config.AWS_COGNITO_USER_POOL_ID))
+
+    # Disable JWT alg for now, we're not using it
+    #config.JWT_PUBLIC_KEY = jwt.algorithms.RSAAlgorithm.from_jwk(
+    #        download_cognito_public_keys(config.AWS_DEFAULT_REGION, config.AWS_COGNITO_USER_POOL_ID))
+
     # JWT_PRIVATE_KEY = '' # not set, we don't send any encoded requests at the moment
     # JWT_SECRET_KEY = ''  # not set, will default to Flask SECRET_KEY instead
 

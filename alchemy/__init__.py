@@ -1,7 +1,6 @@
 import flask
 from flask import g
 import flask_jwt_extended
-import flask_awscognito
 import flask_sqlalchemy
 import os
 import alchemy.config
