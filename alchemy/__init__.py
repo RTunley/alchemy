@@ -60,4 +60,5 @@ application.register_blueprint(auth.bp_auth, url_prefix='/auth')
 application.register_blueprint(school.bp_school, url_prefix='/school/<school_id>')
 
 # Create any tables not already in the db
-db.create_all()
+with application.app_context():
+    db.create_all()

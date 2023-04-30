@@ -5,7 +5,7 @@ Run this from the root alchemy directory:
     python -m tools.populate
 '''
 import os
-from alchemy import db
+from alchemy import application, db
 from tools import db_data
 
 def populate_db():
@@ -13,7 +13,6 @@ def populate_db():
     if os.path.exists(db_path):
         print('Removing existing db:', db_path)
         os.remove(os.path.join(os.getcwd(), 'alchemy/master.db'))
-        db.create_all()
     print('Populating test data...')
 
     school = db_data.add_school("School of Rock")
@@ -59,4 +58,6 @@ def populate_db():
     print('Done!')
 
 if __name__ == '__main__':
-    populate_db()
+    with application.app_context():
+        db.create_all()
+        populate_db()
